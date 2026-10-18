@@ -45,7 +45,8 @@ class _RadioListScreenState extends State<RadioListScreen> {
   }
 
   Future<void> _play(RadioProvider provider, RadioStation station) async {
-    if (provider.currentStation?.streamUrl == station.streamUrl && provider.isPlaying) {
+    // Same station: just pause/resume, never tear the stream down and rebuffer.
+    if (provider.currentStation?.streamUrl == station.streamUrl) {
       await provider.togglePlayPause();
       return;
     }
@@ -66,6 +67,7 @@ class _RadioListScreenState extends State<RadioListScreen> {
     final stations = provider.getFilteredStations(
       region: widget.region,
       isFavoritesOnly: widget.isFavoritesOnly,
+      regionLabeler: (region) => regionLabel(l10n, region),
     );
 
     return Scaffold(
@@ -195,9 +197,14 @@ class _RadioListScreenState extends State<RadioListScreen> {
                                       try {
                                         await provider.toggleFavorite(station);
                                       } catch (error) {
+                                        debugPrint('favourite failed: $error');
                                         if (!context.mounted) return;
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('$error')),
+                                          SnackBar(
+                                            content: Text(
+                                              AppLocalizations.of(context).msgStorageError,
+                                            ),
+                                          ),
                                         );
                                       }
                                     },

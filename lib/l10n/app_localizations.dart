@@ -118,35 +118,11 @@ abstract class AppLocalizations {
   /// **'Balkan Radio'**
   String get appName;
 
-  /// No description provided for @navigationDrawerOpen.
-  ///
-  /// In en, this message translates to:
-  /// **'Open navigation drawer'**
-  String get navigationDrawerOpen;
-
-  /// No description provided for @navigationDrawerClose.
-  ///
-  /// In en, this message translates to:
-  /// **'Close navigation drawer'**
-  String get navigationDrawerClose;
-
-  /// No description provided for @navHeaderTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Balkan Radio'**
-  String get navHeaderTitle;
-
   /// No description provided for @navHeaderSubtitle.
   ///
   /// In en, this message translates to:
   /// **'Ex-Yu Radio Stations'**
   String get navHeaderSubtitle;
-
-  /// No description provided for @navHeaderDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Navigation header'**
-  String get navHeaderDesc;
 
   /// No description provided for @actionSettings.
   ///
@@ -213,12 +189,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Serbia'**
   String get menuSerbia;
-
-  /// No description provided for @menuSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get menuSettings;
 
   /// No description provided for @nowPlayingDefault.
   ///
@@ -351,60 +321,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a Region'**
   String get titleChooseRegion;
-
-  /// No description provided for @labelAlbania.
-  ///
-  /// In en, this message translates to:
-  /// **'Albania'**
-  String get labelAlbania;
-
-  /// No description provided for @labelBosnia.
-  ///
-  /// In en, this message translates to:
-  /// **'Bosnia'**
-  String get labelBosnia;
-
-  /// No description provided for @labelBulgaria.
-  ///
-  /// In en, this message translates to:
-  /// **'Bulgaria'**
-  String get labelBulgaria;
-
-  /// No description provided for @labelCroatia.
-  ///
-  /// In en, this message translates to:
-  /// **'Croatia'**
-  String get labelCroatia;
-
-  /// No description provided for @labelGreece.
-  ///
-  /// In en, this message translates to:
-  /// **'Greece'**
-  String get labelGreece;
-
-  /// No description provided for @labelMacedonia.
-  ///
-  /// In en, this message translates to:
-  /// **'Macedonia'**
-  String get labelMacedonia;
-
-  /// No description provided for @labelMontenegro.
-  ///
-  /// In en, this message translates to:
-  /// **'Montenegro'**
-  String get labelMontenegro;
-
-  /// No description provided for @labelSerbia.
-  ///
-  /// In en, this message translates to:
-  /// **'Serbia'**
-  String get labelSerbia;
-
-  /// No description provided for @labelAllRegions.
-  ///
-  /// In en, this message translates to:
-  /// **'All Regions'**
-  String get labelAllRegions;
 
   /// No description provided for @titleContent.
   ///
@@ -567,6 +483,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The app is free of charge and provided as is, without any warranty.\n\nAll stations are public internet streams owned by third parties. The app does not host, control or endorse them, and their availability or content may change at any time.\n\nStation lists are updated from the project repository on GitHub. Do not use the app for anything unlawful.'**
   String get termsBody;
+
+  /// No description provided for @msgStorageError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the setting. Try again.'**
+  String get msgStorageError;
+
+  /// No description provided for @msgPlaybackInterrupted.
+  ///
+  /// In en, this message translates to:
+  /// **'Stream interrupted.'**
+  String get msgPlaybackInterrupted;
 }
 
 class _AppLocalizationsDelegate

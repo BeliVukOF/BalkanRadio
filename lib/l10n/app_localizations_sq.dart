@@ -12,19 +12,7 @@ class AppLocalizationsSq extends AppLocalizations {
   String get appName => 'Balkan Radio';
 
   @override
-  String get navigationDrawerOpen => 'Hap menunë';
-
-  @override
-  String get navigationDrawerClose => 'Mbyll menunë';
-
-  @override
-  String get navHeaderTitle => 'Balkan Radio';
-
-  @override
   String get navHeaderSubtitle => 'Stacionet Radio Ex-Yu';
-
-  @override
-  String get navHeaderDesc => 'Kreu i menusë';
 
   @override
   String get actionSettings => 'Cilësimet';
@@ -58,9 +46,6 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get menuSerbia => 'Serbi';
-
-  @override
-  String get menuSettings => 'Cilësimet';
 
   @override
   String get nowPlayingDefault => 'Nuk po luan asgjë';
@@ -128,33 +113,6 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get titleChooseRegion => 'Zgjidhni një rajon';
-
-  @override
-  String get labelAlbania => 'Shqipëri';
-
-  @override
-  String get labelBosnia => 'BeH';
-
-  @override
-  String get labelBulgaria => 'Bullgari';
-
-  @override
-  String get labelCroatia => 'Kroaci';
-
-  @override
-  String get labelGreece => 'Greqi';
-
-  @override
-  String get labelMacedonia => 'Maqedoni';
-
-  @override
-  String get labelMontenegro => 'Mali i Zi';
-
-  @override
-  String get labelSerbia => 'Serbi';
-
-  @override
-  String get labelAllRegions => 'Të gjitha rajonet';
 
   @override
   String get titleContent => 'Përmbajtja';
@@ -246,4 +204,10 @@ class AppLocalizationsSq extends AppLocalizations {
   @override
   String get termsBody =>
       'Aplikacioni është falas dhe ofrohet ashtu siç është, pa asnjë garanci.\n\nTë gjitha stacionet janë transmetime publike në internet në pronësi të palëve të treta. Aplikacioni nuk i strehon, nuk i kontrollon dhe nuk i mbështet ato, dhe disponueshmëria ose përmbajtja e tyre mund të ndryshojë në çdo kohë.\n\nListat e stacioneve përditësohen nga repozitoriumi i projektit në GitHub. Mos e përdorni aplikacionin për veprime të paligjshme.';
+
+  @override
+  String get msgStorageError => 'Cilësimi nuk mund të ruhet. Provoni përsëri.';
+
+  @override
+  String get msgPlaybackInterrupted => 'Transmetimi u ndërpre.';
 }

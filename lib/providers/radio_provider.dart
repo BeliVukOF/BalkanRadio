@@ -24,27 +24,21 @@ class RadioProvider extends ChangeNotifier {
   RadioStation? _currentStation;
   bool _isLoading = false;
   bool _disposed = false;
+  bool _playPending = false;
+  int _playToken = 0;
   String _searchQuery = '';
-
-  static const List<String> _regions = [
-    'Albania',
-    'Bosnia',
-    'Bulgaria',
-    'Croatia',
-    'Greece',
-    'Macedonia',
-    'Montenegro',
-    'Serbia',
-  ];
 
   List<RadioStation> get allStations => _allStations;
   RadioStation? get currentStation => _currentStation;
   bool get isLoading => _isLoading;
   String get searchQuery => _searchQuery;
   bool get isPlaying => _audio?.playbackState.value.playing ?? false;
-  List<String> get availableRegions => _regions;
+  String? get playbackError => _audio?.error.value;
+  List<String> get availableRegions => StationManager.regions
+      .map((r) => r[0].toUpperCase() + r.substring(1))
+      .toList();
   List<String> get enabledRegions =>
-      _regions.where(prefs.isRegionEnabled).toList();
+      availableRegions.where(prefs.isRegionEnabled).toList();
 
   bool get isBuffering => switch (_audio?.playbackState.value.processingState) {
         AudioProcessingState.loading || AudioProcessingState.buffering => true,
@@ -68,7 +62,7 @@ class RadioProvider extends ChangeNotifier {
       await RegionPreferences.init();
     } catch (error, stack) {
       // Unreadable preferences must not stop the app from opening, but they
-      // must be visible in the log: every settings toggle silently dies then.
+      // must be visible: every settings toggle silently dies without storage.
       debugPrint('RegionPreferences.init failed: $error\n$stack');
     }
 
@@ -76,7 +70,8 @@ class RadioProvider extends ChangeNotifier {
 
     try {
       _audio = await initAudioService();
-    } catch (_) {
+    } catch (error, stack) {
+      debugPrint('audio init failed: $error\n$stack');
       _audio = RadioAudioHandler();
     }
 
@@ -94,9 +89,12 @@ class RadioProvider extends ChangeNotifier {
       _notify();
     }));
     _subscriptions.add(_audio!.playbackState.listen((_) => _notify()));
+    _audio!.error.addListener(_notify);
 
-    if (!_audioReady.isCompleted) _audioReady.complete();
     _notify();
+    // Always completes, even when init above threw: playback calls must never
+    // wait forever on a completer nobody finishes.
+    if (!_audioReady.isCompleted) _audioReady.complete();
   }
 
   void _notify() {
@@ -104,54 +102,84 @@ class RadioProvider extends ChangeNotifier {
   }
 
   /// Shows the cached list straight away, then refreshes from the network.
-  /// Returns true when the network refresh succeeded.
+  /// A region that fails keeps its previous entries: a partial fetch never
+  /// shrinks the list or the cache.
   Future<bool> loadStations() async {
-    if (_allStations.isEmpty) {
-      final cached = await stationManager.cachedStations();
-      _allStations = cached != null && cached.isNotEmpty
-          ? cached
-          : StationRepository.allStations;
-      _notify();
-    }
+    if (_playPending) return false;
+    _playPending = true;
 
-    _isLoading = true;
-    _notify();
-
-    var refreshed = false;
     try {
-      final stations = await stationManager.fetchStations();
-      if (stations.isNotEmpty) {
-        _allStations = stations;
-        refreshed = true;
+      if (_allStations.isEmpty) {
+        final cached = await stationManager.cachedStations();
+        _allStations = cached != null && cached.isNotEmpty
+            ? cached
+            : StationRepository.allStations;
+        _notify();
       }
-    } catch (_) {
-      // Offline: keep whatever list is already on screen.
-    }
 
-    _isLoading = false;
-    _notify();
-    return refreshed;
+      _isLoading = true;
+      _notify();
+
+      var refreshed = false;
+      try {
+        final fetched = await stationManager.fetchStations();
+        if (fetched.isNotEmpty) {
+          _allStations = _merge(_allStations, fetched);
+          unawaited(stationManager.saveToCache(_allStations));
+          refreshed = fetched.length == StationManager.regions.length;
+        }
+      } catch (error) {
+        debugPrint('station refresh failed: $error');
+      }
+
+      _isLoading = false;
+      _notify();
+      return refreshed;
+    } finally {
+      _playPending = false;
+    }
+  }
+
+  /// Keeps every station whose region did not come back from the network.
+  List<RadioStation> _merge(
+    List<RadioStation> existing,
+    Map<String, List<RadioStation>> fetched,
+  ) {
+    final fetchedNames = fetched.keys.toSet();
+    final kept = existing.where((s) {
+      final region = s.region.toLowerCase();
+      return !fetchedNames.contains(region);
+    });
+    return [...fetched.values.expand((s) => s), ...kept];
   }
 
   List<RadioStation> getFilteredStations({
     String? region,
     bool isFavoritesOnly = false,
+    String Function(String)? regionLabeler,
   }) {
-    var list = _allStations.where((s) => prefs.isRegionEnabled(s.region)).toList();
+    var list = _allStations.toList();
 
     if (isFavoritesOnly) {
+      // Favourites are chosen by the user, so they must not disappear when a
+      // region is switched off.
       list = list.where((s) => prefs.isStationFavorite(s.streamUrl)).toList();
-    } else if (region != null && region.isNotEmpty) {
-      list = list.where((s) => s.region == region).toList();
+    } else {
+      list = list.where((s) => prefs.isRegionEnabled(s.region)).toList();
+      if (region != null && region.isNotEmpty) {
+        list = list.where((s) => s.region == region).toList();
+      }
     }
 
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
-      list = list
-          .where((s) =>
-              s.name.toLowerCase().contains(query) ||
-              s.region.toLowerCase().contains(query))
-          .toList();
+      list = list.where((s) {
+        if (s.name.toLowerCase().contains(query)) return true;
+        if (s.region.toLowerCase().contains(query)) return true;
+        // Region names on screen are localised ("Grčka"), so search them too.
+        final label = regionLabeler?.call(s.region);
+        return label != null && label.toLowerCase().contains(query);
+      }).toList();
     }
 
     // Favourites on top, then everything else, each group alphabetical.
@@ -172,6 +200,7 @@ class RadioProvider extends ChangeNotifier {
 
   /// Returns false when the stream could not be opened.
   Future<bool> playStation(RadioStation station) async {
+    final token = ++_playToken;
     _currentStation = station;
     _notify();
 
@@ -179,9 +208,13 @@ class RadioProvider extends ChangeNotifier {
     try {
       await _audio!.playStation(station);
       return true;
-    } catch (_) {
-      _currentStation = null;
-      _notify();
+    } catch (error) {
+      debugPrint('play failed: $error');
+      // Only clear the station if the user has not switched to another one.
+      if (token == _playToken) {
+        _currentStation = null;
+        _notify();
+      }
       return false;
     }
   }
@@ -196,6 +229,7 @@ class RadioProvider extends ChangeNotifier {
   }
 
   Future<void> stop() async {
+    _playToken++;
     _currentStation = null;
     _notify();
     await _audioReady.future;
@@ -240,6 +274,7 @@ class RadioProvider extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    _audio?.error.removeListener(_notify);
     for (final subscription in _subscriptions) {
       subscription.cancel();
     }

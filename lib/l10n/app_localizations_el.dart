@@ -12,19 +12,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get appName => 'Balkan Radio';
 
   @override
-  String get navigationDrawerOpen => 'Άνοιγμα μενού';
-
-  @override
-  String get navigationDrawerClose => 'Κλείσιμο μενού';
-
-  @override
-  String get navHeaderTitle => 'Balkan Radio';
-
-  @override
   String get navHeaderSubtitle => 'Ραδιοφωνικοί Σταθμοί Ex-Yu';
-
-  @override
-  String get navHeaderDesc => 'Κεφαλίδα μενού';
 
   @override
   String get actionSettings => 'Ρυθμίσεις';
@@ -58,9 +46,6 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get menuSerbia => 'Σερβία';
-
-  @override
-  String get menuSettings => 'Ρυθμίσεις';
 
   @override
   String get nowPlayingDefault => 'Δεν αναπαράγεται τίποτα';
@@ -128,33 +113,6 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get titleChooseRegion => 'Επιλέξτε περιοχή';
-
-  @override
-  String get labelAlbania => 'Αλβανία';
-
-  @override
-  String get labelBosnia => 'Βοσνία';
-
-  @override
-  String get labelBulgaria => 'Βουλγαρία';
-
-  @override
-  String get labelCroatia => 'Κροατία';
-
-  @override
-  String get labelGreece => 'Ελλάδα';
-
-  @override
-  String get labelMacedonia => 'Μακεδονία';
-
-  @override
-  String get labelMontenegro => 'Μαυροβούνιο';
-
-  @override
-  String get labelSerbia => 'Σερβία';
-
-  @override
-  String get labelAllRegions => 'Όλες οι περιοχές';
 
   @override
   String get titleContent => 'Περιεχόμενο';
@@ -246,4 +204,11 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get termsBody =>
       'Η εφαρμογή είναι δωρεάν και παρέχεται ως έχει, χωρίς καμία εγγύηση.\n\nΌλοι οι σταθμοί είναι δημόσιες ροές στο διαδίκτυο που ανήκουν σε τρίτους. Η εφαρμογή δεν τους φιλοξενεί, δεν τους ελέγχει και δεν τους υποστηρίζει, και η διαθεσιμότητα ή το περιεχόμενό τους μπορεί να αλλάξει ανά πάσα στιγμή.\n\nΟι λίστες σταθμών ενημερώνονται από το αποθετήριο του έργου στο GitHub. Μην χρησιμοποιείτε την εφαρμογή για παράνομες ενέργειες.';
+
+  @override
+  String get msgStorageError =>
+      'Δεν ήταν δυνατή η αποθήκευση της ρύθμισης. Δοκιμάστε ξανά.';
+
+  @override
+  String get msgPlaybackInterrupted => 'Η ροή διακόπηκε.';
 }

@@ -12,19 +12,7 @@ class AppLocalizationsBs extends AppLocalizations {
   String get appName => 'Balkan Radio';
 
   @override
-  String get navigationDrawerOpen => 'Otvori meni';
-
-  @override
-  String get navigationDrawerClose => 'Zatvori meni';
-
-  @override
-  String get navHeaderTitle => 'Balkan Radio';
-
-  @override
   String get navHeaderSubtitle => 'Ex-Yu Radio Stanice';
-
-  @override
-  String get navHeaderDesc => 'Zaglavlje menija';
 
   @override
   String get actionSettings => 'Postavke';
@@ -58,9 +46,6 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get menuSerbia => 'Srbija';
-
-  @override
-  String get menuSettings => 'Postavke';
 
   @override
   String get nowPlayingDefault => 'Trenutno ništa ne svira';
@@ -128,33 +113,6 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get titleChooseRegion => 'Odaberite regiju';
-
-  @override
-  String get labelAlbania => 'Albanija';
-
-  @override
-  String get labelBosnia => 'Bosna i Hercegovina';
-
-  @override
-  String get labelBulgaria => 'Bugarska';
-
-  @override
-  String get labelCroatia => 'Hrvatska';
-
-  @override
-  String get labelGreece => 'Grčka';
-
-  @override
-  String get labelMacedonia => 'Makedonija';
-
-  @override
-  String get labelMontenegro => 'Crna Gora';
-
-  @override
-  String get labelSerbia => 'Srbija';
-
-  @override
-  String get labelAllRegions => 'Sve regije';
 
   @override
   String get titleContent => 'Sadržaj';
@@ -244,4 +202,11 @@ class AppLocalizationsBs extends AppLocalizations {
   @override
   String get termsBody =>
       'Aplikacija je besplatna i pruža se takva kakva jeste, bez ikakve garancije.\n\nSve stanice su javni internet strimovi u vlasništvu trećih strana. Aplikacija ih ne hostuje, ne kontroliše i ne podržava, a njihova dostupnost i sadržaj se mogu promijeniti u svakom trenutku.\n\nListe stanica se ažuriraju iz repozitorija projekta na GitHub-u. Ne koristite aplikaciju za nezakonite radnje.';
+
+  @override
+  String get msgStorageError =>
+      'Nije moguće sačuvati postavku. Pokušajte ponovo.';
+
+  @override
+  String get msgPlaybackInterrupted => 'Strim je prekinut.';
 }

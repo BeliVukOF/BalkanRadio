@@ -37,12 +37,15 @@ class StationAvatar extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(shape: BoxShape.circle, color: scheme.surface),
         child: Center(
-          child: Text(
-            initialsFor(name),
-            style: TextStyle(
-              fontSize: size * 0.32,
-              fontWeight: FontWeight.w700,
-              color: active ? scheme.onSurface : scheme.onSurfaceVariant,
+          // Initials repeat the station name that is always next to the avatar.
+          child: ExcludeSemantics(
+            child: Text(
+              initialsFor(name),
+              style: TextStyle(
+                fontSize: size * 0.32,
+                fontWeight: FontWeight.w700,
+                color: active ? scheme.onSurface : scheme.onSurfaceVariant,
+              ),
             ),
           ),
         ),

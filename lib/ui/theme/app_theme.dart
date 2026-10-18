@@ -19,7 +19,9 @@ abstract final class AppTheme {
   static const LinearGradient heroLight = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF6C5CE7), Color(0xFF9B8CFF)],
+    // Darker than the Material accent on purpose: white text on #9B8CFF was
+    // only 2.8:1. These two ends both clear 4.5:1.
+    colors: [Color(0xFF4B3BC7), Color(0xFF5F4FD8)],
   );
 
   static ThemeData get light => _build(Brightness.light);

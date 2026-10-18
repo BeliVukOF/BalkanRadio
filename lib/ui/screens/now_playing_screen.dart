@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../models/radio_station.dart';
 import '../../providers/radio_provider.dart';
 import '../region_labels.dart';
 import '../theme/app_theme.dart';
@@ -46,7 +47,7 @@ class NowPlayingScreen extends StatelessWidget {
                 : l10n.contentDescriptionFavorite,
             icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
             color: isFavorite ? scheme.primary : scheme.onSurfaceVariant,
-            onPressed: () => provider.toggleFavorite(station),
+            onPressed: () => _toggleFavorite(context, provider, station),
           ),
         ],
       ),
@@ -95,6 +96,23 @@ class NowPlayingScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+                if (provider.playbackError != null) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 18, color: scheme.error),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          l10n.msgPlaybackInterrupted,
+                          style: theme.textTheme.bodySmall
+                              ?.copyWith(color: scheme.error),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 28),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -127,7 +145,7 @@ class NowPlayingScreen extends StatelessWidget {
                       iconSize: 32,
                       color: isFavorite ? scheme.primary : scheme.onSurfaceVariant,
                       icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-                      onPressed: () => provider.toggleFavorite(station),
+                      onPressed: () => _toggleFavorite(context, provider, station),
                     ),
                   ],
                 ),
@@ -138,6 +156,22 @@ class NowPlayingScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _toggleFavorite(
+    BuildContext context,
+    RadioProvider provider,
+    RadioStation station,
+  ) async {
+    try {
+      await provider.toggleFavorite(station);
+    } catch (error) {
+      debugPrint('favourite failed: $error');
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).msgStorageError)),
+      );
+    }
   }
 }
 
@@ -230,8 +264,9 @@ class _LiveBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        gradient: active ? AppTheme.accent : null,
-        color: active ? null : scheme.surfaceContainerHighest,
+        // White on the accent gradient is only ~2:1, so the badge uses the
+        // scheme pair, which the contrast test guarantees.
+        color: active ? scheme.primary : scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -240,7 +275,7 @@ class _LiveBadge extends StatelessWidget {
           fontSize: 10,
           fontWeight: FontWeight.w800,
           letterSpacing: 1,
-          color: active ? Colors.white : scheme.onSurfaceVariant,
+          color: active ? scheme.onPrimary : scheme.onSurfaceVariant,
         ),
       ),
     );

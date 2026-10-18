@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:balkan_radio/models/radio_station.dart';
+import 'package:balkan_radio/ui/screens/settings_screen.dart' show appVersion;
 import 'package:balkan_radio/ui/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,6 +50,24 @@ void main() {
       expect(_contrast(scheme.onSurfaceVariant, scheme.surface), greaterThan(4.5));
       expect(_contrast(scheme.onPrimaryContainer, scheme.primaryContainer),
           greaterThan(4.5));
+      expect(_contrast(scheme.onPrimary, scheme.primary), greaterThan(4.5));
     });
   }
+
+  test('hero gradients keep white text readable', () {
+    for (final gradient in [AppTheme.heroLight, AppTheme.heroDark]) {
+      for (final colour in gradient.colors) {
+        expect(_contrast(Colors.white, colour), greaterThan(4.5),
+            reason: 'white on $colour');
+      }
+    }
+  });
+
+  test('about version matches pubspec', () {
+    final pubspec = File('pubspec.yaml').readAsStringSync();
+    final version = RegExp(r'^version:\s*([0-9.]+)', multiLine: true)
+        .firstMatch(pubspec)!
+        .group(1);
+    expect(appVersion, version);
+  });
 }

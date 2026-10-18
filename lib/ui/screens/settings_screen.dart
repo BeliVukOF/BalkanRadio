@@ -7,8 +7,8 @@ import '../region_labels.dart';
 import '../widgets/mini_player.dart';
 import 'legal_screen.dart';
 
-// shortcut: version duplicated from pubspec.yaml, move to package_info_plus if it drifts.
-const String _appVersion = '1.1.0';
+/// Kept in sync with pubspec.yaml by a unit test (`about version matches pubspec`).
+const String appVersion = '1.1.6';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -128,7 +128,7 @@ class SettingsScreen extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.info_outline),
                 title: Text(l10n.navHeaderSubtitle),
-                subtitle: Text(l10n.aboutVersion(_appVersion)),
+                subtitle: Text(l10n.aboutVersion(appVersion)),
               ),
             ],
           ),
@@ -143,9 +143,11 @@ class SettingsScreen extends StatelessWidget {
     try {
       return await action();
     } catch (error) {
+      // Log the real cause, show a translated message: never leak internals.
+      debugPrint('settings write failed: $error');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$error')),
+          SnackBar(content: Text(AppLocalizations.of(context).msgStorageError)),
         );
       }
       return null;

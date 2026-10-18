@@ -32,16 +32,24 @@ class RadioAudioHandler extends BaseAudioHandler {
   RadioAudioHandler() {
     _player.playbackEventStream.listen(
       (_) => playbackState.add(_state()),
-      onError: (Object _) {},
+      onError: (Object error, StackTrace _) {
+        // Post-start failures (dropped connection, dead ICY server) used to be
+        // swallowed, which left the UI buffering forever with no message.
+        debugPrint('playback error: $error');
+        this.error.value = error.toString();
+        playbackState.add(_state().copyWith(playing: false));
+      },
     );
-    _player.processingStateStream.listen((state) {
-      if (state == ProcessingState.completed) {
-        mediaItem.add(null);
-      }
-    });
   }
 
   final AudioPlayer _player = AudioPlayer();
+
+  /// Non-null while the last playback attempt failed after it had started.
+  final ValueNotifier<String?> error = ValueNotifier<String?>(null);
+
+  /// Last request wins: a slow station that fails later must not clear the
+  /// station the user has already switched to.
+  int _playToken = 0;
 
   AudioPlayer get player => _player;
 
@@ -65,6 +73,8 @@ class RadioAudioHandler extends BaseAudioHandler {
 
   /// Throws when the stream cannot be opened, so the UI can tell the user.
   Future<void> playStation(RadioStation station) async {
+    final token = ++_playToken;
+    error.value = null;
     mediaItem.add(MediaItem(
       id: station.streamUrl,
       title: station.name,
@@ -73,11 +83,12 @@ class RadioAudioHandler extends BaseAudioHandler {
     ));
     try {
       await _player.stop();
-      // A dead or blocked stream would otherwise buffer forever with no feedback.
       // 30s, not 15: some ICY/HLS servers take that long on mobile data.
       await _player.setUrl(station.streamUrl).timeout(const Duration(seconds: 30));
+      if (token != _playToken) return;
       await _player.play();
     } catch (_) {
+      if (token != _playToken) return;
       mediaItem.add(null);
       rethrow;
     }
@@ -91,6 +102,8 @@ class RadioAudioHandler extends BaseAudioHandler {
 
   @override
   Future<void> stop() async {
+    _playToken++;
+    error.value = null;
     await _player.stop();
     mediaItem.add(null);
     await super.stop();

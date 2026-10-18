@@ -12,19 +12,7 @@ class AppLocalizationsMk extends AppLocalizations {
   String get appName => 'Balkan Radio';
 
   @override
-  String get navigationDrawerOpen => 'Отвори мени';
-
-  @override
-  String get navigationDrawerClose => 'Затвори мени';
-
-  @override
-  String get navHeaderTitle => 'Balkan Radio';
-
-  @override
   String get navHeaderSubtitle => 'Ex-Yu Радио Станици';
-
-  @override
-  String get navHeaderDesc => 'Заглавие на менито';
 
   @override
   String get actionSettings => 'Поставки';
@@ -58,9 +46,6 @@ class AppLocalizationsMk extends AppLocalizations {
 
   @override
   String get menuSerbia => 'Србија';
-
-  @override
-  String get menuSettings => 'Поставки';
 
   @override
   String get nowPlayingDefault => 'Ништо не се репродуцира';
@@ -128,33 +113,6 @@ class AppLocalizationsMk extends AppLocalizations {
 
   @override
   String get titleChooseRegion => 'Избери регион';
-
-  @override
-  String get labelAlbania => 'Албанија';
-
-  @override
-  String get labelBosnia => 'БиХ';
-
-  @override
-  String get labelBulgaria => 'Бугарија';
-
-  @override
-  String get labelCroatia => 'Хрватска';
-
-  @override
-  String get labelGreece => 'Грција';
-
-  @override
-  String get labelMacedonia => 'Македонија';
-
-  @override
-  String get labelMontenegro => 'Црна Гора';
-
-  @override
-  String get labelSerbia => 'Србија';
-
-  @override
-  String get labelAllRegions => 'Сите региони';
 
   @override
   String get titleContent => 'Содржина';
@@ -245,4 +203,11 @@ class AppLocalizationsMk extends AppLocalizations {
   @override
   String get termsBody =>
       'Апликацијата е бесплатна и се нуди таква каква што е, без каква било гаранција.\n\nСите станици се јавни интернет стримови во сопственост на трети страни. Апликацијата не ги хостира, не ги контролира и не ги поддржува, а нивната достапност и содржина може да се променат во секое време.\n\nЛистите на станици се ажурираат од репозиториумот на проектот на GitHub. Не користете ја апликацијата за незаконски дејствија.';
+
+  @override
+  String get msgStorageError =>
+      'Не може да се зачува поставката. Обидете се повторно.';
+
+  @override
+  String get msgPlaybackInterrupted => 'Стримот е прекинат.';
 }

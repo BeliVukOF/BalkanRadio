@@ -12,19 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'Balkan Radio';
 
   @override
-  String get navigationDrawerOpen => 'Open navigation drawer';
-
-  @override
-  String get navigationDrawerClose => 'Close navigation drawer';
-
-  @override
-  String get navHeaderTitle => 'Balkan Radio';
-
-  @override
   String get navHeaderSubtitle => 'Ex-Yu Radio Stations';
-
-  @override
-  String get navHeaderDesc => 'Navigation header';
 
   @override
   String get actionSettings => 'Settings';
@@ -58,9 +46,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get menuSerbia => 'Serbia';
-
-  @override
-  String get menuSettings => 'Settings';
 
   @override
   String get nowPlayingDefault => 'Not Playing';
@@ -128,33 +113,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get titleChooseRegion => 'Choose a Region';
-
-  @override
-  String get labelAlbania => 'Albania';
-
-  @override
-  String get labelBosnia => 'Bosnia';
-
-  @override
-  String get labelBulgaria => 'Bulgaria';
-
-  @override
-  String get labelCroatia => 'Croatia';
-
-  @override
-  String get labelGreece => 'Greece';
-
-  @override
-  String get labelMacedonia => 'Macedonia';
-
-  @override
-  String get labelMontenegro => 'Montenegro';
-
-  @override
-  String get labelSerbia => 'Serbia';
-
-  @override
-  String get labelAllRegions => 'All Regions';
 
   @override
   String get titleContent => 'Content';
@@ -245,4 +203,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get termsBody =>
       'The app is free of charge and provided as is, without any warranty.\n\nAll stations are public internet streams owned by third parties. The app does not host, control or endorse them, and their availability or content may change at any time.\n\nStation lists are updated from the project repository on GitHub. Do not use the app for anything unlawful.';
+
+  @override
+  String get msgStorageError => 'Could not save the setting. Try again.';
+
+  @override
+  String get msgPlaybackInterrupted => 'Stream interrupted.';
 }

@@ -92,14 +92,15 @@ class RegionSelectionScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      GradientPlayButton(
-                        size: 52,
-                        playing: provider.isPlaying,
-                        label: provider.isPlaying
-                            ? l10n.contentDescriptionPause
-                            : l10n.contentDescriptionPlay,
-                        onPressed: provider.togglePlayPause,
-                      ),
+                      if (station != null)
+                        GradientPlayButton(
+                          size: 52,
+                          playing: provider.isPlaying,
+                          label: provider.isPlaying
+                              ? l10n.contentDescriptionPause
+                              : l10n.contentDescriptionPlay,
+                          onPressed: provider.togglePlayPause,
+                        ),
                     ],
                   ),
                 ],
@@ -164,10 +165,14 @@ class _ActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Material(
-      color: scheme.surfaceContainer,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
+    return Semantics(
+      button: true,
+      label: label,
+      excludeSemantics: true,
+      child: Material(
+        color: scheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Padding(
@@ -195,6 +200,7 @@ class _ActionTile extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }
