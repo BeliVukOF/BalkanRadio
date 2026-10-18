@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -9,6 +10,11 @@ import '../../providers/radio_provider.dart';
 import '../region_labels.dart';
 import 'bold_theme.dart';
 import 'bold_widgets.dart';
+
+/// "4:07" under an hour, "1h 05m" above: how much of the sleep timer is left.
+String formatSleepRemaining(Duration left) => left.inHours > 0
+    ? '${left.inHours}h ${(left.inMinutes % 60).toString().padLeft(2, '0')}m'
+    : '${left.inMinutes}:${(left.inSeconds % 60).toString().padLeft(2, '0')}';
 
 /// Next/previous land on the neighbouring station and wrap around.
 int stepStationIndex(int index, int step, int length) =>
@@ -132,9 +138,12 @@ class BoldNowPlaying extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: _LiveBadge(magenta: palette.neonB, neon: palette.neon),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _LiveBadge(magenta: palette.neonB, neon: palette.neon),
+                    const _SleepChip(),
+                  ],
                 ),
                 const SizedBox(height: 12),
                 Align(
@@ -274,18 +283,32 @@ class BoldNowPlaying extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      l10n.labelSleepTimer,
-                      style: TextStyle(
-                        color: palette.text,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          l10n.labelSleepTimer,
+                          style: TextStyle(
+                            color: palette.text,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
-                    ),
+                      const _SleepChip(),
+                    ],
                   ),
                 ),
+                // Armed timer: cancel it right here, before picking a new one.
+                if (provider.sleepActive)
+                  ListTile(
+                    leading: Icon(Icons.timer_off_outlined, color: palette.accent),
+                    title: Text(l10n.sleepOff, style: TextStyle(color: palette.accent)),
+                    onTap: () {
+                      provider.setSleepTimer(null);
+                      Navigator.pop(sheetContext);
+                    },
+                  ),
                 SwitchListTile(
                   title: Text(
                     l10n.sleepCloseApp,
@@ -303,10 +326,11 @@ class BoldNowPlaying extends StatelessWidget {
                       (Duration(minutes: minutes), closeApp),
                     ),
                   ),
-                ListTile(
-                  title: Text(l10n.sleepOff, style: TextStyle(color: palette.accent)),
-                  onTap: () => Navigator.pop(sheetContext, (null, closeApp)),
-                ),
+                if (!provider.sleepActive)
+                  ListTile(
+                    title: Text(l10n.sleepOff, style: TextStyle(color: palette.accent)),
+                    onTap: () => Navigator.pop(sheetContext, (null, closeApp)),
+                  ),
               ],
             ),
           ),
@@ -378,6 +402,62 @@ class _LiveBadge extends StatelessWidget {
               fontWeight: neon ? FontWeight.w800 : FontWeight.w600,
               letterSpacing: neon ? 2 : 1,
               fontFamily: neon ? 'monospace' : null,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Remaining sleep-timer time, ticking once a second; invisible when unarmed.
+class _SleepChip extends StatefulWidget {
+  const _SleepChip();
+
+  @override
+  State<_SleepChip> createState() => _SleepChipState();
+}
+
+class _SleepChipState extends State<_SleepChip> {
+  Timer? _tick;
+
+  @override
+  void initState() {
+    super.initState();
+    // Only redraws while a timer is armed, so the chip counts down live.
+    _tick = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (context.read<RadioProvider>().sleepActive) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _tick?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = BoldTheme.of(context);
+    final left = context.watch<RadioProvider>().sleepRemaining;
+    if (left == null) return const SizedBox.shrink();
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: palette.accent.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(palette.corners(16)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.bedtime_outlined, size: 14, color: palette.accent),
+          const SizedBox(width: 6),
+          Text(
+            formatSleepRemaining(left),
+            style: TextStyle(
+              color: palette.accent,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],

@@ -41,6 +41,14 @@ class RadioProvider extends ChangeNotifier {
   /// true while a sleep timer is armed.
   bool get sleepActive => _sleepDeadline != null;
 
+  /// Time left on the armed sleep timer; null when none is set.
+  Duration? get sleepRemaining {
+    final deadline = _sleepDeadline;
+    if (deadline == null) return null;
+    final left = deadline.difference(DateTime.now());
+    return left.isNegative ? Duration.zero : left;
+  }
+
   List<String> get availableRegions => StationManager.regions
       .map((r) => r[0].toUpperCase() + r.substring(1))
       .toList();
