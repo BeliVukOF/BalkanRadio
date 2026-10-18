@@ -34,7 +34,7 @@ class BoldNowPlaying extends StatelessWidget {
       body: NeonBackdrop(
         child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 34),
           child: Column(
             children: [
               Row(
@@ -140,10 +140,6 @@ class BoldNowPlaying extends StatelessWidget {
                       ),
                     ],
                   ),
-                ],
-                if (palette.neon) ...[
-                  const SizedBox(height: 16),
-                  _Waveform(palette: palette),
                 ],
                 const SizedBox(height: 20),
                 Row(
@@ -347,56 +343,4 @@ class _LiveBadge extends StatelessWidget {
       ),
     );
   }
-}
-
-
-/// Decorative equaliser strip of the cyber mock: no audio analysis, the bars
-/// just alternate between the two neon colours.
-class _Waveform extends StatelessWidget {
-  const _Waveform({required this.palette});
-
-  final BoldPalette palette;
-
-  /// Bar heights in 0..1, repeating.
-  static const List<double> _bars = [
-    0.30, 1.00, 0.55, 0.22, 0.80, 0.35, 0.95, 0.20, 0.65, 0.85, 0.40, 0.70,
-    0.25, 0.90, 0.50, 0.75, 1.00, 0.45, 0.60, 0.30, 0.85, 0.55, 0.70, 0.20,
-  ];
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-        height: 44,
-        width: double.infinity,
-        child: CustomPaint(
-          painter: _WaveformPainter(palette.neonA, palette.neonB, _bars),
-        ),
-      );
-}
-
-class _WaveformPainter extends CustomPainter {
-  const _WaveformPainter(this.left, this.right, this.bars);
-
-  final Color left;
-  final Color right;
-  final List<double> bars;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const gap = 3.0;
-    final width = (size.width - gap * (bars.length - 1)) / bars.length;
-    final paint = Paint()..strokeCap = StrokeCap.butt;
-    for (var i = 0; i < bars.length; i++) {
-      paint.color = i < bars.length / 2 ? left : right;
-      final height = size.height * bars[i];
-      final x = i * (width + gap);
-      canvas.drawRect(
-        Rect.fromLTWH(x, (size.height - height) / 2, width, height),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _WaveformPainter old) =>
-      old.left != left || old.right != right;
 }
