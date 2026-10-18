@@ -104,87 +104,123 @@ class _BoldHomeState extends State<BoldHome> {
     );
   }
 
+  /// Closing search leaves no query behind and drops the keyboard.
+  void _closeSearch() {
+    FocusScope.of(context).unfocus();
+    _search.clear();
+    context.read<RadioProvider>().setSearchQuery('');
+    setState(() => _searching = false);
+  }
+
   Widget _header(AppLocalizations l10n, {required bool showSearch}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: _searching
-                    ? _SearchField(
-                        controller: _search,
-                        hint: l10n.searchHint,
-                        onChanged: context.read<RadioProvider>().setSearchQuery,
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 6),
-                          if (BoldTheme.of(context).neon) ...[
-                            Text(
-                              '// ${l10n.navHeaderSubtitle.toUpperCase()}',
-                              style: TextStyle(
-                                color: BoldTheme.of(context).neonA,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 2.5,
-                                fontFamily: 'monospace',
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            _GlitchTitle(
-                              text: l10n.appName.toUpperCase(),
-                              palette: BoldTheme.of(context),
-                            ),
-                          ] else ...[
-                            Text(
-                              l10n.navHeaderSubtitle,
-                              style: TextStyle(color: BoldTheme.of(context).textMuted, fontSize: 13),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              l10n.appName,
-                              style: TextStyle(
-                                color: BoldTheme.of(context).text,
-                                fontSize: 34,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -1,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
+          Expanded(
+            // Mock: tapping the magnifier replaces the title with a back arrow
+            // plus a full-width field — one cross-fade, no dead space.
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              // The default layout centres its child; keep both states left.
+              layoutBuilder: (current, previous) => Stack(
+                alignment: Alignment.centerLeft,
+                children: [...previous, if (current != null) current],
               ),
-              if (showSearch)
-                Column(
-                  children: [
-                    BoldOrb(
-                      icon: Icons.settings_outlined,
-                      tooltip: l10n.actionSettings,
-                      size: 42,
-                      onPressed: _openSettings,
-                    ),
-                    const SizedBox(height: 8),
-                    BoldOrb(
-                      icon: _searching ? Icons.close_rounded : Icons.search_rounded,
-                      tooltip: _searching ? l10n.contentDescriptionClear : l10n.searchHint,
-                      size: 42,
-                      onPressed: () {
-                        setState(() => _searching = !_searching);
-                        if (!_searching) {
-                          _search.clear();
-                          context.read<RadioProvider>().setSearchQuery('');
-                        }
-                      },
-                    ),
-                  ],
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0.12, 0),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
                 ),
-            ],
+              ),
+              child: _searching
+                  ? Row(
+                      key: const ValueKey('search'),
+                      children: [
+                        BoldOrb(
+                          icon: Icons.arrow_back_rounded,
+                          tooltip: l10n.contentDescriptionBack,
+                          size: 46,
+                          onPressed: _closeSearch,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _SearchField(
+                            controller: _search,
+                            hint: l10n.searchHint,
+                            onChanged: context.read<RadioProvider>().setSearchQuery,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      key: const ValueKey('title'),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 6),
+                        if (BoldTheme.of(context).neon) ...[
+                          Text(
+                            '// ${l10n.navHeaderSubtitle.toUpperCase()}',
+                            style: TextStyle(
+                              color: BoldTheme.of(context).neonA,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 2.5,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          _GlitchTitle(
+                            text: l10n.appName.toUpperCase(),
+                            palette: BoldTheme.of(context),
+                          ),
+                        ] else ...[
+                          Text(
+                            l10n.navHeaderSubtitle,
+                            style: TextStyle(color: BoldTheme.of(context).textMuted, fontSize: 13),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.appName,
+                            style: TextStyle(
+                              color: BoldTheme.of(context).text,
+                              fontSize: 34,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -1,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+            ),
           ),
+          if (showSearch && !_searching) ...[
+            const SizedBox(width: 12),
+            Column(
+              children: [
+                BoldOrb(
+                  icon: Icons.settings_outlined,
+                  tooltip: l10n.actionSettings,
+                  size: 42,
+                  onPressed: _openSettings,
+                ),
+                const SizedBox(height: 8),
+                BoldOrb(
+                  icon: Icons.search_rounded,
+                  tooltip: l10n.searchHint,
+                  size: 42,
+                  onPressed: () => setState(() => _searching = true),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -226,7 +262,7 @@ class _BoldHomeState extends State<BoldHome> {
       children: [
         _header(l10n, showSearch: true),
         const SizedBox(height: 12),
-        if (!favoritesOnly) _chips(provider, l10n),
+        if (!favoritesOnly && !_searching) _chips(provider, l10n),
         const SizedBox(height: 8),
         if (provider.isLoading)
           Padding(
@@ -248,31 +284,38 @@ class _BoldHomeState extends State<BoldHome> {
                     ),
                   ),
                 )
-              : _listCard(
-                  ListView.builder(
-                  padding: EdgeInsets.fromLTRB(
-                    BoldTheme.of(context).modern ? 14 : 20,
-                    BoldTheme.of(context).modern ? 6 : 4,
-                    BoldTheme.of(context).modern ? 14 : 20,
-                    16,
-                  ),
-                  itemCount: stations.length,
-                  itemBuilder: (context, index) {
-                    final station = stations[index];
-                    final current = provider.currentStation?.streamUrl == station.streamUrl;
-                    final favorite = provider.prefs.isStationFavorite(station.streamUrl);
-                    return BoldStationRow(
-                      station: station,
-                      subtitle: regionLabel(l10n, station.region),
-                      playing: current && provider.isPlaying,
-                      favorite: favorite,
-                      favoriteLabel: favorite
-                          ? l10n.contentDescriptionUnfavorite
-                          : l10n.contentDescriptionFavorite,
-                      onPlay: () => _play(provider, station),
-                      onFavorite: () => _toggleFavorite(provider, station),
-                    );
-                  },
+              // Mock: the card hugs its rows instead of stretching over the
+              // whole screen when a region holds only a few stations.
+              : SingleChildScrollView(
+                  child: _listCard(
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.fromLTRB(
+                        BoldTheme.of(context).modern ? 14 : 20,
+                        BoldTheme.of(context).modern ? 6 : 4,
+                        BoldTheme.of(context).modern ? 14 : 20,
+                        16,
+                      ),
+                      itemCount: stations.length,
+                      itemBuilder: (context, index) {
+                        final station = stations[index];
+                        final current = provider.currentStation?.streamUrl == station.streamUrl;
+                        final favorite = provider.prefs.isStationFavorite(station.streamUrl);
+                        return BoldStationRow(
+                          station: station,
+                          subtitle: regionLabel(l10n, station.region),
+                          playing: current && provider.isPlaying,
+                          favorite: favorite,
+                          last: index == stations.length - 1,
+                          favoriteLabel: favorite
+                              ? l10n.contentDescriptionUnfavorite
+                              : l10n.contentDescriptionFavorite,
+                          onPlay: () => _play(provider, station),
+                          onFavorite: () => _toggleFavorite(provider, station),
+                        );
+                      },
+                    ),
                   ),
                 ),
         ),
@@ -308,7 +351,7 @@ class _BoldHomeState extends State<BoldHome> {
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
             mainAxisSpacing: 14,
             crossAxisSpacing: 14,
-            childAspectRatio: 1.45,
+            childAspectRatio: 1.65,
             children: [
               for (final region in regions)
                 _CountryCard(
@@ -345,7 +388,11 @@ class _SearchField extends StatelessWidget {
     final field = TextField(
       controller: controller,
       autofocus: true,
-      style: TextStyle(color: palette.text, fontSize: 20),
+      style: TextStyle(
+        color: palette.text,
+        fontSize: 18,
+        fontFamily: palette.neon ? 'monospace' : null,
+      ),
       cursorColor: palette.accent,
       decoration: InputDecoration(
         hintText: hint,
@@ -355,22 +402,26 @@ class _SearchField extends StatelessWidget {
       ),
       onChanged: onChanged,
     );
-    if (!palette.neon) return field;
-    return DecoratedBox(
+    // Mock: glass pill for Modern, framed rectangle for Cyberpunk — the field
+    // always has a body, never a bare line of text over the backdrop.
+    return Container(
+      height: 46,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: palette.surface,
-        border: palette.frame,
-        boxShadow: palette.shadow,
+        color: palette.neon ? palette.surface : palette.glass,
+        border: palette.neon ? palette.frame : null,
+        borderRadius: BorderRadius.circular(palette.corners(23)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          children: [
-            Icon(Icons.search, size: 20, color: palette.neonA),
-            const SizedBox(width: 8),
-            Expanded(child: field),
-          ],
-        ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.search,
+            size: 20,
+            color: palette.neon ? palette.neonA : palette.highlight,
+          ),
+          const SizedBox(width: 8),
+          Expanded(child: field),
+        ],
       ),
     );
   }
@@ -391,6 +442,9 @@ class _Chip extends StatelessWidget {
       padding: const EdgeInsets.only(right: 10),
       child: DecoratedBox(
         decoration: BoxDecoration(
+          // The border must follow the pill, otherwise its sharp corners show
+          // as boxes around the rounded chip.
+          borderRadius: BorderRadius.circular(palette.corners(22)),
           border: palette.neon && !selected
               ? Border.all(color: palette.frame!.top.color)
               : (palette.modern && !selected ? palette.glassFrame : null),
@@ -501,6 +555,7 @@ class _CountryCard extends StatelessWidget {
     final glass = palette.modern;
     return DecoratedBox(
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(palette.corners(26)),
         color: neon ? palette.surface : (glass ? palette.glass : null),
         border: glass ? palette.glassFrame : palette.frame,
         boxShadow: palette.shadow,

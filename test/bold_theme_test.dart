@@ -98,7 +98,8 @@ void main() {
       expect(palette.modern, isTrue);
       expect(palette.backdrop, isNotNull);
       expect(palette.glass.a, lessThan(1)); // frosted, not opaque
-      expect(palette.glassFrame, isNotNull);
+      // The mocks draw no frames: cards read through fill and backdrop only.
+      expect(palette.glassFrame, isNull);
       // Body text must clear the worst stop of the backdrop, not the flat one.
       for (final stop in palette.backdrop!) {
         expect(contrast(stop, palette.text), greaterThanOrEqualTo(4.5),

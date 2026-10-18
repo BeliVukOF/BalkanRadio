@@ -7,7 +7,7 @@ import '../region_labels.dart';
 import 'legal_screen.dart';
 
 /// Kept in sync with pubspec.yaml by a unit test (`about version matches pubspec`).
-const String appVersion = '1.3.1';
+const String appVersion = '1.3.4';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -21,9 +21,13 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.titleSettings, style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-        children: [
+      // Edge-to-edge: the list must stop above the system navigation bar
+      // (3-button and gesture modes both), not scroll underneath it.
+      body: SafeArea(
+        top: false,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          children: [
           _Section(
             title: l10n.titleAppearance,
             children: [
@@ -152,6 +156,7 @@ class SettingsScreen extends StatelessWidget {
             ],
           ),
         ],
+        ),
       ),
     );
   }

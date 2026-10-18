@@ -34,10 +34,22 @@ class BoldNowPlaying extends StatelessWidget {
       backgroundColor: palette.background,
       body: NeonBackdrop(
         child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 34),
-          child: Column(
-            children: [
+          child: LayoutBuilder(
+            builder: (context, box) {
+              final h = box.maxHeight;
+              // Mocks: artwork ~38% of the height on the glass designs, and
+              // the controls sit in thumb reach with empty space below instead
+              // of hugging the system navigation bar.
+              final artSide = math.min(
+                box.maxWidth - 48,
+                h * (box.maxWidth > box.maxHeight ? 0.18 : 0.38),
+              );
+              final bottomGap =
+                  h * (palette.modern || palette.neon ? 0.13 : 0.05);
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+                child: Column(
+                  children: [
               Row(
                 children: [
                   BoldOrb(
@@ -81,56 +93,10 @@ class BoldNowPlaying extends StatelessWidget {
                   ),
                 )
               else ...[
-                Expanded(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final side = math.min(
-                        constraints.maxWidth,
-                        constraints.maxHeight - 16,
-                      );
-                      if (palette.modern) {
-                        // Mock: rings on a frosted card, monogram in the middle.
-                        return Center(
-                          child: Container(
-                            width: side,
-                            height: side,
-                            decoration: BoxDecoration(
-                              color: palette.glass,
-                              borderRadius: BorderRadius.circular(40),
-                              border: palette.glassFrame,
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: Stack(
-                              children: [
-                                Positioned.fill(
-                                  child: CustomPaint(
-                                    painter: RingsPainter(
-                                      palette.text.withValues(alpha: 0.14),
-                                    ),
-                                  ),
-                                ),
-                                Center(
-                                  child: BoldMonogram(
-                                    name: station.name,
-                                    size: side * 0.55,
-                                    radius: side * 0.28,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                      return Center(
-                        child: BoldMonogram(
-                          name: station.name,
-                          size: side,
-                          radius: 40,
-                          rings: true,
-                        ),
-                      );
-                    },
-                  ),
+                SizedBox(
+                  width: artSide,
+                  height: artSide,
+                  child: _artwork(context, station, artSide),
                 ),
                 const SizedBox(height: 24),
                 Row(
@@ -178,7 +144,7 @@ class BoldNowPlaying extends StatelessWidget {
                     ],
                   ),
                 ],
-                const SizedBox(height: 20),
+                const Spacer(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -243,12 +209,53 @@ class BoldNowPlaying extends StatelessWidget {
                     ),
                   ],
                 ),
+                SizedBox(height: bottomGap),
               ],
-            ],
+                  ],
+                ),
+              );
+            },
           ),
         ),
-        ),
       ),
+    );
+  }
+
+  /// Artwork block of the mock: rings on a frosted card for Modern, the
+  /// gradient tile with rings for the other designs.
+  Widget _artwork(BuildContext context, RadioStation station, double side) {
+    final palette = BoldTheme.of(context);
+    if (palette.modern) {
+      return Container(
+        decoration: BoxDecoration(
+          color: palette.glass,
+          borderRadius: BorderRadius.circular(40),
+          border: palette.glassFrame,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: CustomPaint(
+                painter: RingsPainter(palette.text.withValues(alpha: 0.14)),
+              ),
+            ),
+            Center(
+              child: BoldMonogram(
+                name: station.name,
+                size: side * 0.55,
+                radius: side * 0.28,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return BoldMonogram(
+      name: station.name,
+      size: side,
+      radius: 40,
+      rings: true,
     );
   }
 

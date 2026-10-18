@@ -360,6 +360,7 @@ class BoldStationRow extends StatelessWidget {
     required this.subtitle,
     required this.playing,
     required this.favorite,
+    required this.last,
     required this.favoriteLabel,
     required this.onPlay,
     required this.onFavorite,
@@ -369,6 +370,9 @@ class BoldStationRow extends StatelessWidget {
   final String subtitle;
   final bool playing;
   final bool favorite;
+
+  /// Last row: skip its separator so no stray line sits on the card edge.
+  final bool last;
   final String favoriteLabel;
   final VoidCallback onPlay;
   final VoidCallback onFavorite;
@@ -451,7 +455,7 @@ class BoldStationRow extends StatelessWidget {
       return Column(
         children: [
           row,
-          _DashedSeparator(palette.textMuted.withValues(alpha: 0.35)),
+          if (!last) _DashedSeparator(palette.textMuted.withValues(alpha: 0.35)),
         ],
       );
     }
@@ -459,7 +463,8 @@ class BoldStationRow extends StatelessWidget {
     return Column(
       children: [
         row,
-        Divider(height: 1, thickness: 1, color: palette.text.withValues(alpha: 0.12)),
+        if (!last)
+          Divider(height: 1, thickness: 1, color: palette.text.withValues(alpha: 0.12)),
       ],
     );
   }
@@ -537,7 +542,11 @@ class BoldMiniPlayer extends StatelessWidget {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                playing ? 'LIVE' : '// ${subtitle.toUpperCase()}',
+                                playing
+                                    ? 'LIVE'
+                                    : (palette.neon
+                                        ? '// ${subtitle.toUpperCase()}'
+                                        : subtitle.toUpperCase()),
                                 style: TextStyle(
                                   color: palette.neon ? palette.neonB : palette.accent,
                                   fontSize: 12,
@@ -636,7 +645,8 @@ class BoldNavBar extends StatelessWidget {
               : EdgeInsets.zero,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(26),
+              // 23 = half of the 46px item; a larger radius overflows the pill.
+              borderRadius: BorderRadius.circular(palette.corners(23)),
               border: palette.modern && i == index
                   ? Border.all(color: palette.highlight, width: 1.2)
                   : null,

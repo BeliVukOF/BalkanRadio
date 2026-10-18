@@ -53,14 +53,13 @@ class BoldPalette {
   final List<Color>? backdrop;
 
   /// Card colour: frosted glass over the modern backdrop, raised surface else.
-  Color get glass => modern ? surface.withValues(alpha: 0.55) : surface;
+  Color get glass => modern
+      ? surface.withValues(alpha: brightness == Brightness.dark ? 0.5 : 0.8)
+      : surface;
 
-  /// Hairline border of the glass cards; null when the design has none.
-  Border? get glassFrame => modern
-      ? Border.all(
-          color: text.withValues(alpha: brightness == Brightness.dark ? 0.16 : 0.55),
-        )
-      : null;
+  /// The mocks draw no frames: modern surfaces read as soft glass, so the fill
+  /// and the backdrop do the work instead of a visible box.
+  Border? get glassFrame => null;
 
   /// Gradient of play buttons and the player artwork; null = flat accent.
   List<Color>? get playGradient => modern
