@@ -48,6 +48,11 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- Lets Android Auto list this app as a media source. -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
     </application>
     <queries>
         <intent>

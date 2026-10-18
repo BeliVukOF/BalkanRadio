@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../models/radio_station.dart';
+import 'car_browse.dart';
 
 /// Starts the platform media service. Falls back to a plain handler (playback
 /// works, media notification does not) so the app can never be blocked by a
@@ -51,6 +52,10 @@ class RadioAudioHandler extends BaseAudioHandler {
   /// station the user has already switched to.
   int _playToken = 0;
 
+  /// Station list offered to the car (Android Auto); the provider keeps it
+  /// in sync. Empty until stations load, which is fine — the car re-queries.
+  List<RadioStation> browseStations = const [];
+
   AudioPlayer get player => _player;
 
   PlaybackState _state() => PlaybackState(
@@ -75,12 +80,7 @@ class RadioAudioHandler extends BaseAudioHandler {
   Future<void> playStation(RadioStation station) async {
     final token = ++_playToken;
     error.value = null;
-    mediaItem.add(MediaItem(
-      id: station.streamUrl,
-      title: station.name,
-      album: station.region,
-      artist: 'Balkan Radio',
-    ));
+    mediaItem.add(carStationItem(station));
     try {
       await _player.stop();
       // 30s, not 15: some ICY/HLS servers take that long on mobile data.
@@ -91,6 +91,32 @@ class RadioAudioHandler extends BaseAudioHandler {
       if (token != _playToken) return;
       mediaItem.add(null);
       rethrow;
+    }
+  }
+
+  @override
+  Future<List<MediaItem>> getChildren(String parentMediaId,
+      [Map<String, dynamic>? options]) async {
+    if (parentMediaId == AudioService.recentRootId) {
+      // "Recent" is what is playing now, so the car can resume it.
+      final current = mediaItem.value;
+      return current == null ? const [] : [current];
+    }
+    return carBrowseChildren(parentMediaId, browseStations);
+  }
+
+  /// Tapping a station in the car. Errors must not escape into the service.
+  @override
+  Future<void> playFromMediaId(String mediaId,
+      [Map<String, dynamic>? extras]) async {
+    for (final station in browseStations) {
+      if (station.streamUrl != mediaId) continue;
+      try {
+        await playStation(station);
+      } catch (error) {
+        debugPrint('car playback failed: $error');
+      }
+      return;
     }
   }
 

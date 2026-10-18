@@ -98,6 +98,8 @@ class RadioProvider extends ChangeNotifier {
   }
 
   void _notify() {
+    // Android Auto browses from the handler: keep its tree on the current list.
+    _audio?.browseStations = _allStations;
     if (!_disposed) notifyListeners();
   }
 
