@@ -1,0 +1,22 @@
+[
+  { "name": "Ritam Srca", "streamUrl": "https://s4.radio.co/s0f65dad2d/listen", "region": "Serbia" },
+  { "name": "Lola", "streamUrl": "http://streaming.tdiradio.com/radiolola.mp3", "region": "Serbia" },
+  { "name": "Play", "streamUrl": "http://stream.playradio.rs:8001/play.mp3", "region": "Serbia" },
+  { "name": "TDI", "streamUrl": "http://streaming.tdiradio.com:8000/tdiradio.mp3", "region": "Serbia" },
+  { "name": "Hit FM", "streamUrl": "https://streaming.hitfm.rs/hit.mp3", "region": "Serbia" },
+  { "name": "Radio In", "streamUrl": "https://radio3-64ssl.streaming.rs:9212/;*.mp3", "region": "Serbia" },
+  { "name": "Radio S ExYu", "streamUrl": "https://stream.radios.rs:9042/;*.mp3", "region": "Serbia" },
+  { "name": "Radio S 1", "streamUrl": "https://stream.radios.rs:9000/radios1.mp3", "region": "Serbia" },
+  { "name": "Radio S 2", "streamUrl": "https://stream.radios.rs:9002/radios2.mp3", "region": "Serbia" },
+  { "name": "Radio S 3", "streamUrl": "https://stream.radios.rs:9004/radios3.mp3", "region": "Serbia" },
+  { "name": "Radio S 4", "streamUrl": "https://stream.radios.rs:9006/radios4.mp3", "region": "Serbia" },
+  { "name": "Radio Jat", "streamUrl": "https://streaming.radiojat.rs/radiojat.mp3", "region": "Serbia" },
+  { "name": "Nostalgie", "streamUrl": "https://nostalgie128ssl.streaming.rs:9252/;*.mp3", "region": "Serbia" },
+  { "name": "Pink Rock", "streamUrl": "https://edge9.pink.rs/rockstream", "region": "Serbia" },
+  { "name": "Cool Radio", "streamUrl": "https://live.coolradio.rs/cool128", "region": "Serbia" },
+  { "name": "Karolina", "streamUrl": "https://streaming.karolina.rs/karolina.mp3", "region": "Serbia" },
+  { "name": "Radio Morava", "streamUrl": "https://e3.radiomorava.rs/radio/8000/radiomorava128.mp3", "region": "Serbia" },
+  { "name": "Naxi FM", "streamUrl": "https://naxi128.streaming.rs:9152/;*.mp3", "region": "Serbia" },
+  { "name": "Rock Radio", "streamUrl": "https://streaming.tdiradio.com/rockradio.mp3", "region": "Serbia" },
+  { "name": "Lollipop Radio", "streamUrl": "https://streaming.tdiradio.com/lollipop.mp3", "region": "Serbia" }
+]

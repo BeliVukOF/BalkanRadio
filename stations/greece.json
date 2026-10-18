@@ -1,0 +1,13 @@
+[
+  { "name": "Plus Radio", "streamUrl": "https://eco.onestreaming.com/proxy/plusradio/stream", "region": "Greece" },
+  { "name": "RadioBoss", "streamUrl": "http://168.119.74.185:8150/live", "region": "Greece" },
+  { "name": "Trelown", "streamUrl": "http://i2.streams.ovh:7109/stream", "region": "Greece" },
+  { "name": "Kiss FM", "streamUrl": "https://kissfm.live24.gr/kissfmathens", "region": "Greece" },
+  { "name": "Radio IN", "streamUrl": "https://rdst.win:48383/stream", "region": "Greece" },
+  { "name": "Art FM", "streamUrl": "https://radio.webmonster.gr:8030/artfm906hi", "region": "Greece" },
+  { "name": "Rythmos", "streamUrl": "https://rythmos.live24.gr/rythmos", "region": "Greece" },
+  { "name": "Melodia FM", "streamUrl": "https://stream.rcs.revma.com/8tdwa6ez1duvv", "region": "Greece" },
+  { "name": "En Lefko", "streamUrl": "https://stream.rcs.revma.com/kwste9dz1duvv", "region": "Greece" },
+  { "name": "Easy FM", "streamUrl": "https://easy972.live24.gr/easy972", "region": "Greece" },
+  { "name": "Notes FM", "streamUrl": "https://netradio.live24.gr/stylfmathens", "region": "Greece" }
+]

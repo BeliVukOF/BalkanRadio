@@ -1,0 +1,13 @@
+[
+  { "name": "STIL Radio", "streamUrl": "https://eu4.fastcast4u.com/proxy/stilradiomk?mp=/1", "region": "Macedonia" },
+  { "name": "Kanal 103", "streamUrl": "http://radiostream.neotel.mk/kanal103", "region": "Macedonia" },
+  { "name": "Antenna 5", "streamUrl": "http://antenna5stream.neotel.mk:8000/live128", "region": "Macedonia" },
+  { "name": "Radio Maria MK", "streamUrl": "http://dreamsiteradiocp.com:8118/stream", "region": "Macedonia" },
+  { "name": "Just Music", "streamUrl": "https://radiostream.neotel.mk/justmusicradio", "region": "Macedonia" },
+  { "name": "Life Radio", "streamUrl": "http://liferadio.ddns.net:8000/", "region": "Macedonia" },
+  { "name": "Urban FM", "streamUrl": "https://securestreams4.autopo.st:1668/stream", "region": "Macedonia" },
+  { "name": "City Radio Skopje", "streamUrl": "http://176.9.117.123:9998/live", "region": "Macedonia" },
+  { "name": "MRT Radio 1", "streamUrl": "https://vod-c57.interspace.com/channel_abr/47/playlist.m3u8", "region": "Macedonia" },
+  { "name": "MRT Radio 2", "streamUrl": "https://vod-c57.interspace.com/channel_abr/48/playlist.m3u8", "region": "Macedonia" },
+  { "name": "MRT Radio 3", "streamUrl": "https://vod-c57.interspace.com/channel_abr/49/playlist.m3u8", "region": "Macedonia" }
+]

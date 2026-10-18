@@ -1,0 +1,217 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+
+import '../data/region_preferences.dart';
+import '../data/station_manager.dart';
+import '../data/station_repository.dart';
+import '../models/radio_station.dart';
+import '../services/audio_handler.dart';
+
+class RadioProvider extends ChangeNotifier {
+  RadioProvider({required this.audioHandler}) {
+    _init();
+  }
+
+  final RegionPreferences prefs = RegionPreferences();
+  final StationManager stationManager = StationManager();
+  final RadioAudioHandler audioHandler;
+
+  final List<StreamSubscription<dynamic>> _subscriptions = [];
+  List<RadioStation> _allStations = [];
+  RadioStation? _currentStation;
+  bool _isLoading = false;
+  bool _disposed = false;
+  String _searchQuery = '';
+
+  static const List<String> _regions = [
+    'Albania',
+    'Bosnia',
+    'Bulgaria',
+    'Croatia',
+    'Greece',
+    'Macedonia',
+    'Montenegro',
+    'Serbia',
+  ];
+
+  List<RadioStation> get allStations => _allStations;
+  RadioStation? get currentStation => _currentStation;
+  bool get isLoading => _isLoading;
+  String get searchQuery => _searchQuery;
+  bool get isPlaying => audioHandler.playbackState.value.playing;
+  List<String> get availableRegions => _regions;
+  List<String> get enabledRegions =>
+      _regions.where(prefs.isRegionEnabled).toList();
+
+  ThemeMode get themeMode => switch (prefs.themeMode) {
+        'light' => ThemeMode.light,
+        'dark' => ThemeMode.dark,
+        _ => ThemeMode.system,
+      };
+
+  /// null means "follow the system language".
+  Locale? get locale {
+    final code = prefs.appLanguage;
+    return code == 'system' ? null : Locale(code);
+  }
+
+  Future<void> _init() async {
+    await RegionPreferences.init();
+
+    _subscriptions.add(audioHandler.mediaItem.listen((item) {
+      _currentStation = item == null
+          ? null
+          : _allStations.firstWhere(
+              (s) => s.streamUrl == item.id,
+              orElse: () => RadioStation(
+                name: item.title,
+                streamUrl: item.id,
+                region: item.album ?? '',
+              ),
+            );
+      _notify();
+    }));
+
+    _subscriptions.add(
+      audioHandler.playbackState.listen((_) => _notify()),
+    );
+
+    await loadStations();
+  }
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  /// Shows the cached list straight away, then refreshes from the network.
+  /// Returns true when the network refresh succeeded.
+  Future<bool> loadStations() async {
+    if (_allStations.isEmpty) {
+      final cached = await stationManager.cachedStations();
+      _allStations = cached != null && cached.isNotEmpty
+          ? cached
+          : StationRepository.allStations;
+      _notify();
+    }
+
+    _isLoading = true;
+    _notify();
+
+    var refreshed = false;
+    try {
+      final stations = await stationManager.fetchStations();
+      if (stations.isNotEmpty) {
+        _allStations = stations;
+        refreshed = true;
+      }
+    } catch (_) {
+      // Offline: keep whatever list is already on screen.
+    }
+
+    _isLoading = false;
+    _notify();
+    return refreshed;
+  }
+
+  List<RadioStation> getFilteredStations({
+    String? region,
+    bool isFavoritesOnly = false,
+  }) {
+    var list = _allStations.where((s) => prefs.isRegionEnabled(s.region)).toList();
+
+    if (isFavoritesOnly) {
+      list = list.where((s) => prefs.isStationFavorite(s.streamUrl)).toList();
+    } else if (region != null && region.isNotEmpty) {
+      list = list.where((s) => s.region == region).toList();
+    }
+
+    if (_searchQuery.isNotEmpty) {
+      final query = _searchQuery.toLowerCase();
+      list = list
+          .where((s) =>
+              s.name.toLowerCase().contains(query) ||
+              s.region.toLowerCase().contains(query))
+          .toList();
+    }
+
+    return list;
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    _notify();
+  }
+
+  /// Returns false when the stream could not be opened.
+  Future<bool> playStation(RadioStation station) async {
+    _currentStation = station;
+    _notify();
+    try {
+      await audioHandler.playStation(station);
+      return true;
+    } catch (_) {
+      _currentStation = null;
+      _notify();
+      return false;
+    }
+  }
+
+  Future<void> togglePlayPause() async {
+    if (isPlaying) {
+      await audioHandler.pause();
+    } else if (_currentStation != null) {
+      await audioHandler.play();
+    }
+  }
+
+  Future<void> stop() async {
+    _currentStation = null;
+    await audioHandler.stop();
+    _notify();
+  }
+
+  Future<void> toggleFavorite(RadioStation station) async {
+    await prefs.toggleFavorite(station.streamUrl);
+    _notify();
+  }
+
+  /// Returns false when the last enabled region would be switched off.
+  Future<bool> setRegionEnabled(String region, bool enabled) async {
+    final enabledRegions = this.enabledRegions;
+    if (!enabled && enabledRegions.length <= 1 && enabledRegions.contains(region)) {
+      return false;
+    }
+    await prefs.setRegionEnabled(region, enabled);
+    _notify();
+    return true;
+  }
+
+  Future<void> setPowerSavingEnabled(bool enabled) async {
+    await prefs.setPowerSavingEnabled(enabled);
+    _notify();
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    await prefs.setThemeMode(switch (mode) {
+      ThemeMode.light => 'light',
+      ThemeMode.dark => 'dark',
+      ThemeMode.system => 'system',
+    });
+    _notify();
+  }
+
+  Future<void> setAppLanguage(String code) async {
+    await prefs.setAppLanguage(code);
+    _notify();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
+    super.dispose();
+  }
+}

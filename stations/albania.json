@@ -1,0 +1,6 @@
+[
+  { "name": "Radio Tirana 1", "streamUrl": "http://79.106.48.2:8000/radiotirana1", "region": "Albania" },
+  { "name": "Top Albanian Radio", "streamUrl": "https://live.top-media.al/tar", "region": "Albania" },
+  { "name": "My Music Radio", "streamUrl": "https://live.top-media.al/mmr", "region": "Albania" },
+  { "name": "Radio Club FM", "streamUrl": "https://cp1.sednastream.com/proxy/clubfm?mp=/stream", "region": "Albania" }
+]

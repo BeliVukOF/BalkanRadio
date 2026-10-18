@@ -1,0 +1,12 @@
+[
+  { "name": "Banovina Light", "streamUrl": "https://audio.radio-banovina.hr:7008/stream", "region": "Croatia" },
+  { "name": "Banovina Turbo", "streamUrl": "https://audio.radio-banovina.hr:7010/stream", "region": "Croatia" },
+  { "name": "Banovina", "streamUrl": "https://audio.radio-banovina.hr:7000/stream", "region": "Croatia" },
+  { "name": "Extra Fm", "streamUrl": "https://relay2.social3.hr/radio/8190/radio.mp3", "region": "Croatia" },
+  { "name": "Extra Fm Throwback", "streamUrl": "https://relay2.social3.hr/radio/8170/radio.mp3", "region": "Croatia" },
+  { "name": "Extra Fm Fresh", "streamUrl": "https://relay2.social3.hr/radio/8360/radio.mp3", "region": "Croatia" },
+  { "name": "Laganini FM", "streamUrl": "http://cast5.asurahosting.com/proxy/soundset/stream", "region": "Croatia" },
+  { "name": "Enter Zagreb", "streamUrl": "http://live.enterzagreb.hr:8023/stream", "region": "Croatia" },
+  { "name": "Otvoreni Live", "streamUrl": "https://stream.otvoreni.hr/otvoreni", "region": "Croatia" },
+  { "name": "Otvoreni Chill", "streamUrl": "https://stream.otvoreni.hr/chill", "region": "Croatia" }
+]

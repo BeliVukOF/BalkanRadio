@@ -1,0 +1,6 @@
+[
+  { "name": "Kolubara", "streamUrl": "https://kolubara.name.ba:8000/", "region": "Bosnia" },
+  { "name": "Dzungla 1", "streamUrl": "https://cast2.name.ba/proxy/dzungla/stream", "region": "Bosnia" },
+  { "name": "Dzungla 2", "streamUrl": "https://cast2.name.ba/proxy/dzungla2/stream", "region": "Bosnia" },
+  { "name": "Dzungla 3", "streamUrl": "https://cast2.name.ba/proxy/dzungla3/stream", "region": "Bosnia" }
+]

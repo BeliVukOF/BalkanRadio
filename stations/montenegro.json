@@ -1,0 +1,8 @@
+[
+  { "name": "Radio Svetigora", "streamUrl": "http://svetigoralive.com:8879/;", "region": "Montenegro" },
+  { "name": "Antena M", "streamUrl": "http://radioservis.me:8010/antenamlive", "region": "Montenegro" },
+  { "name": "Reggaeneracija", "streamUrl": "http://5.189.179.77:8000/stream", "region": "Montenegro" },
+  { "name": "Radio S1", "streamUrl": "https://stream.radios.rs:9008/;", "region": "Montenegro" },
+  { "name": "Radio Elmag", "streamUrl": "https://radio.elmag.me/poprock.mp3", "region": "Montenegro" },
+  { "name": "Radio Berane", "streamUrl": "https://stream.iradio.pro/proxy/radioberane?mp=/stream;", "region": "Montenegro" }
+]

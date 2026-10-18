@@ -1,0 +1,4 @@
+[
+  { "name": "BG Veselina", "streamUrl": "https://bss1.neterra.tv/veselina/veselina.m3u8", "region": "Bulgaria" },
+  { "name": "BG Energy", "streamUrl": "https://play.global.audio:8000/nrj128", "region": "Bulgaria" }
+]

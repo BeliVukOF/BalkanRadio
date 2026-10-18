@@ -1,0 +1,79 @@
+import '../models/radio_station.dart';
+
+class StationRepository {
+  static const List<RadioStation> allStations = [
+    // Albania
+    RadioStation(name: "Radio Tirana 1", streamUrl: "http://79.106.48.2:8000/radiotirana1", region: "Albania"),
+    RadioStation(name: "Top Albanian Radio", streamUrl: "https://live.top-media.al/tar", region: "Albania"),
+    RadioStation(name: "My Music Radio", streamUrl: "https://live.top-media.al/mmr", region: "Albania"),
+    RadioStation(name: "Radio Club FM", streamUrl: "https://cp1.sednastream.com/proxy/clubfm?mp=/stream", region: "Albania"),
+
+    // Bosnia
+    RadioStation(name: "Kolubara", streamUrl: "https://kolubara.name.ba:8000/", region: "Bosnia"),
+    RadioStation(name: "Dzungla 1", streamUrl: "https://cast2.name.ba/proxy/dzungla/stream", region: "Bosnia"),
+    RadioStation(name: "Dzungla 2", streamUrl: "https://cast2.name.ba/proxy/dzungla2/stream", region: "Bosnia"),
+    RadioStation(name: "Dzungla 3", streamUrl: "https://cast2.name.ba/proxy/dzungla3/stream", region: "Bosnia"),
+
+    // Bulgaria
+    RadioStation(name: "BG Veselina", streamUrl: "https://bss1.neterra.tv/veselina/veselina.m3u8", region: "Bulgaria"),
+    RadioStation(name: "BG Energy", streamUrl: "https://play.global.audio:8000/nrj128", region: "Bulgaria"),
+
+    // Croatia
+    RadioStation(name: "Banovina Light", streamUrl: "https://audio.radio-banovina.hr:7008/stream", region: "Croatia"),
+    RadioStation(name: "Banovina Turbo", streamUrl: "https://audio.radio-banovina.hr:7010/stream", region: "Croatia"),
+    RadioStation(name: "Banovina", streamUrl: "https://audio.radio-banovina.hr:7000/stream", region: "Croatia"),
+    RadioStation(name: "Extra Fm", streamUrl: "https://relay2.social3.hr/radio/8190/radio.mp3", region: "Croatia"),
+    RadioStation(name: "Extra Fm Throwback", streamUrl: "https://relay2.social3.hr/radio/8170/radio.mp3", region: "Croatia"),
+    RadioStation(name: "Extra Fm Fresh", streamUrl: "https://relay2.social3.hr/radio/8360/radio.mp3", region: "Croatia"),
+    RadioStation(name: "Laganini FM", streamUrl: "http://cast5.asurahosting.com/proxy/soundset/stream", region: "Croatia"),
+    RadioStation(name: "Enter Zagreb", streamUrl: "http://live.enterzagreb.hr:8023/stream", region: "Croatia"),
+    RadioStation(name: "Otvoreni Live", streamUrl: "https://stream.otvoreni.hr/otvoreni", region: "Croatia"),
+    RadioStation(name: "Otvoreni Chill", streamUrl: "https://stream.otvoreni.hr/chill", region: "Croatia"),
+
+    // Greece
+    RadioStation(name: "Plus Radio", streamUrl: "https://eco.onestreaming.com/proxy/plusradio/stream", region: "Greece"),
+    RadioStation(name: "RadioBoss", streamUrl: "http://168.119.74.185:8150/live", region: "Greece"),
+    RadioStation(name: "Trelown", streamUrl: "http://i2.streams.ovh:7109/stream", region: "Greece"),
+
+    // Macedonia
+    RadioStation(name: "STIL Radio", streamUrl: "https://eu4.fastcast4u.com/proxy/stilradiomk?mp=/1", region: "Macedonia"),
+    RadioStation(name: "Kanal 103", streamUrl: "http://radiostream.neotel.mk/kanal103", region: "Macedonia"),
+    RadioStation(name: "Antenna 5", streamUrl: "http://antenna5stream.neotel.mk:8000/live128", region: "Macedonia"),
+    RadioStation(name: "Radio Maria MK", streamUrl: "http://dreamsiteradiocp.com:8118/stream", region: "Macedonia"),
+    RadioStation(name: "Just Music", streamUrl: "https://radiostream.neotel.mk/justmusicradio", region: "Macedonia"),
+    RadioStation(name: "Life Radio", streamUrl: "http://liferadio.ddns.net:8000/", region: "Macedonia"),
+    RadioStation(name: "Urban FM", streamUrl: "https://securestreams4.autopo.st:1668/stream", region: "Macedonia"),
+    RadioStation(name: "City Radio Skopje", streamUrl: "http://176.9.117.123:9998/live", region: "Macedonia"),
+    RadioStation(name: "MRT Radio 1", streamUrl: "https://vod-c57.interspace.com/channel_abr/47/playlist.m3u8", region: "Macedonia"),
+    RadioStation(name: "MRT Radio 2", streamUrl: "https://vod-c57.interspace.com/channel_abr/48/playlist.m3u8", region: "Macedonia"),
+    RadioStation(name: "MRT Radio 3", streamUrl: "https://vod-c57.interspace.com/channel_abr/49/playlist.m3u8", region: "Macedonia"),
+
+    // Montenegro
+    RadioStation(name: "Radio Svetigora", streamUrl: "http://svetigoralive.com:8879/;", region: "Montenegro"),
+    RadioStation(name: "Antena M", streamUrl: "http://radioservis.me:8010/antenamlive", region: "Montenegro"),
+    RadioStation(name: "Reggaeneracija", streamUrl: "http://5.189.179.77:8000/stream", region: "Montenegro"),
+    RadioStation(name: "Radio S1", streamUrl: "https://stream.radios.rs:9008/;", region: "Montenegro"),
+    RadioStation(name: "Radio Elmag", streamUrl: "https://radio.elmag.me/poprock.mp3", region: "Montenegro"),
+    RadioStation(name: "Radio Berane", streamUrl: "https://stream.iradio.pro/proxy/radioberane?mp=/stream;", region: "Montenegro"),
+
+    // Serbia
+    RadioStation(name: "Ritam Srca", streamUrl: "https://s4.radio.co/s0f65dad2d/listen", region: "Serbia"),
+    RadioStation(name: "Lola", streamUrl: "http://streaming.tdiradio.com/radiolola.mp3", region: "Serbia"),
+    RadioStation(name: "Play", streamUrl: "http://stream.playradio.rs:8001/play.mp3", region: "Serbia"),
+    RadioStation(name: "TDI", streamUrl: "http://streaming.tdiradio.com:8000/tdiradio.mp3", region: "Serbia"),
+    RadioStation(name: "Hit FM", streamUrl: "https://streaming.hitfm.rs/hit.mp3", region: "Serbia"),
+    RadioStation(name: "Radio In", streamUrl: "https://radio3-64ssl.streaming.rs:9212/;*.mp3", region: "Serbia"),
+    RadioStation(name: "Radio S ExYu", streamUrl: "https://stream.radios.rs:9042/;*.mp3", region: "Serbia"),
+    RadioStation(name: "Radio S 1", streamUrl: "https://stream.radios.rs:9000/radios1.mp3", region: "Serbia"),
+    RadioStation(name: "Radio S 2", streamUrl: "https://stream.radios.rs:9002/radios2.mp3", region: "Serbia"),
+    RadioStation(name: "Radio S 3", streamUrl: "https://stream.radios.rs:9004/radios3.mp3", region: "Serbia"),
+    RadioStation(name: "Radio S 4", streamUrl: "https://stream.radios.rs:9006/radios4.mp3", region: "Serbia"),
+    RadioStation(name: "Radio Jat", streamUrl: "https://streaming.radiojat.rs/radiojat.mp3", region: "Serbia"),
+    RadioStation(name: "Nostalgie", streamUrl: "https://nostalgie128ssl.streaming.rs:9252/;*.mp3", region: "Serbia"),
+    RadioStation(name: "Pink Rock", streamUrl: "https://edge9.pink.rs/rockstream", region: "Serbia"),
+    RadioStation(name: "Cool Radio", streamUrl: "https://live.coolradio.rs/cool128", region: "Serbia"),
+    RadioStation(name: "Karolina", streamUrl: "https://streaming.karolina.rs/karolina.mp3", region: "Serbia"),
+    RadioStation(name: "Radio Morava", streamUrl: "https://e3.radiomorava.rs/radio/8000/radiomorava128.mp3", region: "Serbia"),
+    RadioStation(name: "Naxi FM", streamUrl: "https://naxi128.streaming.rs:9152/;*.mp3", region: "Serbia"),
+  ];
+}
