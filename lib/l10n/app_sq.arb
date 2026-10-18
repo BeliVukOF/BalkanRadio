@@ -63,5 +63,12 @@
   "privacyBody": "Balkan Radio nuk mbledh, nuk ruan dhe nuk ndan asnjë të dhënë personale. Nuk ka llogari, nuk ka gjurmim, nuk ka analitikë dhe nuk ka reklama.\n\nStacionet e preferuara, rajonet e aktivizuara, tema dhe gjuha ruhen vetëm në këtë pajisje.\n\nListat e stacioneve dhe transmetimet audio shkarkohen direkt nga serverë të palëve të treta. Si çdo kërkesë në internet, ata serverë mund të shohin adresën tuaj IP.",
   "termsBody": "Aplikacioni është falas dhe ofrohet ashtu siç është, pa asnjë garanci.\n\nTë gjitha stacionet janë transmetime publike në internet në pronësi të palëve të treta. Aplikacioni nuk i strehon, nuk i kontrollon dhe nuk i mbështet ato, dhe disponueshmëria ose përmbajtja e tyre mund të ndryshojë në çdo kohë.\n\nListat e stacioneve përditësohen nga repozitoriumi i projektit në GitHub. Mos e përdorni aplikacionin për veprime të paligjshme.",
   "msgStorageError": "Cilësimi nuk mund të ruhet. Provoni përsëri.",
-  "msgPlaybackInterrupted": "Transmetimi u ndërpre."
+  "msgPlaybackInterrupted": "Transmetimi u ndërpre.",
+  "titleDesign": "Dizajni",
+  "designClassic": "Klasik",
+  "designBold": "Pamje e re",
+  "labelNowPlaying": "Po luan tani",
+  "labelSleepTimer": "Kohëmatësi i gjumit",
+  "sleepOff": "Fikur",
+  "sleepCloseApp": "Mbyll aplikacionin"
 }

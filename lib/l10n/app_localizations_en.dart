@@ -209,4 +209,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get msgPlaybackInterrupted => 'Stream interrupted.';
+
+  @override
+  String get titleDesign => 'Design';
+
+  @override
+  String get designClassic => 'Classic';
+
+  @override
+  String get designBold => 'New look';
+
+  @override
+  String get labelNowPlaying => 'Now playing';
+
+  @override
+  String get labelSleepTimer => 'Sleep timer';
+
+  @override
+  String get sleepOff => 'Off';
+
+  @override
+  String get sleepCloseApp => 'Close the app';
 }

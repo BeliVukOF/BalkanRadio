@@ -8,7 +8,7 @@ import '../widgets/mini_player.dart';
 import 'legal_screen.dart';
 
 /// Kept in sync with pubspec.yaml by a unit test (`about version matches pubspec`).
-const String appVersion = '1.1.7';
+const String appVersion = '1.1.9';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -35,6 +35,22 @@ class SettingsScreen extends StatelessWidget {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => _pickTheme(context, provider),
               ),
+            ],
+          ),
+          _Section(
+            title: l10n.titleDesign,
+            children: [
+              for (final option in const ['classic', 'bold'])
+                ListTile(
+                  leading: Icon(
+                    option == 'classic'
+                        ? Icons.palette_outlined
+                        : Icons.bolt_outlined,
+                  ),
+                  title: Text(option == 'classic' ? l10n.designClassic : l10n.designBold),
+                  trailing: provider.design == option ? const Icon(Icons.check) : null,
+                  onTap: () => _guard(context, () => provider.setDesign(option)),
+                ),
             ],
           ),
           _Section(
@@ -134,7 +150,9 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: const MiniPlayer(),
+      // The classic mini player's gradient ring clashes with the bold design,
+      // which shows its own player on the home screen.
+      bottomNavigationBar: provider.design == 'bold' ? null : const MiniPlayer(),
     );
   }
 

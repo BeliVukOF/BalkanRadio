@@ -82,5 +82,12 @@
   "privacyBody": "Balkan Radio does not collect, store or share any personal data. There is no account, no tracking, no analytics and no advertising.\n\nYour favorites, enabled regions, theme and language are saved only on this device.\n\nStation lists and audio streams are downloaded directly from third-party servers. As with any internet request, those servers can see your IP address.",
   "termsBody": "The app is free of charge and provided as is, without any warranty.\n\nAll stations are public internet streams owned by third parties. The app does not host, control or endorse them, and their availability or content may change at any time.\n\nStation lists are updated from the project repository on GitHub. Do not use the app for anything unlawful.",
   "msgStorageError": "Could not save the setting. Try again.",
-  "msgPlaybackInterrupted": "Stream interrupted."
+  "msgPlaybackInterrupted": "Stream interrupted.",
+  "titleDesign": "Design",
+  "designClassic": "Classic",
+  "designBold": "New look",
+  "labelNowPlaying": "Now playing",
+  "labelSleepTimer": "Sleep timer",
+  "sleepOff": "Off",
+  "sleepCloseApp": "Close the app"
 }

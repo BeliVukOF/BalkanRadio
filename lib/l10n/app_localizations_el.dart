@@ -211,4 +211,25 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get msgPlaybackInterrupted => 'Η ροή διακόπηκε.';
+
+  @override
+  String get titleDesign => 'Σχεδιασμός';
+
+  @override
+  String get designClassic => 'Κλασικό';
+
+  @override
+  String get designBold => 'Νέα εμφάνιση';
+
+  @override
+  String get labelNowPlaying => 'Παίζει τώρα';
+
+  @override
+  String get labelSleepTimer => 'Χρονοδιακόπτης ύπνου';
+
+  @override
+  String get sleepOff => 'Ανενεργό';
+
+  @override
+  String get sleepCloseApp => 'Κλείσιμο εφαρμογής';
 }

@@ -210,4 +210,25 @@ class AppLocalizationsBg extends AppLocalizations {
 
   @override
   String get msgPlaybackInterrupted => 'Потокът е прекъснат.';
+
+  @override
+  String get titleDesign => 'Дизайн';
+
+  @override
+  String get designClassic => 'Класичен';
+
+  @override
+  String get designBold => 'Нов изглед';
+
+  @override
+  String get labelNowPlaying => 'В момента свири';
+
+  @override
+  String get labelSleepTimer => 'Таймер за сън';
+
+  @override
+  String get sleepOff => 'Изключи';
+
+  @override
+  String get sleepCloseApp => 'Затвори приложението';
 }

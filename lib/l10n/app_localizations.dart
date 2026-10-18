@@ -495,6 +495,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stream interrupted.'**
   String get msgPlaybackInterrupted;
+
+  /// No description provided for @titleDesign.
+  ///
+  /// In en, this message translates to:
+  /// **'Design'**
+  String get titleDesign;
+
+  /// No description provided for @designClassic.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get designClassic;
+
+  /// No description provided for @designBold.
+  ///
+  /// In en, this message translates to:
+  /// **'New look'**
+  String get designBold;
+
+  /// No description provided for @labelNowPlaying.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing'**
+  String get labelNowPlaying;
+
+  /// No description provided for @labelSleepTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep timer'**
+  String get labelSleepTimer;
+
+  /// No description provided for @sleepOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get sleepOff;
+
+  /// No description provided for @sleepCloseApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Close the app'**
+  String get sleepCloseApp;
 }
 
 class _AppLocalizationsDelegate

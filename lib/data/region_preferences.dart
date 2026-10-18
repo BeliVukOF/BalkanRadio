@@ -50,6 +50,13 @@ class RegionPreferences {
     await (await ready()).setString('app_language', value);
   }
 
+  /// 'classic' | 'bold' — which UI design the app opens with.
+  String get design => _prefs?.getString('design') ?? 'classic';
+
+  Future<void> setDesign(String value) async {
+    await (await ready()).setString('design', value);
+  }
+
   Set<String> get favorites => _prefs?.getStringList('favorites')?.toSet() ?? {};
 
   bool isStationFavorite(String streamUrl) => favorites.contains(streamUrl);

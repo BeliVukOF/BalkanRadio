@@ -209,4 +209,25 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get msgPlaybackInterrupted => 'Strim je prekinut.';
+
+  @override
+  String get titleDesign => 'Dizajn';
+
+  @override
+  String get designClassic => 'Klasik';
+
+  @override
+  String get designBold => 'Novi izgled';
+
+  @override
+  String get labelNowPlaying => 'Trenutno svira';
+
+  @override
+  String get labelSleepTimer => 'Tajmer za spavanje';
+
+  @override
+  String get sleepOff => 'Isključi';
+
+  @override
+  String get sleepCloseApp => 'Zatvori aplikaciju';
 }

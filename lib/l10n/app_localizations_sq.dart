@@ -210,4 +210,25 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get msgPlaybackInterrupted => 'Transmetimi u ndërpre.';
+
+  @override
+  String get titleDesign => 'Dizajni';
+
+  @override
+  String get designClassic => 'Klasik';
+
+  @override
+  String get designBold => 'Pamje e re';
+
+  @override
+  String get labelNowPlaying => 'Po luan tani';
+
+  @override
+  String get labelSleepTimer => 'Kohëmatësi i gjumit';
+
+  @override
+  String get sleepOff => 'Fikur';
+
+  @override
+  String get sleepCloseApp => 'Mbyll aplikacionin';
 }

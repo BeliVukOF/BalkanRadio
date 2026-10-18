@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import 'l10n/app_localizations.dart';
 import 'providers/radio_provider.dart';
+import 'ui/bold/bold_home.dart';
+import 'ui/bold/bold_theme.dart';
 import 'ui/screens/region_selection_screen.dart';
 import 'ui/theme/app_theme.dart';
 
@@ -24,17 +26,19 @@ class BalkanRadioApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<RadioProvider>();
+    // Each design has its own light and dark palette; the theme choice picks one.
+    final bold = provider.design == 'bold';
 
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context).appName,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme: bold ? BoldTheme.lightTheme : AppTheme.light,
+      darkTheme: bold ? BoldTheme.darkTheme : AppTheme.dark,
       themeMode: provider.themeMode,
       locale: provider.locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const RegionSelectionScreen(),
+      home: bold ? const BoldHome() : const RegionSelectionScreen(),
     );
   }
 }

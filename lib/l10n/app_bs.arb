@@ -63,5 +63,12 @@
   "privacyBody": "Balkan Radio ne prikuplja, ne čuva i ne dijeli nikakve lične podatke. Nema računa, nema praćenja, nema analitike i nema oglašavanja.\n\nOmiljene stanice, omogućene regije, tema i jezik čuvaju se samo na ovom uređaju.\n\nListe stanica i audio strimovi preuzimaju se direktno sa servera trećih strana. Kao i kod svakog internet zahtjeva, ti serveri mogu vidjeti vašu IP adresu.",
   "termsBody": "Aplikacija je besplatna i pruža se takva kakva jeste, bez ikakve garancije.\n\nSve stanice su javni internet strimovi u vlasništvu trećih strana. Aplikacija ih ne hostuje, ne kontroliše i ne podržava, a njihova dostupnost i sadržaj se mogu promijeniti u svakom trenutku.\n\nListe stanica se ažuriraju iz repozitorija projekta na GitHub-u. Ne koristite aplikaciju za nezakonite radnje.",
   "msgStorageError": "Nije moguće sačuvati postavku. Pokušajte ponovo.",
-  "msgPlaybackInterrupted": "Strim je prekinut."
+  "msgPlaybackInterrupted": "Strim je prekinut.",
+  "titleDesign": "Dizajn",
+  "designClassic": "Klasik",
+  "designBold": "Novi izgled",
+  "labelNowPlaying": "Trenutno svira",
+  "labelSleepTimer": "Tajmer za spavanje",
+  "sleepOff": "Isključi",
+  "sleepCloseApp": "Zatvori aplikaciju"
 }

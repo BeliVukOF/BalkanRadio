@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart' show SystemNavigator;
 import 'package:audio_service/audio_service.dart' show AudioProcessingState;
 import 'package:flutter/material.dart';
 
@@ -25,6 +26,9 @@ class RadioProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _disposed = false;
   bool _playPending = false;
+  Timer? _sleepTimer;
+  DateTime? _sleepDeadline;
+  bool _sleepClosesApp = false;
   int _playToken = 0;
   String _searchQuery = '';
 
@@ -34,6 +38,9 @@ class RadioProvider extends ChangeNotifier {
   String get searchQuery => _searchQuery;
   bool get isPlaying => _audio?.playbackState.value.playing ?? false;
   String? get playbackError => _audio?.error.value;
+  /// true while a sleep timer is armed.
+  bool get sleepActive => _sleepDeadline != null;
+
   List<String> get availableRegions => StationManager.regions
       .map((r) => r[0].toUpperCase() + r.substring(1))
       .toList();
@@ -44,6 +51,9 @@ class RadioProvider extends ChangeNotifier {
         AudioProcessingState.loading || AudioProcessingState.buffering => true,
         _ => false,
       };
+
+  /// 'classic' | 'bold'
+  String get design => prefs.design;
 
   ThemeMode get themeMode => switch (prefs.themeMode) {
         'light' => ThemeMode.light,
@@ -238,6 +248,28 @@ class RadioProvider extends ChangeNotifier {
     await _audio!.stop();
   }
 
+  /// Stops playback after [duration]; null cancels. With [closeApp] the app
+  /// also leaves the UI when the timer fires. A real force-stop is not
+  /// something an app can do to itself, so this is the honest version.
+  void setSleepTimer(Duration? duration, {bool closeApp = false}) {
+    _sleepTimer?.cancel();
+    _sleepTimer = null;
+    _sleepDeadline = null;
+    _sleepClosesApp = closeApp;
+
+    if (duration != null) {
+      _sleepDeadline = DateTime.now().add(duration);
+      _sleepTimer = Timer(duration, () {
+        _sleepTimer = null;
+        _sleepDeadline = null;
+        unawaited(stop());
+        if (_sleepClosesApp) SystemNavigator.pop();
+        _notify();
+      });
+    }
+    _notify();
+  }
+
   Future<void> toggleFavorite(RadioStation station) async {
     await prefs.toggleFavorite(station.streamUrl);
     _notify();
@@ -259,6 +291,11 @@ class RadioProvider extends ChangeNotifier {
     _notify();
   }
 
+  Future<void> setDesign(String value) async {
+    await prefs.setDesign(value);
+    _notify();
+  }
+
   Future<void> setThemeMode(ThemeMode mode) async {
     await prefs.setThemeMode(switch (mode) {
       ThemeMode.light => 'light',
@@ -275,6 +312,7 @@ class RadioProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    _sleepTimer?.cancel();
     _disposed = true;
     _audio?.error.removeListener(_notify);
     for (final subscription in _subscriptions) {

@@ -210,4 +210,25 @@ class AppLocalizationsMk extends AppLocalizations {
 
   @override
   String get msgPlaybackInterrupted => 'Стримот е прекинат.';
+
+  @override
+  String get titleDesign => 'Дизајн';
+
+  @override
+  String get designClassic => 'Класик';
+
+  @override
+  String get designBold => 'Нов изглед';
+
+  @override
+  String get labelNowPlaying => 'Моментално свири';
+
+  @override
+  String get labelSleepTimer => 'Тајмер за спиење';
+
+  @override
+  String get sleepOff => 'Исклучи';
+
+  @override
+  String get sleepCloseApp => 'Затвори апликацијата';
 }
