@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/radio_station.dart';
+import '../../providers/radio_provider.dart';
 import 'bold_theme.dart';
 
 /// Paints the design background: gradient for Modern, grid for Cyberpunk,
@@ -554,6 +558,8 @@ class BoldMiniPlayer extends StatelessWidget {
                       ],
                     ),
                   ),
+                  const SleepChip(),
+                  const SizedBox(width: 8),
                   if (palette.neon)
                     NeonPlayButton(
                       icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
@@ -675,4 +681,65 @@ class BoldNavBar extends StatelessWidget {
           ),
         ),
       );
+}
+
+/// "4:07" under an hour, "1h 05m" above: how much of the sleep timer is left.
+String formatSleepRemaining(Duration left) => left.inHours > 0
+    ? '${left.inHours}h ${(left.inMinutes % 60).toString().padLeft(2, '0')}m'
+    : '${left.inMinutes}:${(left.inSeconds % 60).toString().padLeft(2, '0')}';
+
+/// Remaining sleep-timer time, ticking once a second; invisible when unarmed.
+class SleepChip extends StatefulWidget {
+  const SleepChip({super.key});
+
+  @override
+  State<SleepChip> createState() => SleepChipState();
+}
+
+class SleepChipState extends State<SleepChip> {
+  Timer? _tick;
+
+  @override
+  void initState() {
+    super.initState();
+    // Only redraws while a timer is armed, so the chip counts down live.
+    _tick = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (context.read<RadioProvider>().sleepActive) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _tick?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = BoldTheme.of(context);
+    final left = context.watch<RadioProvider>().sleepRemaining;
+    if (left == null) return const SizedBox.shrink();
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: palette.accent.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(palette.corners(16)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.bedtime_outlined, size: 14, color: palette.accent),
+          const SizedBox(width: 6),
+          Text(
+            formatSleepRemaining(left),
+            style: TextStyle(
+              color: palette.accent,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

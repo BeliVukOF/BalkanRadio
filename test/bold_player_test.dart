@@ -1,4 +1,5 @@
 import 'package:balkan_radio/ui/bold/bold_now_playing.dart';
+import 'package:balkan_radio/ui/bold/bold_widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

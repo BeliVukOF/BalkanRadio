@@ -11,11 +11,6 @@ import '../region_labels.dart';
 import 'bold_theme.dart';
 import 'bold_widgets.dart';
 
-/// "4:07" under an hour, "1h 05m" above: how much of the sleep timer is left.
-String formatSleepRemaining(Duration left) => left.inHours > 0
-    ? '${left.inHours}h ${(left.inMinutes % 60).toString().padLeft(2, '0')}m'
-    : '${left.inMinutes}:${(left.inSeconds % 60).toString().padLeft(2, '0')}';
-
 /// Next/previous land on the neighbouring station and wrap around.
 int stepStationIndex(int index, int step, int length) =>
     length == 0 ? -1 : (((index < 0 ? 0 : index) + step) + length) % length;
@@ -142,7 +137,7 @@ class BoldNowPlaying extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _LiveBadge(magenta: palette.neonB, neon: palette.neon),
-                    const _SleepChip(),
+                    const SleepChip(),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -271,7 +266,8 @@ class BoldNowPlaying extends StatelessWidget {
   Future<void> _pickSleepTimer(BuildContext context, RadioProvider provider) async {
     final l10n = AppLocalizations.of(context);
     final palette = BoldTheme.of(context);
-    var closeApp = false;
+    // The switch keeps whatever was chosen last time, not a reset default.
+    var closeApp = provider.sleepClosesApp;
     final choice = await showModalBottomSheet<(Duration?, bool)>(
       context: context,
       backgroundColor: palette.surface,
@@ -295,7 +291,7 @@ class BoldNowPlaying extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const _SleepChip(),
+                      const SleepChip(),
                     ],
                   ),
                 ),
@@ -315,7 +311,10 @@ class BoldNowPlaying extends StatelessWidget {
                     style: TextStyle(color: palette.text, fontSize: 15),
                   ),
                   value: closeApp,
-                  onChanged: (value) => setSheet(() => closeApp = value),
+                  onChanged: (value) {
+                    setSheet(() => closeApp = value);
+                    provider.setSleepCloseApp(value);
+                  },
                 ),
                 for (final minutes in sleepChoices)
                   ListTile(
@@ -402,62 +401,6 @@ class _LiveBadge extends StatelessWidget {
               fontWeight: neon ? FontWeight.w800 : FontWeight.w600,
               letterSpacing: neon ? 2 : 1,
               fontFamily: neon ? 'monospace' : null,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Remaining sleep-timer time, ticking once a second; invisible when unarmed.
-class _SleepChip extends StatefulWidget {
-  const _SleepChip();
-
-  @override
-  State<_SleepChip> createState() => _SleepChipState();
-}
-
-class _SleepChipState extends State<_SleepChip> {
-  Timer? _tick;
-
-  @override
-  void initState() {
-    super.initState();
-    // Only redraws while a timer is armed, so the chip counts down live.
-    _tick = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (context.read<RadioProvider>().sleepActive) setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _tick?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = BoldTheme.of(context);
-    final left = context.watch<RadioProvider>().sleepRemaining;
-    if (left == null) return const SizedBox.shrink();
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: palette.accent.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(palette.corners(16)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.bedtime_outlined, size: 14, color: palette.accent),
-          const SizedBox(width: 6),
-          Text(
-            formatSleepRemaining(left),
-            style: TextStyle(
-              color: palette.accent,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
             ),
           ),
         ],

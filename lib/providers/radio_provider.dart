@@ -256,14 +256,24 @@ class RadioProvider extends ChangeNotifier {
     await _audio!.stop();
   }
 
+  /// Whether the armed timer also leaves the app when it fires.
+  bool get sleepClosesApp => _sleepClosesApp;
+
+  /// Remembers the choice made in the sheet, so reopening it shows it again.
+  void setSleepCloseApp(bool value) {
+    _sleepClosesApp = value;
+    _notify();
+  }
+
   /// Stops playback after [duration]; null cancels. With [closeApp] the app
   /// also leaves the UI when the timer fires. A real force-stop is not
   /// something an app can do to itself, so this is the honest version.
-  void setSleepTimer(Duration? duration, {bool closeApp = false}) {
+  /// A null [closeApp] keeps the previously chosen value.
+  void setSleepTimer(Duration? duration, {bool? closeApp}) {
     _sleepTimer?.cancel();
     _sleepTimer = null;
     _sleepDeadline = null;
-    _sleepClosesApp = closeApp;
+    if (closeApp != null) _sleepClosesApp = closeApp;
 
     if (duration != null) {
       _sleepDeadline = DateTime.now().add(duration);
