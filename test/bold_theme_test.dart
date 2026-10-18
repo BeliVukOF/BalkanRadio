@@ -78,6 +78,8 @@ void main() {
       BoldTheme.light,
       BoldTheme.cyberDark,
       BoldTheme.cyberLight,
+      BoldTheme.modernDark,
+      BoldTheme.modernLight,
     ]) {
       expect(contrast(palette.accent, palette.onAccent),
           greaterThanOrEqualTo(4.5));
@@ -89,5 +91,34 @@ void main() {
       expect(contrast(palette.background, palette.highlight),
           greaterThanOrEqualTo(4.5));
     }
+  });
+
+  test('modern: glass cards over a gradient backdrop, readable orbs', () {
+    for (final palette in [BoldTheme.modernDark, BoldTheme.modernLight]) {
+      expect(palette.modern, isTrue);
+      expect(palette.backdrop, isNotNull);
+      expect(palette.glass.a, lessThan(1)); // frosted, not opaque
+      expect(palette.glassFrame, isNotNull);
+      // Body text must clear the worst stop of the backdrop, not the flat one.
+      for (final stop in palette.backdrop!) {
+        expect(contrast(stop, palette.text), greaterThanOrEqualTo(4.5),
+            reason: 'text on $stop');
+        expect(contrast(stop, palette.textMuted), greaterThanOrEqualTo(4.5),
+            reason: 'muted on $stop');
+      }
+      // White glyphs on the play orbs: 3:1 is the bar for graphics.
+      for (final stop in palette.playGradient!) {
+        expect(contrast(Colors.white, stop), greaterThanOrEqualTo(3),
+            reason: 'play glyph on $stop');
+      }
+      // White chip labels are text, so 4.5:1.
+      for (final stop in palette.chipGradient!) {
+        expect(contrast(Colors.white, stop), greaterThanOrEqualTo(4.5),
+            reason: 'chip label on $stop');
+      }
+    }
+    // Classic and Cyberpunk have no gradient decorations.
+    expect(BoldTheme.dark.playGradient, isNull);
+    expect(BoldTheme.cyberDark.chipGradient, isNull);
   });
 }

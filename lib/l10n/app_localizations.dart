@@ -514,11 +514,11 @@ abstract class AppLocalizations {
   /// **'Cyberpunk'**
   String get designCyber;
 
-  /// No description provided for @designBold.
+  /// No description provided for @designModern.
   ///
   /// In en, this message translates to:
-  /// **'New look'**
-  String get designBold;
+  /// **'Modern'**
+  String get designModern;
 
   /// No description provided for @labelNowPlaying.
   ///

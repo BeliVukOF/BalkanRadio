@@ -17,9 +17,11 @@ class BoldPalette {
     required this.text,
     required this.textMuted,
     this.neon = false,
+    this.modern = false,
     Color? neonA,
     Color? neonB,
     Color? grid,
+    this.backdrop,
   })  : neonA = neonA ?? accent,
         neonB = neonB ?? accent,
         grid = grid ?? const Color(0x00000000);
@@ -43,6 +45,36 @@ class BoldPalette {
 
   /// Background grid line colour; transparent when [neon] is false.
   final Color grid;
+
+  /// True for the Modern design: gradient backdrop, glass cards, gradient orbs.
+  final bool modern;
+
+  /// Backdrop gradient, top-left to bottom-right; null keeps a flat background.
+  final List<Color>? backdrop;
+
+  /// Card colour: frosted glass over the modern backdrop, raised surface else.
+  Color get glass => modern ? surface.withValues(alpha: 0.55) : surface;
+
+  /// Hairline border of the glass cards; null when the design has none.
+  Border? get glassFrame => modern
+      ? Border.all(
+          color: text.withValues(alpha: brightness == Brightness.dark ? 0.16 : 0.55),
+        )
+      : null;
+
+  /// Gradient of play buttons and the player artwork; null = flat accent.
+  List<Color>? get playGradient => modern
+      ? (brightness == Brightness.dark
+          ? const [Color(0xFF1587B8), Color(0xFF3129B8)]
+          : const [Color(0xFF0E5C86), Color(0xFF2A2AAE)])
+      : null;
+
+  /// Gradient of the selected region chip; null = flat accent.
+  List<Color>? get chipGradient => modern
+      ? (brightness == Brightness.dark
+          ? const [Color(0xFF2F5FE0), Color(0xFF6B45D8)]
+          : const [Color(0xFF24409E), Color(0xFF5B2BC0)])
+      : null;
 
   /// Neon frame colour of one station; the light design needs darker shades so
   /// the monogram stays readable on a white tile.
@@ -134,6 +166,32 @@ abstract final class BoldTheme {
     grid: Color(0x1A0B0B12),
   );
 
+  /// Modern: navy/purple/teal backdrop, glass cards, cyan accents.
+  static const BoldPalette modernDark = BoldPalette(
+    background: Color(0xFF0A1030),
+    surface: Color(0xFF1A2246),
+    surfaceHigh: Color(0xFF232C55),
+    accent: Color(0xFF5CCFE0),
+    onAccent: Color(0xFF04121A),
+    text: Color(0xFFF3F5FF),
+    textMuted: Color(0xFFA6AECB),
+    modern: true,
+    backdrop: [Color(0xFF0A1030), Color(0xFF241A4E), Color(0xFF0B3A3F)],
+  );
+
+  /// Modern light: pale lavender/blue backdrop, white glass, violet accents.
+  static const BoldPalette modernLight = BoldPalette(
+    background: Color(0xFFE4E9F8),
+    surface: Color(0xFFFFFFFF),
+    surfaceHigh: Color(0xFFF2F4FC),
+    accent: Color(0xFF4B3FC8),
+    onAccent: Color(0xFFFFFFFF),
+    text: Color(0xFF0B1233),
+    textMuted: Color(0xFF49547A),
+    modern: true,
+    backdrop: [Color(0xFFC6D7F7), Color(0xFFE8E4F8), Color(0xFFCDEFF6)],
+  );
+
   static BoldPalette of(BuildContext context) =>
       Theme.of(context).extension<_PaletteExt>()?.palette ??
       (Theme.of(context).brightness == Brightness.dark ? dark : light);
@@ -213,6 +271,8 @@ abstract final class BoldTheme {
   static ThemeData get lightTheme => _build(light, Brightness.light);
   static ThemeData get cyberDarkTheme => _build(cyberDark, Brightness.dark);
   static ThemeData get cyberLightTheme => _build(cyberLight, Brightness.light);
+  static ThemeData get modernDarkTheme => _build(modernDark, Brightness.dark);
+  static ThemeData get modernLightTheme => _build(modernLight, Brightness.light);
 
   static ThemeData _build(BoldPalette p, Brightness brightness) {
     final scheme = ColorScheme(

@@ -220,7 +220,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get designCyber => 'Cyberpunk';
 
   @override
-  String get designBold => 'Novi izgled';
+  String get designModern => 'Modern';
 
   @override
   String get labelNowPlaying => 'Trenutno svira';

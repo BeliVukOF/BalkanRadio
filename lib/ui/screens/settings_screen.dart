@@ -4,11 +4,10 @@ import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/radio_provider.dart';
 import '../region_labels.dart';
-import '../widgets/mini_player.dart';
 import 'legal_screen.dart';
 
 /// Kept in sync with pubspec.yaml by a unit test (`about version matches pubspec`).
-const String appVersion = '1.2.1';
+const String appVersion = '1.3.0';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -40,16 +39,16 @@ class SettingsScreen extends StatelessWidget {
           _Section(
             title: l10n.titleDesign,
             children: [
-              for (final option in const ['classic', 'bold', 'cyber'])
+              for (final option in const ['classic', 'modern', 'cyber'])
                 ListTile(
                   leading: Icon(switch (option) {
                     'classic' => Icons.palette_outlined,
-                    'bold' => Icons.bolt_outlined,
+                    'modern' => Icons.bolt_outlined,
                     _ => Icons.grid_on,
                   }),
                   title: Text(switch (option) {
                     'classic' => l10n.designClassic,
-                    'bold' => l10n.designBold,
+                    'modern' => l10n.designModern,
                     _ => l10n.designCyber,
                   }),
                   trailing: provider.design == option ? const Icon(Icons.check) : null,
@@ -154,9 +153,6 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
-      // The classic mini player's gradient ring clashes with the newer designs,
-      // which shows its own player on the home screen.
-      bottomNavigationBar: provider.design == 'classic' ? const MiniPlayer() : null,
     );
   }
 

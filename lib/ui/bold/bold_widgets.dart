@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../models/radio_station.dart';
 import 'bold_theme.dart';
 
-/// Paints the cyber grid behind the screen; a no-op for the bold design.
+/// Paints the design background: gradient for Modern, grid for Cyberpunk,
+/// nothing for Classic.
 class NeonBackdrop extends StatelessWidget {
   const NeonBackdrop({super.key, required this.child});
 
@@ -12,6 +13,25 @@ class NeonBackdrop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
+    final backdrop = palette.backdrop;
+    if (backdrop != null) {
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: backdrop,
+                ),
+              ),
+            ),
+          ),
+          child,
+        ],
+      );
+    }
     if (!palette.neon) return child;
     return Stack(
       children: [
@@ -60,6 +80,7 @@ class BoldOrb extends StatelessWidget {
     this.color,
     this.iconColor,
     this.iconSize = 22,
+    this.gradient,
   });
 
   final IconData icon;
@@ -72,6 +93,9 @@ class BoldOrb extends StatelessWidget {
   final Color? iconColor;
   final double iconSize;
 
+  /// Filled gradient instead of a flat [color]; the Modern play buttons use it.
+  final List<Color>? gradient;
+
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
@@ -82,7 +106,7 @@ class BoldOrb extends StatelessWidget {
       width: size,
       height: size,
       child: Material(
-        color: color ?? palette.surfaceHigh,
+        color: gradient == null ? (color ?? palette.surfaceHigh) : Colors.transparent,
         shape: palette.neon
             ? RoundedRectangleBorder(
                 borderRadius: BorderRadius.zero,
@@ -92,10 +116,22 @@ class BoldOrb extends StatelessWidget {
               )
             : const CircleBorder(),
         clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onPressed,
-          child: Center(
-            child: Icon(icon, size: iconSize, color: iconColor ?? palette.text),
+        child: Ink(
+          decoration: gradient == null
+              ? null
+              : BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: gradient!,
+                  ),
+                ),
+          child: InkWell(
+            onTap: onPressed,
+            child: Center(
+              child: Icon(icon, size: iconSize, color: iconColor ?? palette.text),
+            ),
           ),
         ),
       ),
@@ -151,7 +187,7 @@ class BoldMonogram extends StatelessWidget {
           children: [
             if (rings)
               CustomPaint(
-                painter: _RingsPainter(neonColor.withValues(alpha: 0.20)),
+                painter: RingsPainter(neonColor.withValues(alpha: 0.20)),
               ),
             Center(
               child: Text(
@@ -186,7 +222,7 @@ class BoldMonogram extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           if (rings)
-            CustomPaint(painter: _RingsPainter(Colors.white.withValues(alpha: 0.10))),
+            CustomPaint(painter: RingsPainter(Colors.white.withValues(alpha: 0.10))),
           Center(
             child: Text(
               label,
@@ -204,8 +240,9 @@ class BoldMonogram extends StatelessWidget {
   }
 }
 
-class _RingsPainter extends CustomPainter {
-  const _RingsPainter(this.color);
+/// Concentric rings of the player artwork, drawn on the tile or the card.
+class RingsPainter extends CustomPainter {
+  const RingsPainter(this.color);
 
   final Color color;
 
@@ -223,7 +260,7 @@ class _RingsPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _RingsPainter old) => old.color != color;
+  bool shouldRepaint(covariant RingsPainter old) => old.color != color;
 }
 
 /// Yellow action button with one cut corner, used by the cyber design.
@@ -396,7 +433,8 @@ class BoldStationRow extends StatelessWidget {
             else
               BoldOrb(
                 icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                iconColor: palette.accent,
+                gradient: palette.playGradient,
+                iconColor: palette.playGradient == null ? palette.accent : Colors.white,
                 iconSize: 26,
                 onPressed: onPlay,
               ),
@@ -405,11 +443,19 @@ class BoldStationRow extends StatelessWidget {
       ),
     );
 
-    if (!palette.neon) return row;
+    if (palette.neon) {
+      return Column(
+        children: [
+          row,
+          _DashedSeparator(palette.textMuted.withValues(alpha: 0.35)),
+        ],
+      );
+    }
+    if (!palette.modern) return row;
     return Column(
       children: [
         row,
-        _DashedSeparator(palette.textMuted.withValues(alpha: 0.35)),
+        Divider(height: 1, thickness: 1, color: palette.text.withValues(alpha: 0.12)),
       ],
     );
   }
@@ -439,8 +485,10 @@ class BoldMiniPlayer extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: palette.neon ? palette.surface : palette.surfaceHigh,
-          border: palette.frame,
+          color: palette.modern
+              ? palette.glass
+              : (palette.neon ? palette.surface : palette.surfaceHigh),
+          border: palette.modern ? palette.glassFrame : palette.frame,
           boxShadow: palette.shadow,
           borderRadius: BorderRadius.circular(palette.corners(26)),
         ),
@@ -472,14 +520,14 @@ class BoldMiniPlayer extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        if (palette.neon)
+                        if (palette.neon || palette.modern)
                           Row(
                             children: [
                               Container(
                                 width: 7,
                                 height: 7,
                                 decoration: BoxDecoration(
-                                  color: palette.neonB,
+                                  color: palette.neon ? palette.neonB : palette.accent,
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -487,11 +535,11 @@ class BoldMiniPlayer extends StatelessWidget {
                               Text(
                                 playing ? 'LIVE' : '// ${subtitle.toUpperCase()}',
                                 style: TextStyle(
-                                  color: palette.neonB,
+                                  color: palette.neon ? palette.neonB : palette.accent,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
-                                  letterSpacing: 1.5,
-                                  fontFamily: 'monospace',
+                                  letterSpacing: palette.neon ? 1.5 : 1,
+                                  fontFamily: palette.neon ? 'monospace' : null,
                                 ),
                               ),
                             ],
@@ -515,7 +563,8 @@ class BoldMiniPlayer extends StatelessWidget {
                   else
                     BoldOrb(
                       icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                      iconColor: palette.accent,
+                      gradient: palette.playGradient,
+                      iconColor: palette.playGradient == null ? palette.accent : Colors.white,
                       iconSize: 24,
                       onPressed: onPlay,
                     ),
@@ -551,55 +600,79 @@ class BoldNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
+    final row = Row(
+      children: [for (var i = 0; i < labels.length; i++) _item(palette, i)],
+    );
+    if (!palette.modern) {
+      return SafeArea(top: false, child: SizedBox(height: 62, child: row));
+    }
+    // Modern: one floating glass pill, the active item in an outlined pill.
     return SafeArea(
       top: false,
-      child: SizedBox(
-        height: 62,
-        child: Row(
-          children: [
-            for (var i = 0; i < labels.length; i++)
-              Expanded(
-                child: InkWell(
-                  onTap: () => onSelect(i),
-                  child: Column(
-                    children: [
-                      if (palette.neon)
-                        Container(
-                          height: 2,
-                          color: i == index ? palette.highlight : Colors.transparent,
-                        ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              _icons[i],
-                              size: 24,
-                              color: i == index ? palette.highlight : palette.textMuted,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              palette.neon ? labels[i].toUpperCase() : labels[i],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: palette.neon ? 10 : 12,
-                                letterSpacing: palette.neon ? 0.8 : 0,
-                                fontFamily: palette.neon ? 'monospace' : null,
-                                fontWeight: palette.neon ? FontWeight.w700 : null,
-                                color: i == index ? palette.highlight : palette.textMuted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-          ],
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: palette.glass,
+            borderRadius: BorderRadius.circular(32),
+            border: palette.glassFrame,
+          ),
+          child: SizedBox(height: 58, child: row),
         ),
       ),
     );
   }
+
+  Widget _item(BoldPalette palette, int i) => Expanded(
+        child: Padding(
+          padding: palette.modern
+              ? const EdgeInsets.symmetric(vertical: 6, horizontal: 4)
+              : EdgeInsets.zero,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(26),
+              border: palette.modern && i == index
+                  ? Border.all(color: palette.highlight, width: 1.2)
+                  : null,
+            ),
+            child: InkWell(
+              onTap: () => onSelect(i),
+              child: Column(
+                children: [
+                  if (palette.neon)
+                    Container(
+                      height: 2,
+                      color: i == index ? palette.highlight : Colors.transparent,
+                    ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _icons[i],
+                          size: 24,
+                          color: i == index ? palette.highlight : palette.textMuted,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          palette.neon ? labels[i].toUpperCase() : labels[i],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: palette.neon ? 10 : 12,
+                            letterSpacing: palette.neon ? 0.8 : 0,
+                            fontFamily: palette.neon ? 'monospace' : null,
+                            fontWeight: palette.neon ? FontWeight.w700 : null,
+                            color: i == index ? palette.highlight : palette.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
 }

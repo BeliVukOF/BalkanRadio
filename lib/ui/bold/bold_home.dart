@@ -248,8 +248,14 @@ class _BoldHomeState extends State<BoldHome> {
                     ),
                   ),
                 )
-              : ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
+              : _listCard(
+                  ListView.builder(
+                  padding: EdgeInsets.fromLTRB(
+                    BoldTheme.of(context).modern ? 14 : 20,
+                    BoldTheme.of(context).modern ? 6 : 4,
+                    BoldTheme.of(context).modern ? 14 : 20,
+                    16,
+                  ),
                   itemCount: stations.length,
                   itemBuilder: (context, index) {
                     final station = stations[index];
@@ -267,9 +273,26 @@ class _BoldHomeState extends State<BoldHome> {
                       onFavorite: () => _toggleFavorite(provider, station),
                     );
                   },
+                  ),
                 ),
         ),
       ],
+    );
+  }
+
+  /// Modern draws the station rows on one frosted card, like the mock.
+  Widget _listCard(Widget list) {
+    final palette = BoldTheme.of(context);
+    if (!palette.modern) return list;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      decoration: BoxDecoration(
+        color: palette.glass,
+        borderRadius: BorderRadius.circular(28),
+        border: palette.glassFrame,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: list,
     );
   }
 
@@ -363,33 +386,51 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
+    final gradient = selected ? palette.chipGradient : null;
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: palette.neon && !selected
               ? Border.all(color: palette.frame!.top.color)
-              : null,
+              : (palette.modern && !selected ? palette.glassFrame : null),
         ),
         child: Material(
-          color: selected
-              ? palette.accent
-              : (palette.neon ? Colors.transparent : palette.surfaceHigh),
+          color: gradient != null
+              ? Colors.transparent
+              : (selected
+                  ? palette.accent
+                  : (palette.neon
+                      ? Colors.transparent
+                      : (palette.modern ? palette.glass : palette.surfaceHigh))),
           borderRadius: BorderRadius.circular(palette.corners(22)),
           clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Text(
-                  palette.neon ? label.toUpperCase() : label,
-                  style: TextStyle(
-                    color: selected ? palette.onAccent : palette.text,
-                    fontWeight: palette.neon ? FontWeight.w700 : FontWeight.w600,
-                    fontSize: palette.neon ? 13 : 15,
-                    letterSpacing: palette.neon ? 1.5 : 0,
-                    fontFamily: palette.neon ? 'monospace' : null,
+          child: Ink(
+            decoration: gradient == null
+                ? null
+                : BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: gradient,
+                    ),
+                  ),
+            child: InkWell(
+              onTap: onTap,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Center(
+                  child: Text(
+                    palette.neon ? label.toUpperCase() : label,
+                    style: TextStyle(
+                      color: gradient != null
+                          ? Colors.white
+                          : (selected ? palette.onAccent : palette.text),
+                      fontWeight: palette.neon ? FontWeight.w700 : FontWeight.w600,
+                      fontSize: palette.neon ? 13 : 15,
+                      letterSpacing: palette.neon ? 1.5 : 0,
+                      fontFamily: palette.neon ? 'monospace' : null,
+                    ),
                   ),
                 ),
               ),
@@ -457,10 +498,11 @@ class _CountryCard extends StatelessWidget {
     final palette = BoldTheme.of(context);
     final code = BoldTheme.countryCodes[region] ?? region.substring(0, 2).toUpperCase();
     final neon = palette.neon;
+    final glass = palette.modern;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: neon ? palette.surface : null,
-        border: palette.frame,
+        color: neon ? palette.surface : (glass ? palette.glass : null),
+        border: glass ? palette.glassFrame : palette.frame,
         boxShadow: palette.shadow,
       ),
       child: Material(
@@ -469,7 +511,7 @@ class _CountryCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: Ink(
           decoration: BoxDecoration(
-            gradient: neon
+            gradient: neon || glass
                 ? null
                 : LinearGradient(
                     begin: Alignment.topLeft,
@@ -487,7 +529,9 @@ class _CountryCard extends StatelessWidget {
                   Text(
                     code,
                     style: TextStyle(
-                      color: neon ? palette.highlight : Colors.white,
+                      color: neon
+                          ? palette.highlight
+                          : (glass ? palette.stationColor(region) : Colors.white),
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
                       letterSpacing: neon ? 2 : -0.5,
@@ -500,7 +544,9 @@ class _CountryCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: neon ? palette.textMuted : Colors.white,
+                      color: neon
+                          ? palette.textMuted
+                          : (glass ? palette.text : Colors.white),
                       fontSize: neon ? 13 : 16,
                       letterSpacing: neon ? 1.5 : 0,
                       fontFamily: neon ? 'monospace' : null,

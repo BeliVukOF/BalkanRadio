@@ -5,8 +5,6 @@ import 'l10n/app_localizations.dart';
 import 'providers/radio_provider.dart';
 import 'ui/bold/bold_home.dart';
 import 'ui/bold/bold_theme.dart';
-import 'ui/screens/region_selection_screen.dart';
-import 'ui/theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,29 +25,22 @@ class BalkanRadioApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<RadioProvider>();
     // Each design has its own light and dark palette; the theme choice picks one.
-    final bold = provider.design == 'bold';
-    final cyber = provider.design == 'cyber';
-    final shell =
-        bold || cyber ? const BoldHome() : const RegionSelectionScreen();
+    final (light, dark) = switch (provider.design) {
+      'modern' => (BoldTheme.modernLightTheme, BoldTheme.modernDarkTheme),
+      'cyber' => (BoldTheme.cyberLightTheme, BoldTheme.cyberDarkTheme),
+      _ => (BoldTheme.lightTheme, BoldTheme.darkTheme),
+    };
 
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context).appName,
       debugShowCheckedModeBanner: false,
-      theme: cyber
-          ? BoldTheme.cyberLightTheme
-          : bold
-              ? BoldTheme.lightTheme
-              : AppTheme.light,
-      darkTheme: cyber
-          ? BoldTheme.cyberDarkTheme
-          : bold
-              ? BoldTheme.darkTheme
-              : AppTheme.dark,
+      theme: light,
+      darkTheme: dark,
       themeMode: provider.themeMode,
       locale: provider.locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: shell,
+      home: const BoldHome(),
     );
   }
 }

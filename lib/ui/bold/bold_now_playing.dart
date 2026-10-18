@@ -87,6 +87,39 @@ class BoldNowPlaying extends StatelessWidget {
                         constraints.maxWidth,
                         constraints.maxHeight - 16,
                       );
+                      if (palette.modern) {
+                        // Mock: rings on a frosted card, monogram in the middle.
+                        return Center(
+                          child: Container(
+                            width: side,
+                            height: side,
+                            decoration: BoxDecoration(
+                              color: palette.glass,
+                              borderRadius: BorderRadius.circular(40),
+                              border: palette.glassFrame,
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: Stack(
+                              children: [
+                                Positioned.fill(
+                                  child: CustomPaint(
+                                    painter: RingsPainter(
+                                      palette.text.withValues(alpha: 0.14),
+                                    ),
+                                  ),
+                                ),
+                                Center(
+                                  child: BoldMonogram(
+                                    name: station.name,
+                                    size: side * 0.55,
+                                    radius: side * 0.28,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
                       return Center(
                         child: BoldMonogram(
                           name: station.name,
@@ -179,8 +212,10 @@ class BoldNowPlaying extends StatelessWidget {
                             ? l10n.contentDescriptionPause
                             : l10n.contentDescriptionPlay,
                         size: 78,
-                        color: palette.accent,
-                        iconColor: palette.onAccent,
+                        color: palette.playGradient == null ? palette.accent : null,
+                        gradient: palette.playGradient,
+                        iconColor:
+                            palette.playGradient == null ? palette.onAccent : Colors.white,
                         iconSize: 40,
                         onPressed: provider.togglePlayPause,
                       ),
@@ -312,7 +347,11 @@ class _LiveBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
       decoration: BoxDecoration(
-        color: neon ? magenta : palette.surfaceHigh,
+        color: neon
+            ? magenta
+            : (palette.modern
+                ? palette.accent.withValues(alpha: 0.18)
+                : palette.surfaceHigh),
         borderRadius: BorderRadius.circular(palette.corners(20)),
       ),
       child: Row(
@@ -332,7 +371,9 @@ class _LiveBadge extends StatelessWidget {
           Text(
             'LIVE',
             style: TextStyle(
-              color: neon ? Colors.white : palette.text,
+              color: neon
+                  ? Colors.white
+                  : (palette.modern ? palette.accent : palette.text),
               fontSize: 13,
               fontWeight: neon ? FontWeight.w800 : FontWeight.w600,
               letterSpacing: neon ? 2 : 1,

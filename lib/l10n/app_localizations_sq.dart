@@ -221,7 +221,7 @@ class AppLocalizationsSq extends AppLocalizations {
   String get designCyber => 'Cyberpunk';
 
   @override
-  String get designBold => 'Pamje e re';
+  String get designModern => 'Modern';
 
   @override
   String get labelNowPlaying => 'Po luan tani';

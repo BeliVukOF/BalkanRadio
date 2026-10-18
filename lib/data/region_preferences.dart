@@ -50,8 +50,14 @@ class RegionPreferences {
     await (await ready()).setString('app_language', value);
   }
 
-  /// 'classic' | 'bold' — which UI design the app opens with.
-  String get design => _prefs?.getString('design') ?? 'classic';
+  /// 'classic' | 'modern' | 'cyber' — which UI design the app opens with.
+  /// Values stored by older builds ('bold', and the retired classic UI) fall
+  /// back to 'classic', which is the former "new look".
+  String get design => switch (_prefs?.getString('design')) {
+        'modern' => 'modern',
+        'cyber' => 'cyber',
+        _ => 'classic',
+      };
 
   Future<void> setDesign(String value) async {
     await (await ready()).setString('design', value);

@@ -221,7 +221,7 @@ class AppLocalizationsBg extends AppLocalizations {
   String get designCyber => 'Cyberpunk';
 
   @override
-  String get designBold => 'Нов изглед';
+  String get designModern => 'Modern';
 
   @override
   String get labelNowPlaying => 'В момента свири';

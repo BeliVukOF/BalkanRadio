@@ -222,7 +222,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get designCyber => 'Cyberpunk';
 
   @override
-  String get designBold => 'Νέα εμφάνιση';
+  String get designModern => 'Modern';
 
   @override
   String get labelNowPlaying => 'Παίζει τώρα';
