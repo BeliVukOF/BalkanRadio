@@ -191,7 +191,16 @@ class _RadioListScreenState extends State<RadioListScreen> {
                                     color: isFavorite
                                         ? scheme.primary
                                         : scheme.onSurfaceVariant,
-                                    onPressed: () => provider.toggleFavorite(station),
+                                    onPressed: () async {
+                                      try {
+                                        await provider.toggleFavorite(station);
+                                      } catch (error) {
+                                        if (!context.mounted) return;
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('$error')),
+                                        );
+                                      }
+                                    },
                                   ),
                                   GradientPlayButton(
                                     size: 44,

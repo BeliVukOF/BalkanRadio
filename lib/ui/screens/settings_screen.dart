@@ -57,8 +57,11 @@ class SettingsScreen extends StatelessWidget {
                   title: Text(regionLabel(l10n, region)),
                   value: provider.prefs.isRegionEnabled(region),
                   onChanged: (value) async {
-                    final ok = await provider.setRegionEnabled(region, value);
-                    if (!ok && context.mounted) {
+                    final ok = await _guard(
+                      context,
+                      () => provider.setRegionEnabled(region, value),
+                    );
+                    if (ok == false && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(l10n.msgKeepOneRegion)),
                       );
@@ -74,7 +77,8 @@ class SettingsScreen extends StatelessWidget {
                 title: Text(l10n.labelPowerSaving),
                 subtitle: Text(l10n.descPowerSaving),
                 value: provider.prefs.isPowerSavingEnabled,
-                onChanged: provider.setPowerSavingEnabled,
+                onChanged: (value) =>
+                    _guard(context, () => provider.setPowerSavingEnabled(value)),
               ),
             ],
           ),
@@ -134,6 +138,20 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  /// Settings must never fail silently: any storage error is shown to the user.
+  Future<T?> _guard<T>(BuildContext context, Future<T> Function() action) async {
+    try {
+      return await action();
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$error')),
+        );
+      }
+      return null;
+    }
+  }
+
   void _openLegal(BuildContext context, String title, String body) {
     Navigator.push(
       context,
@@ -177,7 +195,9 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
     );
-    if (selected != null) await provider.setThemeMode(selected);
+    if (selected != null && context.mounted) {
+      await _guard(context, () => provider.setThemeMode(selected));
+    }
   }
 
   Future<void> _pickLanguage(BuildContext context, RadioProvider provider) async {
@@ -199,7 +219,9 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
     );
-    if (selected != null) await provider.setAppLanguage(selected);
+    if (selected != null && context.mounted) {
+      await _guard(context, () => provider.setAppLanguage(selected));
+    }
   }
 }
 

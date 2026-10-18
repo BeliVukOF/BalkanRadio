@@ -5,7 +5,6 @@ import '../../l10n/app_localizations.dart';
 import '../../providers/radio_provider.dart';
 import '../region_labels.dart';
 import '../theme/app_theme.dart';
-import '../widgets/app_drawer.dart';
 import '../widgets/gradient_play_button.dart';
 import '../widgets/mini_player.dart';
 import '../widgets/station_avatar.dart';
@@ -28,21 +27,21 @@ class RegionSelectionScreen extends StatelessWidget {
     final station = provider.currentStation;
 
     return Scaffold(
-      drawer: const AppDrawer(),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           children: [
             Row(
               children: [
-                Builder(
-                  builder: (context) => IconButton(
-                    tooltip: l10n.navigationDrawerOpen,
-                    icon: const Icon(Icons.menu),
-                    onPressed: () => Scaffold.of(context).openDrawer(),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    l10n.navHeaderSubtitle,
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: scheme.onSurfaceVariant),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
                 IconButton(
                   tooltip: l10n.actionSettings,
                   icon: const Icon(Icons.tune),

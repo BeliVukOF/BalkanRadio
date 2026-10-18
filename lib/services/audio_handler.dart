@@ -74,7 +74,8 @@ class RadioAudioHandler extends BaseAudioHandler {
     try {
       await _player.stop();
       // A dead or blocked stream would otherwise buffer forever with no feedback.
-      await _player.setUrl(station.streamUrl).timeout(const Duration(seconds: 15));
+      // 30s, not 15: some ICY/HLS servers take that long on mobile data.
+      await _player.setUrl(station.streamUrl).timeout(const Duration(seconds: 30));
       await _player.play();
     } catch (_) {
       mediaItem.add(null);

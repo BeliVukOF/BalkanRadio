@@ -66,8 +66,10 @@ class RadioProvider extends ChangeNotifier {
   Future<void> _init() async {
     try {
       await RegionPreferences.init();
-    } catch (_) {
-      // Unreadable preferences must not stop the app from opening.
+    } catch (error, stack) {
+      // Unreadable preferences must not stop the app from opening, but they
+      // must be visible in the log: every settings toggle silently dies then.
+      debugPrint('RegionPreferences.init failed: $error\n$stack');
     }
 
     unawaited(loadStations());
@@ -151,6 +153,14 @@ class RadioProvider extends ChangeNotifier {
               s.region.toLowerCase().contains(query))
           .toList();
     }
+
+    // Favourites on top, then everything else, each group alphabetical.
+    list.sort((a, b) {
+      final aFav = prefs.isStationFavorite(a.streamUrl);
+      final bFav = prefs.isStationFavorite(b.streamUrl);
+      if (aFav != bFav) return aFav ? -1 : 1;
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    });
 
     return list;
   }

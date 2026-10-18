@@ -31,9 +31,12 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Signing with the debug keys for now: this APK is not on Play Store.
             signingConfig = signingConfigs.getByName("debug")
+            // R8 strips names the shared_preferences Pigeon bridge looks up at
+            // runtime (NoSuchMethodError on every read/write), so keep it off.
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }
