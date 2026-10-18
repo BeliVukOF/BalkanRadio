@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/radio_station.dart';
 
 class StationManager {
-  static const String _cacheKey = 'stations_cache_v2';
+  static const String _cacheKey = 'stations_cache_v3';
 
   static const List<String> _regions = [
     'albania',
@@ -20,7 +20,7 @@ class StationManager {
   ];
 
   String _remoteUrl(String region) =>
-      'https://raw.githubusercontent.com/BeliVukOF/Radio-app/main/stations/$region.json';
+      'https://raw.githubusercontent.com/BeliVukOF/BalkanRadio/main/stations/$region.json';
 
   /// Network only. Returns an empty list when every region failed.
   Future<List<RadioStation>> fetchStations() async {

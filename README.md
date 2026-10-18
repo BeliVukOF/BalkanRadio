@@ -1,8 +1,8 @@
 # Balkan Radio (Flutter)
 
 Flutter client for the Balkan Radio station catalogue. Station lists are fetched
-from [BeliVukOF/Radio-app](https://github.com/BeliVukOF/Radio-app) and cached on
-the device, so the app also works offline.
+from this repository's [`stations/`](stations) folder and cached on the device,
+so the app also works offline.
 
 - 8 regions, 68 stations, search, favourites
 - Light / dark / system theme, 9 UI languages / system language
