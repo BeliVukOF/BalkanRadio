@@ -31,7 +31,8 @@ class BoldNowPlaying extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: palette.background,
-      body: SafeArea(
+      body: NeonBackdrop(
+        child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
           child: Column(
@@ -46,11 +47,15 @@ class BoldNowPlaying extends StatelessWidget {
                   Expanded(
                     child: Center(
                       child: Text(
-                        l10n.labelNowPlaying.toUpperCase(),
+                        palette.neon
+                            ? '// ${l10n.labelNowPlaying.toUpperCase()}'
+                            : l10n.labelNowPlaying.toUpperCase(),
                         style: TextStyle(
-                          color: palette.textMuted,
+                          color: palette.neon ? palette.neonA : palette.textMuted,
                           fontSize: 12,
                           letterSpacing: 2,
+                          fontWeight: palette.neon ? FontWeight.w700 : null,
+                          fontFamily: palette.neon ? 'monospace' : null,
                         ),
                       ),
                     ),
@@ -94,7 +99,10 @@ class BoldNowPlaying extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Align(alignment: Alignment.centerLeft, child: _LiveBadge()),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: _LiveBadge(magenta: palette.neonB, neon: palette.neon),
+                ),
                 const SizedBox(height: 12),
                 Align(
                   alignment: Alignment.centerLeft,
@@ -133,6 +141,10 @@ class BoldNowPlaying extends StatelessWidget {
                     ],
                   ),
                 ],
+                if (palette.neon) ...[
+                  const SizedBox(height: 16),
+                  _Waveform(palette: palette),
+                ],
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -142,6 +154,7 @@ class BoldNowPlaying extends StatelessWidget {
                       tooltip: l10n.labelSleepTimer,
                       size: 52,
                       iconSize: 24,
+                      color: palette.neon ? Colors.transparent : null,
                       iconColor: provider.sleepActive ? palette.accent : palette.text,
                       onPressed: () => _pickSleepTimer(context, provider),
                     ),
@@ -149,23 +162,37 @@ class BoldNowPlaying extends StatelessWidget {
                       icon: Icons.skip_previous_rounded,
                       size: 52,
                       iconSize: 26,
+                      color: palette.neon ? Colors.transparent : null,
                       onPressed: () => _skip(provider, station, -1),
                     ),
-                    BoldOrb(
-                      icon: provider.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                      tooltip: provider.isPlaying
-                          ? l10n.contentDescriptionPause
-                          : l10n.contentDescriptionPlay,
-                      size: 78,
-                      color: palette.accent,
-                      iconColor: palette.onAccent,
-                      iconSize: 40,
-                      onPressed: provider.togglePlayPause,
-                    ),
+                    if (palette.neon)
+                      NeonPlayButton(
+                        icon: provider.isPlaying
+                            ? Icons.pause_rounded
+                            : Icons.play_arrow_rounded,
+                        size: 78,
+                        cut: 18,
+                        onPressed: provider.togglePlayPause,
+                      )
+                    else
+                      BoldOrb(
+                        icon: provider.isPlaying
+                            ? Icons.pause_rounded
+                            : Icons.play_arrow_rounded,
+                        tooltip: provider.isPlaying
+                            ? l10n.contentDescriptionPause
+                            : l10n.contentDescriptionPlay,
+                        size: 78,
+                        color: palette.accent,
+                        iconColor: palette.onAccent,
+                        iconSize: 40,
+                        onPressed: provider.togglePlayPause,
+                      ),
                     BoldOrb(
                       icon: Icons.skip_next_rounded,
                       size: 52,
                       iconSize: 26,
+                      color: palette.neon ? Colors.transparent : null,
                       onPressed: () => _skip(provider, station, 1),
                     ),
                     BoldOrb(
@@ -175,6 +202,8 @@ class BoldNowPlaying extends StatelessWidget {
                           : l10n.contentDescriptionFavorite,
                       size: 52,
                       iconSize: 26,
+                      color: palette.neon ? Colors.transparent : null,
+                      iconColor: favorite ? palette.neonB : null,
                       onPressed: () => _toggleFavorite(context, provider, station.streamUrl),
                     ),
                   ],
@@ -182,6 +211,7 @@ class BoldNowPlaying extends StatelessWidget {
               ],
             ],
           ),
+        ),
         ),
       ),
     );
@@ -275,7 +305,10 @@ class BoldNowPlaying extends StatelessWidget {
 }
 
 class _LiveBadge extends StatelessWidget {
-  const _LiveBadge();
+  const _LiveBadge({this.magenta, this.neon = false});
+
+  final Color? magenta;
+  final bool neon;
 
   @override
   Widget build(BuildContext context) {
@@ -283,8 +316,8 @@ class _LiveBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
       decoration: BoxDecoration(
-        color: palette.surfaceHigh,
-        borderRadius: BorderRadius.circular(20),
+        color: neon ? magenta : palette.surfaceHigh,
+        borderRadius: BorderRadius.circular(palette.corners(20)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -293,21 +326,77 @@ class _LiveBadge extends StatelessWidget {
             width: 8,
             height: 8,
             child: DecoratedBox(
-              decoration: BoxDecoration(color: palette.accent, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: neon ? Colors.white : palette.accent,
+                shape: BoxShape.circle,
+              ),
             ),
           ),
           const SizedBox(width: 8),
           Text(
             'LIVE',
             style: TextStyle(
-              color: palette.text,
+              color: neon ? Colors.white : palette.text,
               fontSize: 13,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 1,
+              fontWeight: neon ? FontWeight.w800 : FontWeight.w600,
+              letterSpacing: neon ? 2 : 1,
+              fontFamily: neon ? 'monospace' : null,
             ),
           ),
         ],
       ),
     );
   }
+}
+
+
+/// Decorative equaliser strip of the cyber mock: no audio analysis, the bars
+/// just alternate between the two neon colours.
+class _Waveform extends StatelessWidget {
+  const _Waveform({required this.palette});
+
+  final BoldPalette palette;
+
+  /// Bar heights in 0..1, repeating.
+  static const List<double> _bars = [
+    0.30, 1.00, 0.55, 0.22, 0.80, 0.35, 0.95, 0.20, 0.65, 0.85, 0.40, 0.70,
+    0.25, 0.90, 0.50, 0.75, 1.00, 0.45, 0.60, 0.30, 0.85, 0.55, 0.70, 0.20,
+  ];
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        height: 44,
+        width: double.infinity,
+        child: CustomPaint(
+          painter: _WaveformPainter(palette.neonA, palette.neonB, _bars),
+        ),
+      );
+}
+
+class _WaveformPainter extends CustomPainter {
+  const _WaveformPainter(this.left, this.right, this.bars);
+
+  final Color left;
+  final Color right;
+  final List<double> bars;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const gap = 3.0;
+    final width = (size.width - gap * (bars.length - 1)) / bars.length;
+    final paint = Paint()..strokeCap = StrokeCap.butt;
+    for (var i = 0; i < bars.length; i++) {
+      paint.color = i < bars.length / 2 ? left : right;
+      final height = size.height * bars[i];
+      final x = i * (width + gap);
+      canvas.drawRect(
+        Rect.fromLTWH(x, (size.height - height) / 2, width, height),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _WaveformPainter old) =>
+      old.left != left || old.right != right;
 }

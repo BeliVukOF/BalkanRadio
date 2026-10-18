@@ -28,17 +28,28 @@ class BalkanRadioApp extends StatelessWidget {
     final provider = context.watch<RadioProvider>();
     // Each design has its own light and dark palette; the theme choice picks one.
     final bold = provider.design == 'bold';
+    final cyber = provider.design == 'cyber';
+    final shell =
+        bold || cyber ? const BoldHome() : const RegionSelectionScreen();
 
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context).appName,
       debugShowCheckedModeBanner: false,
-      theme: bold ? BoldTheme.lightTheme : AppTheme.light,
-      darkTheme: bold ? BoldTheme.darkTheme : AppTheme.dark,
+      theme: cyber
+          ? BoldTheme.cyberLightTheme
+          : bold
+              ? BoldTheme.lightTheme
+              : AppTheme.light,
+      darkTheme: cyber
+          ? BoldTheme.cyberDarkTheme
+          : bold
+              ? BoldTheme.darkTheme
+              : AppTheme.dark,
       themeMode: provider.themeMode,
       locale: provider.locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: bold ? const BoldHome() : const RegionSelectionScreen(),
+      home: shell,
     );
   }
 }

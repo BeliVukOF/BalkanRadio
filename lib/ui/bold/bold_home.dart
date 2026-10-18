@@ -70,7 +70,8 @@ class _BoldHomeState extends State<BoldHome> {
     final station = provider.currentStation;
 
     return Scaffold(
-      body: SafeArea(
+      body: NeonBackdrop(
+        child: SafeArea(
         bottom: false,
         child: Column(
           children: [
@@ -99,6 +100,7 @@ class _BoldHomeState extends State<BoldHome> {
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -113,37 +115,47 @@ class _BoldHomeState extends State<BoldHome> {
             children: [
               Expanded(
                 child: _searching
-                    ? TextField(
+                    ? _SearchField(
                         controller: _search,
-                        autofocus: true,
-                        style: TextStyle(color: BoldTheme.of(context).text, fontSize: 20),
-                        cursorColor: BoldTheme.of(context).accent,
-                        decoration: InputDecoration(
-                          hintText: l10n.searchHint,
-                          hintStyle: TextStyle(color: BoldTheme.of(context).textMuted),
-                          border: InputBorder.none,
-                          isDense: true,
-                        ),
+                        hint: l10n.searchHint,
                         onChanged: context.read<RadioProvider>().setSearchQuery,
                       )
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 6),
-                          Text(
-                            l10n.navHeaderSubtitle,
-                            style: TextStyle(color: BoldTheme.of(context).textMuted, fontSize: 13),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.appName,
-                            style: TextStyle(
-                              color: BoldTheme.of(context).text,
-                              fontSize: 34,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: -1,
+                          if (BoldTheme.of(context).neon) ...[
+                            Text(
+                              '// ${l10n.navHeaderSubtitle.toUpperCase()}',
+                              style: TextStyle(
+                                color: BoldTheme.of(context).neonA,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 2.5,
+                                fontFamily: 'monospace',
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: 8),
+                            _GlitchTitle(
+                              text: l10n.appName.toUpperCase(),
+                              palette: BoldTheme.of(context),
+                            ),
+                          ] else ...[
+                            Text(
+                              l10n.navHeaderSubtitle,
+                              style: TextStyle(color: BoldTheme.of(context).textMuted, fontSize: 13),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.appName,
+                              style: TextStyle(
+                                color: BoldTheme.of(context).text,
+                                fontSize: 34,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -1,
+                              ),
+                            ),
+                          ],
                         ],
                       ),
               ),
@@ -292,6 +304,55 @@ class _BoldHomeState extends State<BoldHome> {
   }
 }
 
+/// Search box of the header: plain text for bold, framed field for cyber.
+class _SearchField extends StatelessWidget {
+  const _SearchField({
+    required this.controller,
+    required this.hint,
+    required this.onChanged,
+  });
+
+  final TextEditingController controller;
+  final String hint;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = BoldTheme.of(context);
+    final field = TextField(
+      controller: controller,
+      autofocus: true,
+      style: TextStyle(color: palette.text, fontSize: 20),
+      cursorColor: palette.accent,
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(color: palette.textMuted),
+        border: InputBorder.none,
+        isDense: true,
+      ),
+      onChanged: onChanged,
+    );
+    if (!palette.neon) return field;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: palette.surface,
+        border: palette.frame,
+        boxShadow: palette.shadow,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(
+          children: [
+            Icon(Icons.search, size: 20, color: palette.neonA),
+            const SizedBox(width: 8),
+            Expanded(child: field),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _Chip extends StatelessWidget {
   const _Chip({required this.label, required this.selected, required this.onTap});
 
@@ -301,29 +362,85 @@ class _Chip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = BoldTheme.of(context);
     return Padding(
       padding: const EdgeInsets.only(right: 10),
-      child: Material(
-        color: selected ? BoldTheme.of(context).accent : BoldTheme.of(context).surfaceHigh,
-        borderRadius: BorderRadius.circular(22),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Center(
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: selected ? BoldTheme.of(context).onAccent : BoldTheme.of(context).text,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: palette.neon && !selected
+              ? Border.all(color: palette.frame!.top.color)
+              : null,
+        ),
+        child: Material(
+          color: selected
+              ? palette.accent
+              : (palette.neon ? Colors.transparent : palette.surfaceHigh),
+          borderRadius: BorderRadius.circular(palette.corners(22)),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Center(
+                child: Text(
+                  palette.neon ? label.toUpperCase() : label,
+                  style: TextStyle(
+                    color: selected ? palette.onAccent : palette.text,
+                    fontWeight: palette.neon ? FontWeight.w700 : FontWeight.w600,
+                    fontSize: palette.neon ? 13 : 15,
+                    letterSpacing: palette.neon ? 1.5 : 0,
+                    fontFamily: palette.neon ? 'monospace' : null,
+                  ),
                 ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+/// "BALKAN RADIO" with the cyan/magenta split shadow of the cyber mock.
+class _GlitchTitle extends StatelessWidget {
+  const _GlitchTitle({required this.text, required this.palette});
+
+  final String text;
+  final BoldPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = TextStyle(
+      fontSize: 28,
+      fontWeight: FontWeight.w900,
+      letterSpacing: 0.5,
+      color: palette.text,
+    );
+    // Dark mock splits the title into cyan/magenta, the light one uses a single
+    // yellow offset shadow.
+    if (palette.brightness == Brightness.light) {
+      return Stack(
+        children: [
+          Transform.translate(
+            offset: const Offset(3, 3),
+            child: Text(text, style: style.copyWith(color: palette.accent)),
+          ),
+          Text(text, style: style),
+        ],
+      );
+    }
+    return Stack(
+      children: [
+        Transform.translate(
+          offset: const Offset(-2.5, 1.5),
+          child: Text(text, style: style.copyWith(color: palette.neonA)),
+        ),
+        Transform.translate(
+          offset: const Offset(2.5, -1.5),
+          child: Text(text, style: style.copyWith(color: palette.neonB)),
+        ),
+        Text(text, style: style),
+      ],
     );
   }
 }
@@ -337,46 +454,61 @@ class _CountryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tile = BoldTheme.tileFor(region);
-    return Material(
-      borderRadius: BorderRadius.circular(26),
-      clipBehavior: Clip.antiAlias,
-      child: Ink(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: tile,
+    final palette = BoldTheme.of(context);
+    final code = BoldTheme.countryCodes[region] ?? region.substring(0, 2).toUpperCase();
+    final neon = palette.neon;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: neon ? palette.surface : null,
+        border: palette.frame,
+        boxShadow: palette.shadow,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(palette.corners(26)),
+        clipBehavior: Clip.antiAlias,
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: neon
+                ? null
+                : LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: BoldTheme.tileFor(region),
+                  ),
           ),
-        ),
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  BoldTheme.countryCodes[region] ?? region.substring(0, 2).toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    code,
+                    style: TextStyle(
+                      color: neon ? palette.highlight : Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: neon ? 2 : -0.5,
+                      fontFamily: neon ? 'monospace' : null,
+                    ),
                   ),
-                ),
-                const Spacer(),
-                Text(
-                  label,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                  const Spacer(),
+                  Text(
+                    neon ? label.toUpperCase() : label,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: neon ? palette.textMuted : Colors.white,
+                      fontSize: neon ? 13 : 16,
+                      letterSpacing: neon ? 1.5 : 0,
+                      fontFamily: neon ? 'monospace' : null,
+                      fontWeight: neon ? FontWeight.w700 : FontWeight.w600,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

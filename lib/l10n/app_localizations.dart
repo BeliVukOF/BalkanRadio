@@ -508,6 +508,12 @@ abstract class AppLocalizations {
   /// **'Classic'**
   String get designClassic;
 
+  /// No description provided for @designCyber.
+  ///
+  /// In en, this message translates to:
+  /// **'Cyberpunk'**
+  String get designCyber;
+
   /// No description provided for @designBold.
   ///
   /// In en, this message translates to:

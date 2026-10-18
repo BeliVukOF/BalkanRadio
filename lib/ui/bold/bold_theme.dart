@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
-/// Colours of one design variant. Two instances exist: [BoldTheme.dark] and
-/// [BoldTheme.light]; widgets read them through [BoldTheme.of].
+/// Colours of one design variant. Instances exist for the "Bold" design
+/// ([BoldTheme.dark], [BoldTheme.light]) and the "Cyberpunk" design
+/// ([BoldTheme.cyberDark], [BoldTheme.cyberLight]); widgets read the active one
+/// through [BoldTheme.of].
+///
+/// [neon] switches the extra chrome the cyber design needs: grid background,
+/// square corners, neon frames and glows.
 class BoldPalette {
   const BoldPalette({
     required this.background,
@@ -11,7 +16,13 @@ class BoldPalette {
     required this.onAccent,
     required this.text,
     required this.textMuted,
-  });
+    this.neon = false,
+    Color? neonA,
+    Color? neonB,
+    Color? grid,
+  })  : neonA = neonA ?? accent,
+        neonB = neonB ?? accent,
+        grid = grid ?? const Color(0x00000000);
 
   final Color background;
   final Color surface;
@@ -20,10 +31,56 @@ class BoldPalette {
   final Color onAccent;
   final Color text;
   final Color textMuted;
+
+  /// True for the cyber design; every visual difference hangs off this flag.
+  final bool neon;
+
+  /// Neon border / kicker colour (cyan on dark, teal on light).
+  final Color neonA;
+
+  /// Second neon colour: LIVE badge, hearts (magenta).
+  final Color neonB;
+
+  /// Background grid line colour; transparent when [neon] is false.
+  final Color grid;
+
+  /// Neon frame colour of one station; the light design needs darker shades so
+  /// the monogram stays readable on a white tile.
+  Color stationColor(String seed) =>
+      (brightness == Brightness.dark ? BoldTheme.neonTiles : BoldTheme.neonTilesLight)[
+          BoldTheme._hash(seed) % BoldTheme.neonTiles.length];
+
+  Brightness get brightness =>
+      background.computeLuminance() < 0.35 ? Brightness.dark : Brightness.light;
+
+  /// Active colour of the bottom bar: accent for bold, neon cyan/magenta.
+  Color get highlight =>
+      neon ? (brightness == Brightness.dark ? neonA : neonB) : accent;
+
+  /// Corner radius: designs without [neon] keep the given value, cyber is sharp.
+  double corners(double base) => neon ? 0 : base;
+
+  /// Border around cards and buttons; null when the design has no frames.
+  Border? get frame => neon
+      ? Border.all(
+          color: brightness == Brightness.dark
+              ? neonA.withValues(alpha: 0.55)
+              : text,
+          width: brightness == Brightness.dark ? 1.2 : 2,
+        )
+      : null;
+
+  /// Neon glow on dark, hard offset shadow on light, nothing for bold.
+  List<BoxShadow> get shadow {
+    if (!neon) return const [];
+    if (brightness == Brightness.dark) {
+      return [BoxShadow(color: neonA.withValues(alpha: 0.28), blurRadius: 16)];
+    }
+    return const [BoxShadow(color: Color(0xFF0B0B12), offset: Offset(4, 4))];
+  }
 }
 
-/// Palette for the "Bold" design: one orange accent plus saturated two-tone
-/// tiles, in a dark and a light variant.
+/// Palettes for the two designs, each in a dark and a light variant.
 abstract final class BoldTheme {
   static const BoldPalette dark = BoldPalette(
     background: Color(0xFF0E0E11),
@@ -47,8 +104,39 @@ abstract final class BoldTheme {
     textMuted: Color(0xFF5F5F6A),
   );
 
+  /// Cyberpunk: near-black navy, cyan frames, yellow action buttons.
+  static const BoldPalette cyberDark = BoldPalette(
+    background: Color(0xFF08080F),
+    surface: Color(0xFF101020),
+    surfaceHigh: Color(0xFF16162A),
+    accent: Color(0xFFE8FF00),
+    onAccent: Color(0xFF08080F),
+    text: Color(0xFFF4F6FF),
+    textMuted: Color(0xFF9AA0B5),
+    neon: true,
+    neonA: Color(0xFF22D3EE),
+    neonB: Color(0xFFFF3DA6),
+    grid: Color(0x1422D3EE),
+  );
+
+  /// Cyberpunk light variant: paper lavender, black frames, hard offset shadows.
+  static const BoldPalette cyberLight = BoldPalette(
+    background: Color(0xFFEFEDF5),
+    surface: Color(0xFFFFFFFF),
+    surfaceHigh: Color(0xFFF5F3FA),
+    accent: Color(0xFFF2E600),
+    onAccent: Color(0xFF0B0B12),
+    text: Color(0xFF0B0B12),
+    textMuted: Color(0xFF5B5B6B),
+    neon: true,
+    neonA: Color(0xFF0B7285),
+    neonB: Color(0xFFC2185B),
+    grid: Color(0x1A0B0B12),
+  );
+
   static BoldPalette of(BuildContext context) =>
-      Theme.of(context).brightness == Brightness.dark ? dark : light;
+      Theme.of(context).extension<_PaletteExt>()?.palette ??
+      (Theme.of(context).brightness == Brightness.dark ? dark : light);
 
   /// Top-to-bottom gradients; the first colour is also the monogram background.
   static const List<List<Color>> tiles = [
@@ -64,6 +152,26 @@ abstract final class BoldTheme {
     [Color(0xFF0B5F69), Color(0xFF12747F)],
   ];
 
+  /// Neon frame colours of the cyber design, in the mock's rotation.
+  static const List<Color> neonTiles = [
+    Color(0xFF22D3EE),
+    Color(0xFFFF3DA6),
+    Color(0xFFE8FF00),
+    Color(0xFF3DFF7A),
+    Color(0xFFFF8A2B),
+    Color(0xFFA855F7),
+  ];
+
+  /// Darker frames for the light design, all >= 4.9:1 on white.
+  static const List<Color> neonTilesLight = [
+    Color(0xFF0E7490),
+    Color(0xFFC2185B),
+    Color(0xFF8A6D00),
+    Color(0xFF15803D),
+    Color(0xFFC2410C),
+    Color(0xFF7E22CE),
+  ];
+
   static const Map<String, String> countryCodes = {
     'Albania': 'AL',
     'Bosnia': 'BA',
@@ -77,6 +185,10 @@ abstract final class BoldTheme {
 
   /// Same name always gets the same tile, so colours stay put between launches.
   static List<Color> tileFor(String seed) => tiles[_hash(seed) % tiles.length];
+
+  /// Neon frame colour for the cyber design; same name, same colour.
+  static Color neonFor(String seed) =>
+      neonTiles[_hash(seed) % neonTiles.length];
 
   /// Two-letter monogram: "Radio Dunav" -> "RD", "Rock" -> "RO".
   static String monogram(String name) {
@@ -99,13 +211,15 @@ abstract final class BoldTheme {
 
   static ThemeData get darkTheme => _build(dark, Brightness.dark);
   static ThemeData get lightTheme => _build(light, Brightness.light);
+  static ThemeData get cyberDarkTheme => _build(cyberDark, Brightness.dark);
+  static ThemeData get cyberLightTheme => _build(cyberLight, Brightness.light);
 
   static ThemeData _build(BoldPalette p, Brightness brightness) {
     final scheme = ColorScheme(
       brightness: brightness,
       primary: p.accent,
       onPrimary: p.onAccent,
-      secondary: p.accent,
+      secondary: p.highlight,
       onSecondary: p.onAccent,
       error: brightness == Brightness.dark ? const Color(0xFFFF6B6B) : const Color(0xFFB3261E),
       onError: p.onAccent,
@@ -118,6 +232,7 @@ abstract final class BoldTheme {
       useMaterial3: true,
       colorScheme: scheme,
       scaffoldBackgroundColor: p.background,
+      extensions: [_PaletteExt(p)],
       appBarTheme: AppBarTheme(
         backgroundColor: p.background,
         foregroundColor: p.text,
@@ -132,4 +247,19 @@ abstract final class BoldTheme {
       dividerTheme: DividerThemeData(color: p.surfaceHigh, thickness: 1),
     );
   }
+}
+
+/// Carries the active design palette in the [ThemeData], so widgets only need
+/// [BoldTheme.of] instead of knowing which design is on.
+class _PaletteExt extends ThemeExtension<_PaletteExt> {
+  const _PaletteExt(this.palette);
+
+  final BoldPalette palette;
+
+  @override
+  _PaletteExt copyWith({BoldPalette? palette}) =>
+      _PaletteExt(palette ?? this.palette);
+
+  @override
+  _PaletteExt lerp(_PaletteExt? other, double t) => other ?? this;
 }

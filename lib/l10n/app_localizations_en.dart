@@ -217,6 +217,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get designClassic => 'Classic';
 
   @override
+  String get designCyber => 'Cyberpunk';
+
+  @override
   String get designBold => 'New look';
 
   @override

@@ -218,6 +218,9 @@ class AppLocalizationsMk extends AppLocalizations {
   String get designClassic => 'Класик';
 
   @override
+  String get designCyber => 'Cyberpunk';
+
+  @override
   String get designBold => 'Нов изглед';
 
   @override

@@ -218,6 +218,9 @@ class AppLocalizationsBg extends AppLocalizations {
   String get designClassic => 'Класичен';
 
   @override
+  String get designCyber => 'Cyberpunk';
+
+  @override
   String get designBold => 'Нов изглед';
 
   @override

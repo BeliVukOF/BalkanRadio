@@ -8,7 +8,7 @@ import '../widgets/mini_player.dart';
 import 'legal_screen.dart';
 
 /// Kept in sync with pubspec.yaml by a unit test (`about version matches pubspec`).
-const String appVersion = '1.1.9';
+const String appVersion = '1.2.0';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -40,14 +40,18 @@ class SettingsScreen extends StatelessWidget {
           _Section(
             title: l10n.titleDesign,
             children: [
-              for (final option in const ['classic', 'bold'])
+              for (final option in const ['classic', 'bold', 'cyber'])
                 ListTile(
-                  leading: Icon(
-                    option == 'classic'
-                        ? Icons.palette_outlined
-                        : Icons.bolt_outlined,
-                  ),
-                  title: Text(option == 'classic' ? l10n.designClassic : l10n.designBold),
+                  leading: Icon(switch (option) {
+                    'classic' => Icons.palette_outlined,
+                    'bold' => Icons.bolt_outlined,
+                    _ => Icons.grid_on,
+                  }),
+                  title: Text(switch (option) {
+                    'classic' => l10n.designClassic,
+                    'bold' => l10n.designBold,
+                    _ => l10n.designCyber,
+                  }),
                   trailing: provider.design == option ? const Icon(Icons.check) : null,
                   onTap: () => _guard(context, () => provider.setDesign(option)),
                 ),
@@ -150,9 +154,9 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
-      // The classic mini player's gradient ring clashes with the bold design,
+      // The classic mini player's gradient ring clashes with the newer designs,
       // which shows its own player on the home screen.
-      bottomNavigationBar: provider.design == 'bold' ? null : const MiniPlayer(),
+      bottomNavigationBar: provider.design == 'classic' ? const MiniPlayer() : null,
     );
   }
 
