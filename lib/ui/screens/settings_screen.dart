@@ -17,103 +17,121 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final provider = context.watch<RadioProvider>();
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.titleSettings)),
+      appBar: AppBar(
+        title: Text(l10n.titleSettings, style: const TextStyle(fontWeight: FontWeight.bold)),
+      ),
       body: ListView(
-        padding: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
         children: [
-          _SectionHeader(l10n.titleAppearance),
-          ListTile(
-            leading: const Icon(Icons.brightness_6_outlined),
-            title: Text(l10n.labelTheme),
-            subtitle: Text(_themeLabel(l10n, provider.themeMode)),
-            onTap: () => _pickTheme(context, provider),
+          _Section(
+            title: l10n.titleAppearance,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.brightness_6_outlined),
+                title: Text(l10n.labelTheme),
+                subtitle: Text(_themeLabel(l10n, provider.themeMode)),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _pickTheme(context, provider),
+              ),
+            ],
           ),
-
-          _SectionHeader(l10n.titleLanguage),
-          ListTile(
-            leading: const Icon(Icons.translate),
-            title: Text(l10n.labelSelectLanguage),
-            subtitle: Text(_languageLabel(l10n, provider.prefs.appLanguage)),
-            onTap: () => _pickLanguage(context, provider),
+          _Section(
+            title: l10n.titleLanguage,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.translate),
+                title: Text(l10n.labelSelectLanguage),
+                subtitle: Text(_languageLabel(l10n, provider.prefs.appLanguage)),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _pickLanguage(context, provider),
+              ),
+            ],
           ),
-
-          _SectionHeader(l10n.titleEnabledRegions),
-          for (final region in provider.availableRegions)
-            SwitchListTile(
-              title: Text(regionLabel(l10n, region)),
-              value: provider.prefs.isRegionEnabled(region),
-              onChanged: (value) async {
-                final ok = await provider.setRegionEnabled(region, value);
-                if (!ok && context.mounted) {
-                  _snack(context, l10n.msgKeepOneRegion);
-                }
-              },
-            ),
-
-          _SectionHeader(l10n.titlePerformance),
-          SwitchListTile(
-            title: Text(l10n.labelPowerSaving),
-            subtitle: Text(l10n.descPowerSaving),
-            value: provider.prefs.isPowerSavingEnabled,
-            onChanged: provider.setPowerSavingEnabled,
+          _Section(
+            title: l10n.titleEnabledRegions,
+            children: [
+              for (final region in provider.availableRegions)
+                SwitchListTile(
+                  title: Text(regionLabel(l10n, region)),
+                  value: provider.prefs.isRegionEnabled(region),
+                  onChanged: (value) async {
+                    final ok = await provider.setRegionEnabled(region, value);
+                    if (!ok && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(l10n.msgKeepOneRegion)),
+                      );
+                    }
+                  },
+                ),
+            ],
           ),
-
-          _SectionHeader(l10n.titleContent),
-          ListTile(
-            leading: const Icon(Icons.refresh),
-            title: Text(l10n.labelRefreshStations),
-            subtitle: Text(l10n.descRefreshStations),
-            onTap: () async {
-              final refreshed = await provider.loadStations();
-              if (!context.mounted) return;
-              _snack(
-                context,
-                refreshed
-                    ? l10n.msgStationsUpdated(provider.allStations.length)
-                    : l10n.msgStationsUpdateFailed,
-              );
-            },
+          _Section(
+            title: l10n.titlePerformance,
+            children: [
+              SwitchListTile(
+                title: Text(l10n.labelPowerSaving),
+                subtitle: Text(l10n.descPowerSaving),
+                value: provider.prefs.isPowerSavingEnabled,
+                onChanged: provider.setPowerSavingEnabled,
+              ),
+            ],
           ),
-
-          const Divider(height: 32),
-
-          ListTile(
-            leading: const Icon(Icons.privacy_tip_outlined),
-            title: Text(l10n.privacyPolicy),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => _openLegal(context, l10n.privacyPolicy, l10n.privacyBody),
+          _Section(
+            title: l10n.titleContent,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.refresh),
+                title: Text(l10n.labelRefreshStations),
+                subtitle: Text(l10n.descRefreshStations),
+                onTap: () async {
+                  final refreshed = await provider.loadStations();
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        refreshed
+                            ? l10n.msgStationsUpdated(provider.allStations.length)
+                            : l10n.msgStationsUpdateFailed,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-          ListTile(
-            leading: const Icon(Icons.description_outlined),
-            title: Text(l10n.termsOfService),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => _openLegal(context, l10n.termsOfService, l10n.termsBody),
+          _Section(
+            title: l10n.titleLegal,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.privacy_tip_outlined),
+                title: Text(l10n.privacyPolicy),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _openLegal(context, l10n.privacyPolicy, l10n.privacyBody),
+              ),
+              ListTile(
+                leading: const Icon(Icons.description_outlined),
+                title: Text(l10n.termsOfService),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _openLegal(context, l10n.termsOfService, l10n.termsBody),
+              ),
+            ],
           ),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: Text(l10n.titleAbout),
-            subtitle: Text(l10n.aboutVersion(_appVersion)),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Text(
-              l10n.navHeaderSubtitle,
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: scheme.onSurfaceVariant),
-            ),
+          _Section(
+            title: l10n.titleAbout,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: Text(l10n.navHeaderSubtitle),
+                subtitle: Text(l10n.aboutVersion(_appVersion)),
+              ),
+            ],
           ),
         ],
       ),
       bottomNavigationBar: const MiniPlayer(),
     );
-  }
-
-  void _snack(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _openLegal(BuildContext context, String title, String body) {
@@ -129,8 +147,7 @@ class SettingsScreen extends StatelessWidget {
         ThemeMode.system => l10n.themeSystem,
       };
 
-  static String _languageLabel(AppLocalizations l10n, String code) =>
-      switch (code) {
+  static String _languageLabel(AppLocalizations l10n, String code) => switch (code) {
         'system' => l10n.languageSystem,
         'sr' => l10n.langSerbian,
         'bs' => l10n.langBosnian,
@@ -153,9 +170,8 @@ class SettingsScreen extends StatelessWidget {
           for (final mode in ThemeMode.values)
             ListTile(
               title: Text(_themeLabel(l10n, mode)),
-              trailing: mode == provider.themeMode
-                  ? const Icon(Icons.check, semanticLabel: 'selected')
-                  : null,
+              selected: mode == provider.themeMode,
+              trailing: mode == provider.themeMode ? const Icon(Icons.check) : null,
               onTap: () => Navigator.pop(dialogContext, mode),
             ),
         ],
@@ -175,9 +191,9 @@ class SettingsScreen extends StatelessWidget {
           for (final code in codes)
             ListTile(
               title: Text(_languageLabel(l10n, code)),
-              trailing: code == provider.prefs.appLanguage
-                  ? const Icon(Icons.check, semanticLabel: 'selected')
-                  : null,
+              selected: code == provider.prefs.appLanguage,
+              trailing:
+                  code == provider.prefs.appLanguage ? const Icon(Icons.check) : null,
               onTap: () => Navigator.pop(dialogContext, code),
             ),
         ],
@@ -187,21 +203,44 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader(this.title);
+class _Section extends StatelessWidget {
+  const _Section({required this.title, required this.children});
 
   final String title;
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 4),
-      child: Text(
-        title,
-        style: theme.textTheme.titleSmall
-            ?.copyWith(color: theme.colorScheme.primary),
-      ),
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(6, 16, 6, 8),
+          child: Text(
+            title,
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: scheme.onSurfaceVariant,
+              letterSpacing: 0.6,
+            ),
+          ),
+        ),
+        Material(
+          color: scheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(20),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              for (var i = 0; i < children.length; i++) ...[
+                if (i > 0) Divider(height: 1, indent: 16, color: scheme.outlineVariant),
+                children[i],
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

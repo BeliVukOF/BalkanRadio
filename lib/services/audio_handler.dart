@@ -1,18 +1,31 @@
+import 'dart:async';
+
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../models/radio_station.dart';
 
+/// Starts the platform media service. Falls back to a plain handler (playback
+/// works, media notification does not) so the app can never be blocked by a
+/// service that refuses to start.
 Future<RadioAudioHandler> initAudioService() async {
-  return AudioService.init(
-    builder: RadioAudioHandler.new,
-    config: const AudioServiceConfig(
-      androidNotificationChannelId: 'com.belivuk.balkan_radio.channel.audio',
-      androidNotificationChannelName: 'Balkan Radio playback',
-      androidNotificationOngoing: true,
-      androidStopForegroundOnPause: true,
-    ),
-  );
+  try {
+    return await AudioService.init(
+      builder: RadioAudioHandler.new,
+      config: const AudioServiceConfig(
+        androidNotificationChannelId: 'com.belivuk.balkan_radio.channel.audio',
+        androidNotificationChannelName: 'Balkan Radio playback',
+        androidNotificationOngoing: false,
+        // Keeps the service in the foreground while paused, so resuming never
+        // hits ForegroundServiceStartNotAllowedException on Android 12+.
+        androidStopForegroundOnPause: false,
+      ),
+    ).timeout(const Duration(seconds: 8));
+  } catch (error, stack) {
+    debugPrint('AudioService unavailable, using local playback: $error\n$stack');
+    return RadioAudioHandler();
+  }
 }
 
 class RadioAudioHandler extends BaseAudioHandler {
@@ -21,6 +34,11 @@ class RadioAudioHandler extends BaseAudioHandler {
       (_) => playbackState.add(_state()),
       onError: (Object _) {},
     );
+    _player.processingStateStream.listen((state) {
+      if (state == ProcessingState.completed) {
+        mediaItem.add(null);
+      }
+    });
   }
 
   final AudioPlayer _player = AudioPlayer();
@@ -55,7 +73,8 @@ class RadioAudioHandler extends BaseAudioHandler {
     ));
     try {
       await _player.stop();
-      await _player.setUrl(station.streamUrl);
+      // A dead or blocked stream would otherwise buffer forever with no feedback.
+      await _player.setUrl(station.streamUrl).timeout(const Duration(seconds: 15));
       await _player.play();
     } catch (_) {
       mediaItem.add(null);

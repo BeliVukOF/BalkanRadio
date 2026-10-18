@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audio_service/audio_service.dart' show AudioProcessingState;
 import 'package:flutter/material.dart';
 
 import '../data/region_preferences.dart';
@@ -9,15 +10,16 @@ import '../models/radio_station.dart';
 import '../services/audio_handler.dart';
 
 class RadioProvider extends ChangeNotifier {
-  RadioProvider({required this.audioHandler}) {
+  RadioProvider() {
     _init();
   }
 
   final RegionPreferences prefs = RegionPreferences();
   final StationManager stationManager = StationManager();
-  final RadioAudioHandler audioHandler;
 
   final List<StreamSubscription<dynamic>> _subscriptions = [];
+  final Completer<void> _audioReady = Completer<void>();
+  RadioAudioHandler? _audio;
   List<RadioStation> _allStations = [];
   RadioStation? _currentStation;
   bool _isLoading = false;
@@ -39,10 +41,15 @@ class RadioProvider extends ChangeNotifier {
   RadioStation? get currentStation => _currentStation;
   bool get isLoading => _isLoading;
   String get searchQuery => _searchQuery;
-  bool get isPlaying => audioHandler.playbackState.value.playing;
+  bool get isPlaying => _audio?.playbackState.value.playing ?? false;
   List<String> get availableRegions => _regions;
   List<String> get enabledRegions =>
       _regions.where(prefs.isRegionEnabled).toList();
+
+  bool get isBuffering => switch (_audio?.playbackState.value.processingState) {
+        AudioProcessingState.loading || AudioProcessingState.buffering => true,
+        _ => false,
+      };
 
   ThemeMode get themeMode => switch (prefs.themeMode) {
         'light' => ThemeMode.light,
@@ -57,9 +64,21 @@ class RadioProvider extends ChangeNotifier {
   }
 
   Future<void> _init() async {
-    await RegionPreferences.init();
+    try {
+      await RegionPreferences.init();
+    } catch (_) {
+      // Unreadable preferences must not stop the app from opening.
+    }
 
-    _subscriptions.add(audioHandler.mediaItem.listen((item) {
+    unawaited(loadStations());
+
+    try {
+      _audio = await initAudioService();
+    } catch (_) {
+      _audio = RadioAudioHandler();
+    }
+
+    _subscriptions.add(_audio!.mediaItem.listen((item) {
       _currentStation = item == null
           ? null
           : _allStations.firstWhere(
@@ -72,12 +91,10 @@ class RadioProvider extends ChangeNotifier {
             );
       _notify();
     }));
+    _subscriptions.add(_audio!.playbackState.listen((_) => _notify()));
 
-    _subscriptions.add(
-      audioHandler.playbackState.listen((_) => _notify()),
-    );
-
-    await loadStations();
+    if (!_audioReady.isCompleted) _audioReady.complete();
+    _notify();
   }
 
   void _notify() {
@@ -147,8 +164,10 @@ class RadioProvider extends ChangeNotifier {
   Future<bool> playStation(RadioStation station) async {
     _currentStation = station;
     _notify();
+
+    await _audioReady.future;
     try {
-      await audioHandler.playStation(station);
+      await _audio!.playStation(station);
       return true;
     } catch (_) {
       _currentStation = null;
@@ -158,17 +177,19 @@ class RadioProvider extends ChangeNotifier {
   }
 
   Future<void> togglePlayPause() async {
+    await _audioReady.future;
     if (isPlaying) {
-      await audioHandler.pause();
+      await _audio!.pause();
     } else if (_currentStation != null) {
-      await audioHandler.play();
+      await _audio!.play();
     }
   }
 
   Future<void> stop() async {
     _currentStation = null;
-    await audioHandler.stop();
     _notify();
+    await _audioReady.future;
+    await _audio!.stop();
   }
 
   Future<void> toggleFavorite(RadioStation station) async {

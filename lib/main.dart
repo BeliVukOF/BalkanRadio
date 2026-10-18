@@ -3,17 +3,16 @@ import 'package:provider/provider.dart';
 
 import 'l10n/app_localizations.dart';
 import 'providers/radio_provider.dart';
-import 'services/audio_handler.dart';
 import 'ui/screens/region_selection_screen.dart';
 import 'ui/theme/app_theme.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  final audioHandler = await initAudioService();
-
+  // Nothing is awaited before runApp: the UI must appear even if audio
+  // service start-up hangs, which is what froze the app on the splash screen.
   runApp(
     ChangeNotifierProvider(
-      create: (_) => RadioProvider(audioHandler: audioHandler),
+      create: (_) => RadioProvider(),
       child: const BalkanRadioApp(),
     ),
   );

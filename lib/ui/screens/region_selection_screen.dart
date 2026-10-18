@@ -132,13 +132,18 @@ class RegionSelectionScreen extends StatelessWidget {
               runSpacing: 8,
               children: [
                 for (final region in provider.enabledRegions)
-                  ActionChip(
-                    label: Text(regionLabel(l10n, region)),
-                    labelStyle: TextStyle(color: scheme.onSurface),
-                    backgroundColor: scheme.surfaceContainer,
-                    side: BorderSide.none,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  FilledButton.tonal(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: scheme.surfaceContainer,
+                      foregroundColor: scheme.onSurface,
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                      minimumSize: const Size(0, 48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
                     onPressed: () => _open(context, RadioListScreen(region: region)),
+                    child: Text(regionLabel(l10n, region)),
                   ),
               ],
             ),

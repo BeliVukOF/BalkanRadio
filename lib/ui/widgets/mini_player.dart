@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../providers/radio_provider.dart';
+import '../screens/now_playing_screen.dart';
 import 'station_avatar.dart';
 
 class MiniPlayer extends StatelessWidget {
@@ -25,7 +26,13 @@ class MiniPlayer extends StatelessWidget {
         child: Material(
           color: scheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(24),
-          child: Padding(
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const NowPlayingScreen()),
+            ),
+            child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             child: Row(
               children: [
@@ -58,7 +65,8 @@ class MiniPlayer extends StatelessWidget {
                   icon: const Icon(Icons.stop_circle_outlined),
                   onPressed: provider.stop,
                 ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

@@ -16,7 +16,7 @@ class StationAvatar extends StatelessWidget {
   final double size;
   final bool active;
 
-  String get _initials {
+  static String initialsFor(String name) {
     final words = name.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty);
     if (words.isEmpty) return '?';
     return words.take(2).map((w) => w[0].toUpperCase()).join();
@@ -32,13 +32,13 @@ class StationAvatar extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: active ? AppTheme.accent : null,
-        color: active ? null : scheme.outlineVariant,
+        color: active ? null : scheme.outline,
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(shape: BoxShape.circle, color: scheme.surface),
         child: Center(
           child: Text(
-            _initials,
+            initialsFor(name),
             style: TextStyle(
               fontSize: size * 0.32,
               fontWeight: FontWeight.w700,

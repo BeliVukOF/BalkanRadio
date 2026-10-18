@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
-/// Circular play control. The gradient ring marks the station that is playing;
-/// idle rows keep a muted ring so the list has one clear focal point.
+/// Circular play control. The gradient ring marks the active station; idle rows
+/// get a filled, muted button so the list keeps one clear focal point.
 class GradientPlayButton extends StatelessWidget {
   const GradientPlayButton({
     super.key,
@@ -12,6 +12,7 @@ class GradientPlayButton extends StatelessWidget {
     required this.onPressed,
     this.size = 48,
     this.active = true,
+    this.buffering = false,
   });
 
   final bool playing;
@@ -19,6 +20,7 @@ class GradientPlayButton extends StatelessWidget {
   final VoidCallback onPressed;
   final double size;
   final bool active;
+  final bool buffering;
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +28,10 @@ class GradientPlayButton extends StatelessWidget {
     return Semantics(
       button: true,
       label: label,
+      excludeSemantics: true,
       child: Tooltip(
         message: label,
+        excludeFromSemantics: true,
         child: InkResponse(
           onTap: onPressed,
           radius: size / 2,
@@ -38,14 +42,25 @@ class GradientPlayButton extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: active ? AppTheme.accent : null,
-              color: active ? null : scheme.outlineVariant,
+              color: active ? null : scheme.surfaceContainerHighest,
             ),
             child: DecoratedBox(
               decoration: BoxDecoration(shape: BoxShape.circle, color: scheme.surface),
-              child: Icon(
-                playing ? Icons.pause : Icons.play_arrow,
-                color: active ? scheme.onSurface : scheme.onSurfaceVariant,
-                size: size * 0.5,
+              child: Center(
+                child: buffering
+                    ? SizedBox(
+                        width: size * 0.36,
+                        height: size * 0.36,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: scheme.onSurface,
+                        ),
+                      )
+                    : Icon(
+                        playing ? Icons.pause : Icons.play_arrow,
+                        color: active ? scheme.onSurface : scheme.onSurfaceVariant,
+                        size: size * 0.5,
+                      ),
               ),
             ),
           ),
