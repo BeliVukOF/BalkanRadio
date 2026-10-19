@@ -880,19 +880,29 @@ class BoldNavBar extends StatelessWidget {
   final List<String> labels;
   final ValueChanged<int> onSelect;
 
+  /// Abstract keeps the rounded set of its mock; every other design uses the
+  /// outlined set so the four items read as one family, and settings gets a
+  /// gear instead of a sun.
   static const List<IconData> _icons = [
+    Icons.radio_outlined,
+    Icons.public_outlined,
+    Icons.favorite_border_rounded,
+    Icons.settings_outlined,
+  ];
+
+  static const List<IconData> _abstractIcons = [
     Icons.radio_rounded,
     Icons.public_rounded,
     Icons.favorite_border_rounded,
-    // Fourth slot is only used by the Abstract bar (settings).
     Icons.wb_sunny_outlined,
   ];
 
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
+    final icons = palette.abstract ? _abstractIcons : _icons;
     final row = Row(
-      children: [for (var i = 0; i < labels.length; i++) _item(palette, i)],
+      children: [for (var i = 0; i < labels.length; i++) _item(palette, i, icons)],
     );
     if (palette.abstract) {
       return SafeArea(
@@ -908,7 +918,25 @@ class BoldNavBar extends StatelessWidget {
       );
     }
     if (!palette.modern) {
-      return SafeArea(top: false, child: SizedBox(height: 62, child: row));
+      // Cyber: the bar needs its own surface and a neon hairline, otherwise the
+      // grid shows through the labels and the items read as one long word.
+      return SafeArea(
+        top: false,
+        child: Container(
+          height: palette.neon ? 70 : 62,
+          decoration: BoxDecoration(
+            color: palette.neon ? palette.background : null,
+            border: palette.neon
+                ? Border(
+                    top: BorderSide(
+                      color: palette.neonA.withValues(alpha: 0.35),
+                    ),
+                  )
+                : null,
+          ),
+          child: row,
+        ),
+      );
     }
     // Modern: one floating glass pill, the active item in an outlined pill.
     return SafeArea(
@@ -928,13 +956,13 @@ class BoldNavBar extends StatelessWidget {
     );
   }
 
-  Widget _item(BoldPalette palette, int i) => Expanded(
+  Widget _item(BoldPalette palette, int i, List<IconData> icons) => Expanded(
         child: Padding(
           // 6 horizontal + a 20px radius keeps the outlined pill clear of the
           // bar's own hairline border, even with four items.
           padding: palette.modern
               ? const EdgeInsets.symmetric(vertical: 5, horizontal: 6)
-              : EdgeInsets.zero,
+              : EdgeInsets.symmetric(horizontal: palette.neon ? 4 : 0),
           child: DecoratedBox(
             decoration: BoxDecoration(
               // 23 = half of the 46px item; a larger radius overflows the pill.
@@ -967,15 +995,15 @@ class BoldNavBar extends StatelessWidget {
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Icon(
-                              _icons[i],
+                              icons[i],
                               size: 18,
                               color: i == index ? palette.onAccent : palette.text,
                             ),
                           )
                         else
                           Icon(
-                            _icons[i],
-                            size: palette.neon ? 19 : 22,
+                            icons[i],
+                            size: palette.neon ? 18 : 22,
                             color: i == index ? palette.highlight : palette.textMuted,
                           ),
                         const SizedBox(height: 4),
@@ -984,8 +1012,8 @@ class BoldNavBar extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: palette.neon ? 9.5 : (palette.abstract ? 10.5 : 10.5),
-                            letterSpacing: palette.neon ? 0.8 : 0,
+                            fontSize: palette.neon ? 9 : 10.5,
+                            letterSpacing: palette.neon ? 0.3 : 0,
                             fontFamily: palette.neon ? 'monospace' : null,
                             fontWeight: palette.neon || i == index
                                 ? FontWeight.w700
@@ -995,6 +1023,14 @@ class BoldNavBar extends StatelessWidget {
                                 : (i == index ? palette.highlight : palette.textMuted),
                           ),
                         ),
+                        if (palette.neon) ...[
+                          const SizedBox(height: 3),
+                          Container(
+                            width: i == index ? 18 : 0,
+                            height: 2,
+                            color: palette.highlight,
+                          ),
+                        ],
                       ],
                     ),
                   ),
