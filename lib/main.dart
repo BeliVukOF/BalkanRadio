@@ -47,6 +47,14 @@ class BalkanRadioApp extends StatelessWidget {
       // opaque black slab under the app instead of showing its backdrop.
       builder: (context, child) {
         final dark = Theme.of(context).brightness == Brightness.dark;
+        // Power saving: tell every animation (logo pulse, transitions) to stop.
+        final reduceMotion = context.watch<RadioProvider>().prefs.isPowerSavingEnabled;
+        final content = reduceMotion
+            ? MediaQuery(
+                data: MediaQuery.of(context).copyWith(disableAnimations: true),
+                child: child!,
+              )
+            : child!;
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
@@ -56,7 +64,7 @@ class BalkanRadioApp extends StatelessWidget {
             systemNavigationBarContrastEnforced: false,
             systemStatusBarContrastEnforced: false,
           ),
-          child: child!,
+          child: content,
         );
       },
       home: const BoldHome(),

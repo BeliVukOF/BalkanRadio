@@ -7,7 +7,7 @@ import '../region_labels.dart';
 import 'legal_screen.dart';
 
 /// Kept in sync with pubspec.yaml by a unit test (`about version matches pubspec`).
-const String appVersion = '1.3.9';
+const String appVersion = '1.3.4';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -98,7 +98,6 @@ class SettingsScreen extends StatelessWidget {
             children: [
               SwitchListTile(
                 title: Text(l10n.labelPowerSaving),
-                subtitle: Text(l10n.descPowerSaving),
                 value: provider.prefs.isPowerSavingEnabled,
                 onChanged: (value) =>
                     _guard(context, () => provider.setPowerSavingEnabled(value)),

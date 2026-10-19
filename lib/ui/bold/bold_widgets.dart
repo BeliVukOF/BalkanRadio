@@ -819,19 +819,33 @@ class SleepChip extends StatefulWidget {
 }
 
 class SleepChipState extends State<SleepChip> {
+  RadioProvider? _provider;
   Timer? _tick;
 
   @override
   void initState() {
     super.initState();
-    // Only redraws while a timer is armed, so the chip counts down live.
-    _tick = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (context.read<RadioProvider>().sleepActive) setState(() {});
-    });
+    // No per-second wake-up while nothing is armed: the ticker only exists
+    // between arming the sleep timer and cancelling it.
+    _provider = context.read<RadioProvider>()..addListener(_syncTicker);
+    _syncTicker();
+  }
+
+  void _syncTicker() {
+    final armed = _provider?.sleepActive ?? false;
+    if (armed && _tick == null) {
+      _tick = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (mounted) setState(() {});
+      });
+    } else if (!armed && _tick != null) {
+      _tick!.cancel();
+      _tick = null;
+    }
   }
 
   @override
   void dispose() {
+    _provider?.removeListener(_syncTicker);
     _tick?.cancel();
     super.dispose();
   }

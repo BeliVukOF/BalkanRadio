@@ -60,14 +60,20 @@ class BoldPalette {
   /// Backdrop gradient, top-left to bottom-right; null keeps a flat background.
   final List<Color>? backdrop;
 
-  /// Card colour: frosted glass over the modern backdrop, raised surface else.
+  /// Card colour: sanded glass over the modern backdrop, raised surface else.
+  /// Translucent enough that the gradient reads through every pill.
   Color get glass => modern
-      ? surface.withValues(alpha: brightness == Brightness.dark ? 0.5 : 0.8)
+      ? surface.withValues(alpha: brightness == Brightness.dark ? 0.38 : 0.62)
       : surface;
 
-  /// The mocks draw no frames: modern surfaces read as soft glass, so the fill
-  /// and the backdrop do the work instead of a visible box.
-  Border? get glassFrame => null;
+  /// Hairline rim that makes the frosted pill read as a pane of glass.
+  Border? get glassFrame => modern
+      ? Border.all(
+          color: Colors.white.withValues(
+            alpha: brightness == Brightness.dark ? 0.14 : 0.55,
+          ),
+        )
+      : null;
 
   /// Gradient of play buttons and the player artwork; null = flat accent.
   List<Color>? get playGradient => modern

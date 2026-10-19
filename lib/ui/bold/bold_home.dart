@@ -122,7 +122,10 @@ class _BoldHomeState extends State<BoldHome> {
             // Mock: tapping the magnifier replaces the title with a back arrow
             // plus a full-width field — one cross-fade, no dead space.
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
+              // Power saving skips the cross-fade entirely.
+              duration: context.read<RadioProvider>().prefs.isPowerSavingEnabled
+                  ? Duration.zero
+                  : const Duration(milliseconds: 200),
               // The default layout centres its child; keep both states left.
               layoutBuilder: (current, previous) => Stack(
                 alignment: Alignment.centerLeft,
@@ -284,13 +287,10 @@ class _BoldHomeState extends State<BoldHome> {
                     ),
                   ),
                 )
-              // Mock: the card hugs its rows instead of stretching over the
-              // whole screen when a region holds only a few stations.
-              : SingleChildScrollView(
-                  child: _listCard(
+              // The card is a fixed panel: it always fills the space between
+              // the chips and the mini player, and the rows scroll inside it.
+              : _listCard(
                     ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
                       padding: EdgeInsets.fromLTRB(
                         BoldTheme.of(context).modern ? 14 : 20,
                         BoldTheme.of(context).modern ? 6 : 4,
@@ -317,7 +317,6 @@ class _BoldHomeState extends State<BoldHome> {
                       },
                     ),
                   ),
-                ),
         ),
       ],
     );
