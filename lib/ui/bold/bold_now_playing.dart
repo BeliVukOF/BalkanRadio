@@ -93,12 +93,14 @@ class BoldNowPlaying extends StatelessWidget {
                   ),
                 )
               else ...[
+                const SizedBox(height: 12),
                 SizedBox(
                   width: artSide,
                   height: artSide,
                   child: _artwork(context, station, artSide),
                 ),
-                const SizedBox(height: 24),
+                // Mock: a wider breath under the card before the info block.
+                const SizedBox(height: 32),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -106,7 +108,7 @@ class BoldNowPlaying extends StatelessWidget {
                     const SleepChip(),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: palette.neon
@@ -129,7 +131,7 @@ class BoldNowPlaying extends StatelessWidget {
                           ),
                         ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -269,22 +271,26 @@ class BoldNowPlaying extends StatelessWidget {
               ),
             ),
             Center(
-              child: BoldMonogram(
-                name: station.name,
-                // Mock: the logo circle is ~38% of the card, not two thirds.
-                size: side * 0.38,
-                radius: side * 0.19,
+              child: PulseLogo(
+                child: BoldMonogram(
+                  name: station.name,
+                  // Mock: the logo circle is about a third of the card.
+                  size: side * 0.34,
+                  radius: side * 0.17,
+                ),
               ),
             ),
           ],
         ),
       );
     }
-    return BoldMonogram(
-      name: station.name,
-      size: side,
-      radius: 40,
-      rings: true,
+    return PulseLogo(
+      child: BoldMonogram(
+        name: station.name,
+        size: side,
+        radius: 40,
+        rings: true,
+      ),
     );
   }
 

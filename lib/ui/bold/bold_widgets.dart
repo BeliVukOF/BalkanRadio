@@ -179,8 +179,8 @@ class BoldMonogram extends StatelessWidget {
           boxShadow: palette.brightness == Brightness.dark
               ? [
                   BoxShadow(
-                    color: neonColor.withValues(alpha: 0.36),
-                    blurRadius: 22,
+                    color: neonColor.withValues(alpha: 0.28),
+                    blurRadius: 14,
                   ),
                 ]
               : palette.shadow,
@@ -199,7 +199,7 @@ class BoldMonogram extends StatelessWidget {
                 style: TextStyle(
                   color: neonColor,
                   fontWeight: FontWeight.w800,
-                  fontSize: size * (rings ? 0.26 : 0.30),
+                  fontSize: size * (rings ? 0.22 : 0.30),
                   letterSpacing: 1,
                 ),
               ),
@@ -233,7 +233,7 @@ class BoldMonogram extends StatelessWidget {
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w800,
-                fontSize: size * (rings ? 0.26 : 0.30),
+                fontSize: size * (rings ? 0.22 : 0.30),
                 letterSpacing: 0.5,
                 // The Classic mock sets the monogram in a serif face.
                 fontFamily: palette.modern ? null : 'serif',
@@ -243,6 +243,40 @@ class BoldMonogram extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Gentle breathing scale for the player logo.
+class PulseLogo extends StatefulWidget {
+  const PulseLogo({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  State<PulseLogo> createState() => _PulseLogoState();
+}
+
+class _PulseLogoState extends State<PulseLogo>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1600),
+  )..repeat(reverse: true);
+
+  late final Animation<double> _scale = Tween<double>(begin: 1, end: 1.035)
+      .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Honour the system "remove animations" accessibility setting.
+    if (MediaQuery.disableAnimationsOf(context)) return widget.child;
+    return ScaleTransition(scale: _scale, child: widget.child);
   }
 }
 
