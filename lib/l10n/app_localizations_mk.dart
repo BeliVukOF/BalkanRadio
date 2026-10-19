@@ -159,7 +159,7 @@ class AppLocalizationsMk extends AppLocalizations {
 
   @override
   String get favoritesEmpty =>
-      'Сè уште нема омилени. Допрете ѕвездичката кај станицата за да ја додадете.';
+      'Сè уште нема омилени. Допрете го срцето кај станицата за да ја додадете.';
 
   @override
   String get msgKeepOneRegion => 'Мора да остане овозможен барем еден регион.';

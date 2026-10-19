@@ -159,7 +159,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get favoritesEmpty =>
-      'Δεν υπάρχουν αγαπημένα ακόμη. Πατήστε το αστέρι δίπλα σε έναν σταθμό για να τον προσθέσετε.';
+      'Δεν υπάρχουν αγαπημένα ακόμη. Πατήστε την καρδιά δίπλα σε έναν σταθμό για να τον προσθέσετε.';
 
   @override
   String get msgKeepOneRegion =>

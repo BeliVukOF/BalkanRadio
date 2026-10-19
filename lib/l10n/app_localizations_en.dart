@@ -159,7 +159,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get favoritesEmpty =>
-      'No favorites yet. Tap the star next to a station to add it.';
+      'No favorites yet. Tap the heart next to a station to add it.';
 
   @override
   String get msgKeepOneRegion => 'At least one region must stay enabled.';

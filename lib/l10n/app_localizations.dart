@@ -403,7 +403,7 @@ abstract class AppLocalizations {
   /// No description provided for @favoritesEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No favorites yet. Tap the star next to a station to add it.'**
+  /// **'No favorites yet. Tap the heart next to a station to add it.'**
   String get favoritesEmpty;
 
   /// No description provided for @msgKeepOneRegion.

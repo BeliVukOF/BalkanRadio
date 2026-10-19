@@ -159,7 +159,7 @@ class AppLocalizationsBg extends AppLocalizations {
 
   @override
   String get favoritesEmpty =>
-      'Все още няма любими. Докоснете звездата до станция, за да я добавите.';
+      'Все още няма любими. Докоснете сърцето до станция, за да я добавите.';
 
   @override
   String get msgKeepOneRegion => 'Поне един регион трябва да остане активиран.';

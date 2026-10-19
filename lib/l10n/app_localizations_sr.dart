@@ -158,7 +158,7 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get favoritesEmpty =>
-      'Još nema omiljenih. Dodirni zvezdicu pored stanice da je dodaš.';
+      'Još nema omiljenih. Dodirni srce pored stanice da je dodaš.';
 
   @override
   String get msgKeepOneRegion => 'Mora ostati omogućen bar jedan region.';

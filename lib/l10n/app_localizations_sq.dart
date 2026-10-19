@@ -159,7 +159,7 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get favoritesEmpty =>
-      'Nuk ka të preferuara ende. Prekni yllin pranë një stacioni për ta shtuar.';
+      'Nuk ka të preferuara ende. Prekni zemrën pranë një stacioni për ta shtuar.';
 
   @override
   String get msgKeepOneRegion =>
