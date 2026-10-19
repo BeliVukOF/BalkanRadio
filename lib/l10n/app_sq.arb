@@ -48,7 +48,7 @@
   "languageSystem": "Gjuha e sistemit",
   "searchHint": "Kërko stacione ose rajone",
   "noStationsFound": "Nuk u gjetën stacione",
-  "favoritesEmpty": "Nuk ka të preferuara ende. Prekni yllin pranë një stacioni për ta shtuar.",
+  "favoritesEmpty": "Nuk ka të preferuara ende. Prekni zemrën pranë një stacioni për ta shtuar.",
   "msgKeepOneRegion": "Duhet të mbetet të paktën një rajon i aktivizuar.",
   "msgPlayError": "Nuk mund të luhet ky stacion.",
   "titleAllStations": "Të gjitha stacionet",

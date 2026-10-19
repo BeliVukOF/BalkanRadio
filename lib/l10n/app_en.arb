@@ -59,7 +59,7 @@
   "languageSystem": "System language",
   "searchHint": "Search stations or regions",
   "noStationsFound": "No stations found",
-  "favoritesEmpty": "No favorites yet. Tap the star next to a station to add it.",
+  "favoritesEmpty": "No favorites yet. Tap the heart next to a station to add it.",
   "msgKeepOneRegion": "At least one region must stay enabled.",
   "msgPlayError": "Could not play this station.",
   "titleAllStations": "All stations",

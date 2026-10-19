@@ -48,7 +48,7 @@
   "languageSystem": "Jezik sistema",
   "searchHint": "Pretraži stanice ili regione",
   "noStationsFound": "Nema pronađenih stanica",
-  "favoritesEmpty": "Još nema omiljenih. Dodirni zvezdicu pored stanice da je dodaš.",
+  "favoritesEmpty": "Još nema omiljenih. Dodirni srce pored stanice da je dodaš.",
   "msgKeepOneRegion": "Mora ostati omogućen bar jedan region.",
   "msgPlayError": "Nije moguće pustiti ovu stanicu.",
   "titleAllStations": "Sve stanice",
