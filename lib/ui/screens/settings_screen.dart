@@ -7,7 +7,7 @@ import '../region_labels.dart';
 import 'legal_screen.dart';
 
 /// Kept in sync with pubspec.yaml by a unit test (`about version matches pubspec`).
-const String appVersion = '1.3.8';
+const String appVersion = '1.3.9';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
