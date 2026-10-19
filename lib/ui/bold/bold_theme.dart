@@ -18,6 +18,7 @@ class BoldPalette {
     required this.textMuted,
     this.neon = false,
     this.modern = false,
+    this.abstract = false,
     Color? neonA,
     Color? neonB,
     Color? grid,
@@ -56,6 +57,10 @@ class BoldPalette {
 
   /// True for the Modern design: gradient backdrop, glass cards, gradient orbs.
   final bool modern;
+
+  /// True for the Abstract design: flat Bauhaus surfaces, three fixed accents
+  /// and hairline dividers instead of cards.
+  final bool abstract;
 
   /// Backdrop gradient, top-left to bottom-right; null keeps a flat background.
   final List<Color>? backdrop;
@@ -125,7 +130,19 @@ class BoldPalette {
   }
 }
 
-/// Palettes for the two designs, each in a dark and a light variant.
+/// Fixed accent colours of the Abstract design: they do not change with the
+/// theme, only the surfaces around them do.
+abstract final class AbstractColors {
+  static const blue = Color(0xFF2B4AF2);
+  static const coral = Color(0xFFF25B3B);
+  static const yellow = Color(0xFFF3B71C);
+  static const cream = Color(0xFFF2EDE2);
+  static const ink = Color(0xFF1E1E1E);
+  static const pink = Color(0xFFF27DA0);
+  static const green = Color(0xFF2FA36B);
+}
+
+/// Palettes for the designs, each in a dark and a light variant.
 abstract final class BoldTheme {
   static const BoldPalette dark = BoldPalette(
     background: Color(0xFF0E0E11),
@@ -282,12 +299,38 @@ abstract final class BoldTheme {
     return hash;
   }
 
+  /// Abstract design: cream page with fixed yellow/coral/blue accents.
+  static const BoldPalette abstractLight = BoldPalette(
+    background: Color(0xFFF2EDE2),
+    surface: Color(0xFFE6E0D2),
+    surfaceHigh: Color(0xFFDFD9CA),
+    accent: AbstractColors.yellow,
+    onAccent: Color(0xFF141414),
+    text: Color(0xFF1C1B18),
+    textMuted: Color(0xFF8A857A),
+    abstract: true,
+  );
+
+  /// Abstract dark: the same accents on a warm near-black page.
+  static const BoldPalette abstractDark = BoldPalette(
+    background: Color(0xFF121212),
+    surface: Color(0xFF232323),
+    surfaceHigh: Color(0xFF2A2A2A),
+    accent: AbstractColors.yellow,
+    onAccent: Color(0xFF141414),
+    text: Color(0xFFF2EDE2),
+    textMuted: Color(0xFF9B968C),
+    abstract: true,
+  );
+
   static ThemeData get darkTheme => _build(dark, Brightness.dark);
   static ThemeData get lightTheme => _build(light, Brightness.light);
   static ThemeData get cyberDarkTheme => _build(cyberDark, Brightness.dark);
   static ThemeData get cyberLightTheme => _build(cyberLight, Brightness.light);
   static ThemeData get modernDarkTheme => _build(modernDark, Brightness.dark);
   static ThemeData get modernLightTheme => _build(modernLight, Brightness.light);
+  static ThemeData get abstractDarkTheme => _build(abstractDark, Brightness.dark);
+  static ThemeData get abstractLightTheme => _build(abstractLight, Brightness.light);
 
   static ThemeData _build(BoldPalette p, Brightness brightness) {
     final scheme = ColorScheme(

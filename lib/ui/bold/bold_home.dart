@@ -7,6 +7,7 @@ import '../../providers/radio_provider.dart';
 import '../region_labels.dart';
 import '../screens/settings_screen.dart';
 import 'bold_now_playing.dart';
+import 'abstract.dart';
 import 'bold_theme.dart';
 import 'bold_widgets.dart';
 
@@ -22,7 +23,6 @@ class BoldHome extends StatefulWidget {
 class _BoldHomeState extends State<BoldHome> {
   int _tab = 0;
   String? _region;
-  bool _searching = false;
   final TextEditingController _search = TextEditingController();
 
   @override
@@ -94,8 +94,20 @@ class _BoldHomeState extends State<BoldHome> {
               ),
             BoldNavBar(
               index: _tab,
-              labels: [l10n.titleAllStations, l10n.menuAllRegions, l10n.menuFavorites],
-              onSelect: (index) => setState(() => _tab = index),
+              labels: [
+                l10n.titleAllStations,
+                l10n.menuAllRegions,
+                l10n.menuFavorites,
+                l10n.titleSettings,
+              ],
+              onSelect: (index) {
+                // Fourth slot is settings in every design.
+                if (index == 3) {
+                  _openSettings();
+                  return;
+                }
+                setState(() => _tab = index);
+              },
             ),
           ],
         ),
@@ -104,126 +116,61 @@ class _BoldHomeState extends State<BoldHome> {
     );
   }
 
-  /// Closing search leaves no query behind and drops the keyboard.
-  void _closeSearch() {
-    FocusScope.of(context).unfocus();
-    _search.clear();
-    context.read<RadioProvider>().setSearchQuery('');
-    setState(() => _searching = false);
-  }
-
   Widget _header(AppLocalizations l10n, {required bool showSearch}) {
+    final palette = BoldTheme.of(context);
+    final abstract = palette.abstract;
+    final rawEyebrow = abstract ? l10n.appName : l10n.navHeaderSubtitle;
+    final eyebrow = palette.neon ? '// ${rawEyebrow.toUpperCase()}' : rawEyebrow;
+    final title = switch (_tab) {
+      1 => l10n.menuAllRegions,
+      2 => l10n.menuFavorites,
+      _ => abstract ? l10n.titleAllStations : l10n.appName,
+    };
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-      child: Row(
+      padding: EdgeInsets.fromLTRB(abstract ? 20 : 20, abstract ? 18 : 12, 20, 0),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            // Mock: tapping the magnifier replaces the title with a back arrow
-            // plus a full-width field — one cross-fade, no dead space.
-            child: AnimatedSwitcher(
-              // Power saving skips the cross-fade entirely.
-              duration: context.read<RadioProvider>().prefs.isPowerSavingEnabled
-                  ? Duration.zero
-                  : const Duration(milliseconds: 200),
-              // The default layout centres its child; keep both states left.
-              layoutBuilder: (current, previous) => Stack(
-                alignment: Alignment.centerLeft,
-                children: [...previous, if (current != null) current],
-              ),
-              switchInCurve: Curves.easeOutCubic,
-              switchOutCurve: Curves.easeInCubic,
-              transitionBuilder: (child, animation) => FadeTransition(
-                opacity: animation,
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0.12, 0),
-                    end: Offset.zero,
-                  ).animate(animation),
-                  child: child,
-                ),
-              ),
-              child: _searching
-                  ? Row(
-                      key: const ValueKey('search'),
-                      children: [
-                        BoldOrb(
-                          icon: Icons.arrow_back_rounded,
-                          tooltip: l10n.contentDescriptionBack,
-                          size: 46,
-                          onPressed: _closeSearch,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _SearchField(
-                            controller: _search,
-                            hint: l10n.searchHint,
-                            onChanged: context.read<RadioProvider>().setSearchQuery,
-                          ),
-                        ),
-                      ],
-                    )
-                  : Column(
-                      key: const ValueKey('title'),
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 6),
-                        if (BoldTheme.of(context).neon) ...[
-                          Text(
-                            '// ${l10n.navHeaderSubtitle.toUpperCase()}',
-                            style: TextStyle(
-                              color: BoldTheme.of(context).neonA,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 2.5,
-                              fontFamily: 'monospace',
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          GlitchTitle(
-                            text: l10n.appName.toUpperCase(),
-                            palette: BoldTheme.of(context),
-                          ),
-                        ] else ...[
-                          Text(
-                            l10n.navHeaderSubtitle,
-                            style: TextStyle(color: BoldTheme.of(context).textMuted, fontSize: 13),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.appName,
-                            style: TextStyle(
-                              color: BoldTheme.of(context).text,
-                              fontSize: 34,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: -1,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
+          Text(
+            abstract ? eyebrow.toUpperCase() : eyebrow,
+            style: TextStyle(
+              color: palette.neon ? palette.neonA : palette.textMuted,
+              fontSize: abstract ? 11 : (palette.neon ? 12 : 13),
+              fontWeight: palette.neon || abstract ? FontWeight.w700 : null,
+              letterSpacing: abstract ? 2.2 : (palette.neon ? 2.5 : 0),
+              fontFamily: palette.neon ? 'monospace' : null,
             ),
           ),
-          if (showSearch && !_searching) ...[
-            const SizedBox(width: 12),
-            Column(
-              children: [
-                BoldOrb(
-                  icon: Icons.settings_outlined,
-                  tooltip: l10n.actionSettings,
-                  size: 42,
-                  onPressed: _openSettings,
-                ),
-                const SizedBox(height: 8),
-                BoldOrb(
-                  icon: Icons.search_rounded,
-                  tooltip: l10n.searchHint,
-                  size: 42,
-                  onPressed: () => setState(() => _searching = true),
-                ),
-              ],
+          const SizedBox(height: 6),
+          if (palette.neon)
+            GlitchTitle(
+              text: title.toUpperCase(),
+              palette: palette,
+              fontSize: 28,
+            )
+          else
+            Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: palette.text,
+                fontSize: 34,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -1,
+              ),
+            ),
+          if (showSearch) ...[
+            const SizedBox(height: 16),
+            _SearchField(
+              controller: _search,
+              hint: l10n.searchHint,
+              onChanged: context.read<RadioProvider>().setSearchQuery,
+              autofocus: false,
             ),
           ],
+          const SizedBox(height: 12),
         ],
       ),
     );
@@ -265,7 +212,7 @@ class _BoldHomeState extends State<BoldHome> {
       children: [
         _header(l10n, showSearch: true),
         const SizedBox(height: 12),
-        if (!favoritesOnly && !_searching) _chips(provider, l10n),
+        if (!favoritesOnly) _chips(provider, l10n),
         const SizedBox(height: 8),
         if (provider.isLoading)
           Padding(
@@ -279,12 +226,17 @@ class _BoldHomeState extends State<BoldHome> {
           child: stations.isEmpty
               ? Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Text(
-                      favoritesOnly ? l10n.favoritesEmpty : l10n.noStationsFound,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: BoldTheme.of(context).textMuted, fontSize: 16),
-                    ),
+                    padding: const EdgeInsets.all(24),
+                    child: BoldTheme.of(context).abstract && favoritesOnly
+                        ? _abstractEmptyFavorites(l10n)
+                        : Text(
+                            favoritesOnly ? l10n.favoritesEmpty : l10n.noStationsFound,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: BoldTheme.of(context).textMuted,
+                              fontSize: 16,
+                            ),
+                          ),
                   ),
                 )
               // The card is a fixed panel: it always fills the space between
@@ -323,6 +275,54 @@ class _BoldHomeState extends State<BoldHome> {
   }
 
   /// Modern draws the station rows on one frosted card, like the mock.
+  /// Favourites, empty: the dashed hint card of the mock.
+  Widget _abstractEmptyFavorites(AppLocalizations l10n) {
+    final palette = BoldTheme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: palette.textMuted.withValues(alpha: .6),
+          width: 1.4,
+        ),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 44,
+            height: 44,
+            child: ClipOval(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  const ColoredBox(color: AbstractColors.green),
+                  Center(
+                    child: Container(
+                      width: 14,
+                      height: 14,
+                      decoration: const BoxDecoration(
+                        color: AbstractColors.pink,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              l10n.favoritesEmpty,
+              style: TextStyle(color: palette.text, fontSize: 14, height: 1.35),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _listCard(Widget list) {
     final palette = BoldTheme.of(context);
     if (!palette.modern) return list;
@@ -375,21 +375,27 @@ class _SearchField extends StatelessWidget {
     required this.controller,
     required this.hint,
     required this.onChanged,
+    this.autofocus = true,
   });
 
   final TextEditingController controller;
   final String hint;
   final ValueChanged<String> onChanged;
 
+  /// The field now lives in the header permanently, so it must not grab focus
+  /// on launch and pop the keyboard.
+  final bool autofocus;
+
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
     final field = TextField(
       controller: controller,
-      autofocus: true,
+      autofocus: autofocus,
       style: TextStyle(
         color: palette.text,
-        fontSize: 18,
+        // Neon is monospace and roomy: 18px cuts the hint off at the frame.
+        fontSize: palette.neon ? 14 : 17,
         fontFamily: palette.neon ? 'monospace' : null,
       ),
       cursorColor: palette.accent,
@@ -436,6 +442,38 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
+    if (palette.abstract) {
+      return Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: Material(
+          color: selected ? palette.accent : Colors.transparent,
+          borderRadius: BorderRadius.circular(999),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Container(
+              height: 36,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(999),
+                border: selected
+                    ? null
+                    : Border.all(color: palette.text.withValues(alpha: .35)),
+              ),
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: selected ? palette.onAccent : palette.text,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     final gradient = selected ? palette.chipGradient : null;
     return Padding(
       padding: const EdgeInsets.only(right: 10),
@@ -471,7 +509,9 @@ class _Chip extends StatelessWidget {
             child: InkWell(
               onTap: onTap,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(
+                  horizontal: palette.neon ? 14 : 20,
+                ),
                 child: Center(
                   child: Text(
                     palette.neon ? label.toUpperCase() : label,
@@ -480,8 +520,8 @@ class _Chip extends StatelessWidget {
                           ? Colors.white
                           : (selected ? palette.onAccent : palette.text),
                       fontWeight: palette.neon ? FontWeight.w700 : FontWeight.w600,
-                      fontSize: palette.neon ? 13 : 15,
-                      letterSpacing: palette.neon ? 1.5 : 0,
+                      fontSize: palette.neon ? 12 : 14,
+                      letterSpacing: palette.neon ? 1 : 0,
                       fontFamily: palette.neon ? 'monospace' : null,
                     ),
                   ),
@@ -506,6 +546,54 @@ class _CountryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
+    if (palette.abstract) {
+      return LayoutBuilder(
+        builder: (context, box) {
+          final w = box.maxWidth;
+          return Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: onTap,
+              child: Stack(
+                children: [
+                  // Square art, cropped by the tile: keeps the motif readable.
+                  Positioned(
+                    left: 0,
+                    top: 0,
+                    child: AbstractArtwork(name: region, size: w, radius: 0),
+                  ),
+                  Positioned(
+                    left: 0,
+                    bottom: 12,
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(12, 6, 14, 6),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.horizontal(
+                          right: Radius.circular(999),
+                        ),
+                      ),
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AbstractColors.ink,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
     final code = BoldTheme.countryCodes[region] ?? region.substring(0, 2).toUpperCase();
     final neon = palette.neon;
     final glass = palette.modern;

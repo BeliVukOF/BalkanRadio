@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/radio_station.dart';
 import '../../providers/radio_provider.dart';
 import '../region_labels.dart';
+import 'abstract.dart';
 import 'bold_theme.dart';
 import 'bold_widgets.dart';
 
@@ -29,6 +30,10 @@ class BoldNowPlaying extends StatelessWidget {
     final palette = BoldTheme.of(context);
     final station = provider.currentStation;
     final favorite = station != null && provider.prefs.isStationFavorite(station.streamUrl);
+
+    if (palette.abstract) {
+      return _abstractPlayer(context, provider, l10n, palette, station, favorite);
+    }
 
     return Scaffold(
       backgroundColor: palette.background,
@@ -237,6 +242,217 @@ class BoldNowPlaying extends StatelessWidget {
                 ),
                 SizedBox(height: bottomGap),
               ],
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Abstract player: flat cream/near-black page, ink or cream circle buttons,
+  /// the blue signal artwork and one coral action.
+  Widget _abstractPlayer(
+    BuildContext context,
+    RadioProvider provider,
+    AppLocalizations l10n,
+    BoldPalette palette,
+    RadioStation? station,
+    bool favorite,
+  ) {
+    const cream = AbstractColors.cream;
+    const ink = AbstractColors.ink;
+    const coral = AbstractColors.coral;
+    final dark = palette.brightness == Brightness.dark;
+    final circleBg = dark ? cream : ink;
+    final circleFg = dark ? ink : cream;
+
+    Widget circle(IconData icon, VoidCallback onTap, {double size = 46, double iconSize = 22}) =>
+        SizedBox(
+          width: size,
+          height: size,
+          child: Material(
+            color: circleBg,
+            shape: const CircleBorder(),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: onTap,
+              child: Icon(icon, size: iconSize, color: circleFg),
+            ),
+          ),
+        );
+
+    return Scaffold(
+      backgroundColor: palette.background,
+      body: NeonBackdrop(
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, box) {
+              final h = box.maxHeight;
+              final side = math.min(box.maxWidth - 64, h * 0.36);
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        circle(Icons.keyboard_arrow_down_rounded, () => Navigator.of(context).pop()),
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                              l10n.labelNowPlaying.toUpperCase(),
+                              style: TextStyle(
+                                color: palette.text,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 2.2,
+                              ),
+                            ),
+                          ),
+                        ),
+                        circle(Icons.more_horiz_rounded, () {
+                          provider.stop();
+                          Navigator.of(context).pop();
+                        }),
+                      ],
+                    ),
+                    const SizedBox(height: 26),
+                    if (station == null)
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            l10n.nowPlayingDefault,
+                            style: TextStyle(color: palette.textMuted, fontSize: 16),
+                          ),
+                        ),
+                      )
+                    else ...[
+                      Center(
+                        child: PulseLogo(
+                          child: AbstractArtwork(
+                            name: station.name,
+                            size: side,
+                            radius: 48,
+                            signal: true,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 26),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: coral,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 7,
+                              height: 7,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'LIVE',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        station.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: palette.text,
+                          fontSize: 40,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -1.4,
+                          height: 1.05,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        regionLabel(l10n, station.region),
+                        style: TextStyle(color: palette.textMuted, fontSize: 15),
+                      ),
+                      const Spacer(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          BoldOrb(
+                            icon: Icons.bedtime_outlined,
+                            tooltip: l10n.labelSleepTimer,
+                            size: 52,
+                            iconSize: 24,
+                            color: Colors.transparent,
+                            iconColor: provider.sleepActive ? coral : palette.text,
+                            onPressed: () => _pickSleepTimer(context, provider),
+                          ),
+                          BoldOrb(
+                            icon: Icons.skip_previous_rounded,
+                            size: 52,
+                            iconSize: 28,
+                            color: Colors.transparent,
+                            iconColor: palette.text,
+                            onPressed: () => _skip(provider, station, -1),
+                          ),
+                          SizedBox(
+                            width: 80,
+                            height: 80,
+                            child: Material(
+                              color: coral,
+                              shape: const CircleBorder(),
+                              clipBehavior: Clip.antiAlias,
+                              child: InkWell(
+                                onTap: provider.togglePlayPause,
+                                child: Icon(
+                                  provider.isPlaying
+                                      ? Icons.pause_rounded
+                                      : Icons.play_arrow_rounded,
+                                  size: 38,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                          BoldOrb(
+                            icon: Icons.skip_next_rounded,
+                            size: 52,
+                            iconSize: 28,
+                            color: Colors.transparent,
+                            iconColor: palette.text,
+                            onPressed: () => _skip(provider, station, 1),
+                          ),
+                          BoldOrb(
+                            icon: favorite
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
+                            tooltip: favorite
+                                ? l10n.contentDescriptionUnfavorite
+                                : l10n.contentDescriptionFavorite,
+                            size: 52,
+                            iconSize: 26,
+                            color: Colors.transparent,
+                            iconColor: coral,
+                            onPressed: () => _toggleFavorite(context, provider, station.streamUrl),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: h * 0.12),
+                    ],
                   ],
                 ),
               );

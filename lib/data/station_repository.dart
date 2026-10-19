@@ -27,6 +27,7 @@ class StationRepository {
     RadioStation(name: "Art FM", streamUrl: "https://i2.streams.ovh:2200/ssl/artfm?mp=/stream", region: "Greece"),
     RadioStation(name: "Easy FM", streamUrl: "https://easy972.live24.gr/easy972", region: "Greece"),
     RadioStation(name: "En Lefko", streamUrl: "https://stream.rcs.revma.com/kwste9dz1duvv", region: "Greece"),
+    RadioStation(name: "Focus FM", streamUrl: "https://ice.greekstream.net/focusfm", region: "Greece"),
     RadioStation(name: "Kiss FM", streamUrl: "https://kissfm.live24.gr/kissfmathens", region: "Greece"),
     RadioStation(name: "Melodia FM", streamUrl: "https://stream.rcs.revma.com/8tdwa6ez1duvv", region: "Greece"),
     RadioStation(name: "Notes FM", streamUrl: "https://netradio.live24.gr/stylfmathens", region: "Greece"),

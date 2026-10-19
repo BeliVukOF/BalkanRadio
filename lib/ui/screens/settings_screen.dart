@@ -7,7 +7,7 @@ import '../region_labels.dart';
 import 'legal_screen.dart';
 
 /// Kept in sync with pubspec.yaml by a unit test (`about version matches pubspec`).
-const String appVersion = '1.3.10';
+const String appVersion = '1.3.4';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -43,17 +43,20 @@ class SettingsScreen extends StatelessWidget {
           _Section(
             title: l10n.titleDesign,
             children: [
-              for (final option in const ['classic', 'modern', 'cyber'])
+              for (final option in const ['classic', 'modern', 'cyber', 'abstract'])
                 ListTile(
                   leading: Icon(switch (option) {
                     'classic' => Icons.palette_outlined,
                     'modern' => Icons.bolt_outlined,
-                    _ => Icons.grid_on,
+                    'cyber' => Icons.grid_on,
+                    _ => Icons.category_outlined,
                   }),
+                  // Brand names, identical in every language: no l10n key needed.
                   title: Text(switch (option) {
                     'classic' => l10n.designClassic,
                     'modern' => l10n.designModern,
-                    _ => l10n.designCyber,
+                    'cyber' => l10n.designCyber,
+                    _ => 'Abstract',
                   }),
                   trailing: provider.design == option ? const Icon(Icons.check) : null,
                   onTap: () => _guard(context, () => provider.setDesign(option)),

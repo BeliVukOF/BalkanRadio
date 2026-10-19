@@ -56,6 +56,7 @@ class RegionPreferences {
   String get design => switch (_prefs?.getString('design')) {
         'modern' => 'modern',
         'cyber' => 'cyber',
+        'abstract' => 'abstract',
         _ => 'classic',
       };
 

@@ -31,6 +31,7 @@ class BalkanRadioApp extends StatelessWidget {
     final (light, dark) = switch (provider.design) {
       'modern' => (BoldTheme.modernLightTheme, BoldTheme.modernDarkTheme),
       'cyber' => (BoldTheme.cyberLightTheme, BoldTheme.cyberDarkTheme),
+      'abstract' => (BoldTheme.abstractLightTheme, BoldTheme.abstractDarkTheme),
       _ => (BoldTheme.lightTheme, BoldTheme.darkTheme),
     };
 

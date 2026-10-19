@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/radio_station.dart';
 import '../../providers/radio_provider.dart';
+import 'abstract.dart';
 import 'bold_theme.dart';
 
 /// Paints the design background: gradient for Modern, grid for Cyberpunk,
@@ -17,6 +18,15 @@ class NeonBackdrop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
+    // Abstract: flat page plus the coral quarter disc in the top-right corner.
+    if (palette.abstract) {
+      return Stack(
+        children: [
+          const Positioned.fill(child: AbstractDecor()),
+          Positioned.fill(child: child),
+        ],
+      );
+    }
     final backdrop = palette.backdrop;
     if (backdrop != null) {
       return Stack(
@@ -482,6 +492,84 @@ class BoldStationRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
+    if (palette.abstract) {
+      final dark = palette.brightness == Brightness.dark;
+      final row = InkWell(
+        onTap: onPlay,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              AbstractArtwork(name: station.name, size: 56, radius: 16),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      station.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: palette.text,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: palette.textMuted, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+              BoldOrb(
+                icon: favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                tooltip: favoriteLabel,
+                size: 38,
+                iconSize: 19,
+                color: Colors.transparent,
+                iconColor: favorite ? AbstractColors.coral : palette.textMuted,
+                onPressed: onFavorite,
+              ),
+              const SizedBox(width: 6),
+              SizedBox(
+                width: 44,
+                height: 44,
+                child: Material(
+                  color: dark ? AbstractColors.cream : AbstractColors.ink,
+                  shape: const CircleBorder(),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: onPlay,
+                    child: Icon(
+                      playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                      size: 24,
+                      color: dark ? AbstractColors.ink : AbstractColors.cream,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      return Column(
+        children: [
+          row,
+          if (!last)
+            Divider(
+              height: 1,
+              thickness: 1,
+              indent: 70,
+              color: palette.surfaceHigh,
+            ),
+        ],
+      );
+    }
     final row = InkWell(
       onTap: onPlay,
       borderRadius: BorderRadius.circular(palette.corners(20)),
@@ -592,6 +680,90 @@ class BoldMiniPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
+    // Abstract: solid blue card, the one saturated surface on the page.
+    if (palette.abstract) {
+      const cream = AbstractColors.cream;
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
+        child: Material(
+          color: AbstractColors.blue,
+          borderRadius: BorderRadius.circular(20),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onOpen,
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  AbstractArtwork(name: station.name, size: 40, radius: 10),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          station.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: cream,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                color: cream,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              playing ? 'LIVE' : subtitle.toUpperCase(),
+                              style: TextStyle(
+                                color: cream.withValues(alpha: .85),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SleepChip(),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Material(
+                      color: cream,
+                      shape: const CircleBorder(),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        onTap: onPlay,
+                        child: Icon(
+                          playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                          size: 22,
+                          color: AbstractColors.ink,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
       child: DecoratedBox(
@@ -712,6 +884,8 @@ class BoldNavBar extends StatelessWidget {
     Icons.radio_rounded,
     Icons.public_rounded,
     Icons.favorite_border_rounded,
+    // Fourth slot is only used by the Abstract bar (settings).
+    Icons.wb_sunny_outlined,
   ];
 
   @override
@@ -720,6 +894,19 @@ class BoldNavBar extends StatelessWidget {
     final row = Row(
       children: [for (var i = 0; i < labels.length; i++) _item(palette, i)],
     );
+    if (palette.abstract) {
+      return SafeArea(
+        top: false,
+        child: Container(
+          height: 74,
+          decoration: BoxDecoration(
+            color: palette.background,
+            border: Border(top: BorderSide(color: palette.surfaceHigh)),
+          ),
+          child: row,
+        ),
+      );
+    }
     if (!palette.modern) {
       return SafeArea(top: false, child: SizedBox(height: 62, child: row));
     }
@@ -743,16 +930,17 @@ class BoldNavBar extends StatelessWidget {
 
   Widget _item(BoldPalette palette, int i) => Expanded(
         child: Padding(
-          // 10 horizontal: the outlined pill must not touch the bar's border.
+          // 6 horizontal + a 20px radius keeps the outlined pill clear of the
+          // bar's own hairline border, even with four items.
           padding: palette.modern
-              ? const EdgeInsets.symmetric(vertical: 6, horizontal: 10)
+              ? const EdgeInsets.symmetric(vertical: 5, horizontal: 6)
               : EdgeInsets.zero,
           child: DecoratedBox(
             decoration: BoxDecoration(
               // 23 = half of the 46px item; a larger radius overflows the pill.
-              borderRadius: BorderRadius.circular(palette.corners(23)),
+              borderRadius: BorderRadius.circular(palette.corners(20)),
               color: palette.modern && i == index
-                  ? palette.highlight.withValues(alpha: 0.14)
+                  ? palette.highlight.withValues(alpha: 0.10)
                   : null,
               border: palette.modern && i == index
                   ? Border.all(
@@ -765,33 +953,46 @@ class BoldNavBar extends StatelessWidget {
               onTap: () => onSelect(i),
               child: Column(
                 children: [
-                  if (palette.neon)
-                    Container(
-                      height: 2,
-                      color: i == index ? palette.highlight : Colors.transparent,
-                    ),
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          _icons[i],
-                          size: 24,
-                          color: i == index ? palette.highlight : palette.textMuted,
-                        ),
+                        if (palette.abstract)
+                          Container(
+                            width: 48,
+                            height: 30,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: i == index ? palette.accent : Colors.transparent,
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Icon(
+                              _icons[i],
+                              size: 18,
+                              color: i == index ? palette.onAccent : palette.text,
+                            ),
+                          )
+                        else
+                          Icon(
+                            _icons[i],
+                            size: palette.neon ? 19 : 22,
+                            color: i == index ? palette.highlight : palette.textMuted,
+                          ),
                         const SizedBox(height: 4),
                         Text(
                           palette.neon ? labels[i].toUpperCase() : labels[i],
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: palette.neon ? 10 : 12,
+                            fontSize: palette.neon ? 9.5 : (palette.abstract ? 10.5 : 10.5),
                             letterSpacing: palette.neon ? 0.8 : 0,
                             fontFamily: palette.neon ? 'monospace' : null,
                             fontWeight: palette.neon || i == index
                                 ? FontWeight.w700
                                 : null,
-                            color: i == index ? palette.highlight : palette.textMuted,
+                            color: palette.abstract
+                                ? (i == index ? palette.text : palette.textMuted)
+                                : (i == index ? palette.highlight : palette.textMuted),
                           ),
                         ),
                       ],
