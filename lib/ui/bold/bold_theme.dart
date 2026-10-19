@@ -307,6 +307,11 @@ abstract final class BoldTheme {
         foregroundColor: p.text,
         elevation: 0,
         centerTitle: false,
+        // M3 repaints the bar with surfaceContainer as soon as a list scrolls
+        // under it; on the Settings screen that read as a lighter strip
+        // flashing at the top. Keep the bar identical at every scroll offset.
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
