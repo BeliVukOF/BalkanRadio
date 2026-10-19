@@ -731,7 +731,8 @@ class BoldNavBar extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: palette.glass,
-            borderRadius: BorderRadius.circular(32),
+            // Half of the 58px bar: the same curve family as the item pill.
+            borderRadius: BorderRadius.circular(29),
             border: palette.glassFrame,
           ),
           child: SizedBox(height: 58, child: row),
@@ -742,15 +743,22 @@ class BoldNavBar extends StatelessWidget {
 
   Widget _item(BoldPalette palette, int i) => Expanded(
         child: Padding(
+          // 10 horizontal: the outlined pill must not touch the bar's border.
           padding: palette.modern
-              ? const EdgeInsets.symmetric(vertical: 6, horizontal: 4)
+              ? const EdgeInsets.symmetric(vertical: 6, horizontal: 10)
               : EdgeInsets.zero,
           child: DecoratedBox(
             decoration: BoxDecoration(
               // 23 = half of the 46px item; a larger radius overflows the pill.
               borderRadius: BorderRadius.circular(palette.corners(23)),
+              color: palette.modern && i == index
+                  ? palette.highlight.withValues(alpha: 0.14)
+                  : null,
               border: palette.modern && i == index
-                  ? Border.all(color: palette.highlight, width: 1.2)
+                  ? Border.all(
+                      color: palette.highlight.withValues(alpha: 0.8),
+                      width: 1.2,
+                    )
                   : null,
             ),
             child: InkWell(
@@ -780,7 +788,9 @@ class BoldNavBar extends StatelessWidget {
                             fontSize: palette.neon ? 10 : 12,
                             letterSpacing: palette.neon ? 0.8 : 0,
                             fontFamily: palette.neon ? 'monospace' : null,
-                            fontWeight: palette.neon ? FontWeight.w700 : null,
+                            fontWeight: palette.neon || i == index
+                                ? FontWeight.w700
+                                : null,
                             color: i == index ? palette.highlight : palette.textMuted,
                           ),
                         ),
