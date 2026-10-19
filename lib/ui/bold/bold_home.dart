@@ -177,7 +177,7 @@ class _BoldHomeState extends State<BoldHome> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          _GlitchTitle(
+                          GlitchTitle(
                             text: l10n.appName.toUpperCase(),
                             palette: BoldTheme.of(context),
                           ),
@@ -497,49 +497,6 @@ class _Chip extends StatelessWidget {
 }
 
 /// "BALKAN RADIO" with the cyan/magenta split shadow of the cyber mock.
-class _GlitchTitle extends StatelessWidget {
-  const _GlitchTitle({required this.text, required this.palette});
-
-  final String text;
-  final BoldPalette palette;
-
-  @override
-  Widget build(BuildContext context) {
-    final style = TextStyle(
-      fontSize: 28,
-      fontWeight: FontWeight.w900,
-      letterSpacing: 0.5,
-      color: palette.text,
-    );
-    // Dark mock splits the title into cyan/magenta, the light one uses a single
-    // yellow offset shadow.
-    if (palette.brightness == Brightness.light) {
-      return Stack(
-        children: [
-          Transform.translate(
-            offset: const Offset(3, 3),
-            child: Text(text, style: style.copyWith(color: palette.accent)),
-          ),
-          Text(text, style: style),
-        ],
-      );
-    }
-    return Stack(
-      children: [
-        Transform.translate(
-          offset: const Offset(-2.5, 1.5),
-          child: Text(text, style: style.copyWith(color: palette.neonA)),
-        ),
-        Transform.translate(
-          offset: const Offset(2.5, -1.5),
-          child: Text(text, style: style.copyWith(color: palette.neonB)),
-        ),
-        Text(text, style: style),
-      ],
-    );
-  }
-}
-
 class _CountryCard extends StatelessWidget {
   const _CountryCard({required this.region, required this.label, required this.onTap});
 

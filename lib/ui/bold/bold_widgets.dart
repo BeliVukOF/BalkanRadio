@@ -179,8 +179,8 @@ class BoldMonogram extends StatelessWidget {
           boxShadow: palette.brightness == Brightness.dark
               ? [
                   BoxShadow(
-                    color: neonColor.withValues(alpha: 0.30),
-                    blurRadius: 12,
+                    color: neonColor.withValues(alpha: 0.36),
+                    blurRadius: 22,
                   ),
                 ]
               : palette.shadow,
@@ -235,6 +235,8 @@ class BoldMonogram extends StatelessWidget {
                 fontWeight: FontWeight.w800,
                 fontSize: size * (rings ? 0.26 : 0.30),
                 letterSpacing: 0.5,
+                // The Classic mock sets the monogram in a serif face.
+                fontFamily: palette.modern ? null : 'serif',
               ),
             ),
           ),
@@ -246,25 +248,33 @@ class BoldMonogram extends StatelessWidget {
 
 /// Concentric rings of the player artwork, drawn on the tile or the card.
 class RingsPainter extends CustomPainter {
-  const RingsPainter(this.color);
+  const RingsPainter(this.color, {this.count = 5, this.blur = 0});
 
   final Color color;
+
+  /// How many rings; the Modern card shows three, the tile five.
+  final int count;
+
+  /// Soft edge in logical pixels; 0 keeps the crisp line of the other designs.
+  final double blur;
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
+      ..strokeWidth = 1.5
+      ..maskFilter = blur > 0 ? MaskFilter.blur(BlurStyle.normal, blur) : null;
     final center = Offset(size.width / 2, size.height / 2);
     final max = size.width * 0.5;
-    for (var i = 1; i <= 5; i++) {
-      canvas.drawCircle(center, max * i / 5.5, paint);
+    for (var i = 1; i <= count; i++) {
+      canvas.drawCircle(center, max * i / (count + 0.5), paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant RingsPainter old) => old.color != color;
+  bool shouldRepaint(covariant RingsPainter old) =>
+      old.color != color || old.count != count || old.blur != blur;
 }
 
 /// Yellow action button with one cut corner, used by the cyber design.
@@ -318,6 +328,64 @@ class _CutCornerClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(covariant _CutCornerClipper old) => old.cut != cut;
+}
+
+/// Chromatic-aberration title of the cyber design: cyan/magenta split on dark,
+/// a single heavy offset on light. Shared by the home header and the player.
+class GlitchTitle extends StatelessWidget {
+  const GlitchTitle({
+    super.key,
+    required this.text,
+    required this.palette,
+    this.fontSize = 28,
+    this.fontWeight = FontWeight.w900,
+    this.letterSpacing = 0.5,
+    this.maxLines,
+  });
+
+  final String text;
+  final BoldPalette palette;
+  final double fontSize;
+  final FontWeight fontWeight;
+  final double letterSpacing;
+  final int? maxLines;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = TextStyle(
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      letterSpacing: letterSpacing,
+      color: palette.text,
+    );
+    Widget layer(Color color, Offset offset) => Transform.translate(
+          offset: offset,
+          child: Text(
+            text,
+            maxLines: maxLines,
+            overflow: maxLines == null ? null : TextOverflow.ellipsis,
+            style: style.copyWith(color: color),
+          ),
+        );
+    final body = Text(
+      text,
+      maxLines: maxLines,
+      overflow: maxLines == null ? null : TextOverflow.ellipsis,
+      style: style,
+    );
+    if (palette.brightness == Brightness.light) {
+      return Stack(
+        children: [layer(palette.accent, const Offset(3, 3)), body],
+      );
+    }
+    return Stack(
+      children: [
+        layer(palette.neonA, const Offset(-2.5, 1.5)),
+        layer(palette.neonB, const Offset(2.5, -1.5)),
+        body,
+      ],
+    );
+  }
 }
 
 /// One dashed separator, the cyber design's row divider.

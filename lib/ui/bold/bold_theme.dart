@@ -21,6 +21,7 @@ class BoldPalette {
     Color? neonA,
     Color? neonB,
     Color? grid,
+    this.live,
     this.backdrop,
   })  : neonA = neonA ?? accent,
         neonB = neonB ?? accent,
@@ -42,6 +43,13 @@ class BoldPalette {
 
   /// Second neon colour: LIVE badge, hearts (magenta).
   final Color neonB;
+
+  /// Colour of the LIVE badge on the Modern design (mint in the mock);
+  /// null falls back to [accent].
+  final Color? live;
+
+  /// Ink of the LIVE badge and its dot.
+  Color get liveInk => live ?? accent;
 
   /// Background grid line colour; transparent when [neon] is false.
   final Color grid;
@@ -65,7 +73,7 @@ class BoldPalette {
   List<Color>? get playGradient => modern
       ? (brightness == Brightness.dark
           ? const [Color(0xFF1587B8), Color(0xFF3129B8)]
-          : const [Color(0xFF0E5C86), Color(0xFF2A2AAE)])
+          : const [Color(0xFF2D5FAA), Color(0xFF464DBC)])
       : null;
 
   /// Gradient of the selected region chip; null = flat accent.
@@ -175,6 +183,7 @@ abstract final class BoldTheme {
     text: Color(0xFFF3F5FF),
     textMuted: Color(0xFFA6AECB),
     modern: true,
+    live: Color(0xFF2DD4BF),
     backdrop: [Color(0xFF0A1030), Color(0xFF241A4E), Color(0xFF0B3A3F)],
   );
 
@@ -188,6 +197,7 @@ abstract final class BoldTheme {
     text: Color(0xFF0B1233),
     textMuted: Color(0xFF49547A),
     modern: true,
+    live: Color(0xFF0F766E),
     backdrop: [Color(0xFFC6D7F7), Color(0xFFE8E4F8), Color(0xFFCDEFF6)],
   );
 

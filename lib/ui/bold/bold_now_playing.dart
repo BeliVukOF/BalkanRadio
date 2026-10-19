@@ -109,17 +109,25 @@ class BoldNowPlaying extends StatelessWidget {
                 const SizedBox(height: 12),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    station.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: palette.text,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.8,
-                    ),
-                  ),
+                  child: palette.neon
+                      ? GlitchTitle(
+                          text: station.name.toUpperCase(),
+                          palette: palette,
+                          fontSize: 30,
+                          fontWeight: FontWeight.w800,
+                          maxLines: 2,
+                        )
+                      : Text(
+                          station.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: palette.text,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.8,
+                          ),
+                        ),
                 ),
                 const SizedBox(height: 4),
                 Align(
@@ -153,15 +161,23 @@ class BoldNowPlaying extends StatelessWidget {
                       tooltip: l10n.labelSleepTimer,
                       size: 52,
                       iconSize: 24,
-                      color: palette.neon ? Colors.transparent : null,
-                      iconColor: provider.sleepActive ? palette.accent : palette.text,
+                      color: palette.neon || palette.modern
+                          ? Colors.transparent
+                          : null,
+                      iconColor: provider.sleepActive
+                          ? palette.accent
+                          : (palette.neon || palette.modern
+                              ? palette.textMuted
+                              : palette.text),
                       onPressed: () => _pickSleepTimer(context, provider),
                     ),
                     BoldOrb(
                       icon: Icons.skip_previous_rounded,
                       size: 52,
                       iconSize: 26,
-                      color: palette.neon ? Colors.transparent : null,
+                      color: palette.neon || palette.modern
+                          ? Colors.transparent
+                          : null,
                       onPressed: () => _skip(provider, station, -1),
                     ),
                     if (palette.neon)
@@ -193,7 +209,9 @@ class BoldNowPlaying extends StatelessWidget {
                       icon: Icons.skip_next_rounded,
                       size: 52,
                       iconSize: 26,
-                      color: palette.neon ? Colors.transparent : null,
+                      color: palette.neon || palette.modern
+                          ? Colors.transparent
+                          : null,
                       onPressed: () => _skip(provider, station, 1),
                     ),
                     BoldOrb(
@@ -203,8 +221,14 @@ class BoldNowPlaying extends StatelessWidget {
                           : l10n.contentDescriptionFavorite,
                       size: 52,
                       iconSize: 26,
-                      color: palette.neon ? Colors.transparent : null,
-                      iconColor: favorite ? palette.neonB : null,
+                      color: palette.neon || palette.modern
+                          ? Colors.transparent
+                          : null,
+                      iconColor: favorite
+                          ? (palette.neon ? palette.neonB : palette.accent)
+                          : (palette.neon
+                              ? palette.neonB
+                              : (palette.modern ? palette.accent : null)),
                       onPressed: () => _toggleFavorite(context, provider, station.streamUrl),
                     ),
                   ],
@@ -237,14 +261,19 @@ class BoldNowPlaying extends StatelessWidget {
           children: [
             Positioned.fill(
               child: CustomPaint(
-                painter: RingsPainter(palette.text.withValues(alpha: 0.14)),
+                painter: RingsPainter(
+                  palette.text.withValues(alpha: 0.12),
+                  count: 3,
+                  blur: 3,
+                ),
               ),
             ),
             Center(
               child: BoldMonogram(
                 name: station.name,
-                size: side * 0.55,
-                radius: side * 0.28,
+                // Mock: the logo circle is ~38% of the card, not two thirds.
+                size: side * 0.38,
+                radius: side * 0.19,
               ),
             ),
           ],
@@ -374,17 +403,7 @@ class _LiveBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-      decoration: BoxDecoration(
-        color: neon
-            ? magenta
-            : (palette.modern
-                ? palette.accent.withValues(alpha: 0.18)
-                : palette.surfaceHigh),
-        borderRadius: BorderRadius.circular(palette.corners(20)),
-      ),
-      child: Row(
+    final content = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
@@ -392,7 +411,9 @@ class _LiveBadge extends StatelessWidget {
             height: 8,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: neon ? Colors.white : palette.accent,
+                color: neon
+                    ? Colors.white
+                    : (palette.modern ? palette.liveInk : palette.accent),
                 shape: BoxShape.circle,
               ),
             ),
@@ -403,7 +424,7 @@ class _LiveBadge extends StatelessWidget {
             style: TextStyle(
               color: neon
                   ? Colors.white
-                  : (palette.modern ? palette.accent : palette.text),
+                  : (palette.modern ? palette.liveInk : palette.text),
               fontSize: 13,
               fontWeight: neon ? FontWeight.w800 : FontWeight.w600,
               letterSpacing: neon ? 2 : 1,
@@ -411,7 +432,23 @@ class _LiveBadge extends StatelessWidget {
             ),
           ),
         ],
+      );
+    final badge = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+      decoration: BoxDecoration(
+        color: neon
+            ? magenta
+            : (palette.modern
+                ? palette.liveInk.withValues(alpha: 0.18)
+                : palette.surfaceHigh),
+        borderRadius: BorderRadius.circular(palette.corners(20)),
       ),
+      // Only the badge is slanted; the counter-skew keeps the label upright.
+      child: neon
+          ? Transform(transform: Matrix4.skewX(0.18), child: content)
+          : content,
     );
+    // Mock: the cyber badge is a slanted parallelogram, the others a pill.
+    return neon ? Transform(transform: Matrix4.skewX(-0.18), child: badge) : badge;
   }
 }
