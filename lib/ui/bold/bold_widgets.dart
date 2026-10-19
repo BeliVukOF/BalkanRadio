@@ -179,8 +179,8 @@ class BoldMonogram extends StatelessWidget {
           boxShadow: palette.brightness == Brightness.dark
               ? [
                   BoxShadow(
-                    color: neonColor.withValues(alpha: 0.28),
-                    blurRadius: 14,
+                    color: neonColor.withValues(alpha: 0.26),
+                    blurRadius: 12,
                   ),
                 ]
               : palette.shadow,

@@ -93,7 +93,7 @@ class BoldNowPlaying extends StatelessWidget {
                   ),
                 )
               else ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: artSide,
                   height: artSide,
