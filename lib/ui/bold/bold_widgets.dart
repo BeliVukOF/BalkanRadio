@@ -150,7 +150,11 @@ class BoldOrb extends StatelessWidget {
         ),
       ),
     );
-    return tooltip == null ? orb : Tooltip(message: tooltip!, child: orb);
+    // Tooltip is announced as a description, not a name, so screen readers
+    // still say "button". The same string is the control's label.
+    final named =
+        tooltip == null ? orb : Semantics(button: true, label: tooltip, child: orb);
+    return tooltip == null ? named : Tooltip(message: tooltip!, child: named);
   }
 }
 
