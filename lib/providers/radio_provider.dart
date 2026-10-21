@@ -72,7 +72,12 @@ class RadioProvider extends ChangeNotifier {
   /// null means "follow the system language".
   Locale? get locale {
     final code = prefs.appLanguage;
-    return code == 'system' ? null : Locale(code);
+    if (code == 'system') return null;
+    // Flutter ships sr (Cyrillic) and sr_Latn; our ARB strings are Latin, so
+    // name the script or Material tooltips come out as "Назад".
+    return code == 'sr'
+        ? const Locale.fromSubtags(languageCode: 'sr', scriptCode: 'Latn')
+        : Locale(code);
   }
 
   Future<void> _init() async {

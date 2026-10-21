@@ -188,13 +188,19 @@ class BoldNowPlaying extends StatelessWidget {
                       onPressed: () => _skip(provider, station, -1),
                     ),
                     if (palette.neon)
-                      NeonPlayButton(
-                        icon: provider.isPlaying
-                            ? Icons.pause_rounded
-                            : Icons.play_arrow_rounded,
-                        size: 78,
-                        cut: 18,
-                        onPressed: provider.togglePlayPause,
+                      Semantics(
+                        button: true,
+                        label: provider.isPlaying
+                            ? l10n.contentDescriptionPause
+                            : l10n.contentDescriptionPlay,
+                        child: NeonPlayButton(
+                          icon: provider.isPlaying
+                              ? Icons.pause_rounded
+                              : Icons.play_arrow_rounded,
+                          size: 78,
+                          cut: 18,
+                          onPressed: provider.togglePlayPause,
+                        ),
                       )
                     else
                       BoldOrb(

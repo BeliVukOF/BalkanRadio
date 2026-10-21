@@ -43,7 +43,12 @@ class BalkanRadioApp extends StatelessWidget {
       themeMode: provider.themeMode,
       locale: provider.locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      supportedLocales: const [
+        ...AppLocalizations.supportedLocales,
+        // sr_Latn has no ARB of its own: it resolves to the Serbian strings by
+        // languageCode and only routes Material tooltips to the Latin bundle.
+        Locale.fromSubtags(languageCode: 'sr', scriptCode: 'Latn'),
+      ],
       // Transparent bars: with 3-button navigation Android otherwise paints an
       // opaque black slab under the app instead of showing its backdrop.
       builder: (context, child) {
