@@ -98,8 +98,11 @@ void main() {
       expect(palette.modern, isTrue);
       expect(palette.backdrop, isNotNull);
       expect(palette.glass.a, lessThan(1)); // frosted, not opaque
-      // The mocks draw no frames: cards read through fill and backdrop only.
-      expect(palette.glassFrame, isNull);
+      // Modern pills carry a hairline rim; it must stay subtle, not a frame.
+      final rim = palette.glassFrame;
+      expect(rim, isNotNull);
+      expect(rim!.top.width, lessThanOrEqualTo(1.5));
+      expect(rim.top.color.a, lessThan(0.6)); // translucent pane, not an edge
       // Body text must clear the worst stop of the backdrop, not the flat one.
       for (final stop in palette.backdrop!) {
         expect(contrast(stop, palette.text), greaterThanOrEqualTo(4.5),
