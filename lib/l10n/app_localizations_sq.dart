@@ -282,4 +282,7 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get msgUpdateInstalled => 'Perditesimi eshte gati';
+
+  @override
+  String get updateInstall => 'Instalo';
 }

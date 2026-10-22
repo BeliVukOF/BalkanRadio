@@ -281,4 +281,7 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get msgUpdateInstalled => 'Azuriranje je spremno';
+
+  @override
+  String get updateInstall => 'Instaliraj';
 }

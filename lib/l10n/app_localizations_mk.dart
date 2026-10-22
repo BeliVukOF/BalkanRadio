@@ -282,4 +282,7 @@ class AppLocalizationsMk extends AppLocalizations {
 
   @override
   String get msgUpdateInstalled => 'Ажурирањето е подготвено';
+
+  @override
+  String get updateInstall => 'Инсталирај';
 }

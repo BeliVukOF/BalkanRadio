@@ -113,5 +113,6 @@
   "msgUpdateUpToDate": "You have the latest version",
   "msgUpdateFailed": "Update check failed",
   "msgUpdatePermissionNeeded": "Allow installing from this app to update",
-  "msgUpdateInstalled": "Update ready"
+  "msgUpdateInstalled": "Update ready",
+  "updateInstall": "Install"
 }

@@ -30,8 +30,8 @@ class AppUpdate {
       );
 
   /// Kept in sync with pubspec.yaml by a unit test.
-  static const String currentVersionName = '1.3.15';
-  static const int currentVersionCode = 29;
+  static const String currentVersionName = '1.3.16';
+  static const int currentVersionCode = 30;
 
   bool get isNewer => versionCode > currentVersionCode;
 
@@ -60,12 +60,23 @@ class UpdateService extends ChangeNotifier {
   bool _downloading = false;
   bool _permissionMissing = false;
   int _downloadId = -1;
+  int _progress = 0;
+  String? _readyPath;
   Timer? _poll;
 
   AppUpdate? get available => _available;
   bool get checking => _checking;
   bool get downloading => _downloading;
   bool get permissionMissing => _permissionMissing;
+
+  /// 0..100 while downloading.
+  int get progress => _progress;
+
+  /// Set once the APK is on disk; the UI then offers the install button.
+  String? get readyPath => _readyPath;
+
+  /// The update is downloaded and only waiting for the user to install it.
+  bool get isReadyToInstall => _readyPath != null && !_downloading;
 
   /// Silent check at start-up. A failure is never shown: no update is not news.
   Future<void> checkAtStartup() async {
@@ -163,6 +174,8 @@ class UpdateService extends ChangeNotifier {
     }
     _downloading = true;
     _available = update;
+    _progress = 0;
+    _readyPath = null;
     notifyListeners();
     try {
       final id = await _channel.invokeMethod<int>('enqueueDownload', {
@@ -171,8 +184,7 @@ class UpdateService extends ChangeNotifier {
       });
       if (id == null || id < 0) return false;
       _downloadId = id;
-      await _pollUntilDone(update);
-      return true;
+      return await _pollUntilDone(update);
     } on PlatformException catch (error) {
       debugPrint('update download failed: $error');
       return false;
@@ -192,6 +204,11 @@ class UpdateService extends ChangeNotifier {
         {'id': _downloadId, 'fileName': update.fileName},
       );
       final state = result?['state'] as String?;
+      final percent = (result?['progress'] as num?)?.toInt() ?? _progress;
+      if (percent != _progress) {
+        _progress = percent;
+        notifyListeners();
+      }
       if (state == 'failed') {
         timer.cancel();
         if (!completer.isCompleted) completer.complete(false);
@@ -200,6 +217,8 @@ class UpdateService extends ChangeNotifier {
       if (state == 'ok') {
         timer.cancel();
         final path = result?['path'] as String?;
+        _readyPath = path;
+        _progress = path == null ? 0 : 100;
         if (!completer.isCompleted) completer.complete(path != null);
       }
     });
@@ -211,11 +230,13 @@ class UpdateService extends ChangeNotifier {
   /// Opens the system installer. The user confirms there; Android restarts the
   /// app itself after a package replace.
   Future<bool> install(AppUpdate update) async {
+    // Re-query: the file may have been removed from Downloads since the
+    // download finished, and installing a missing file just fails silently.
     final result = await _channel.invokeMapMethod<String, dynamic>(
       'downloadStatus',
       {'id': _downloadId, 'fileName': update.fileName},
     );
-    final path = result?['path'] as String?;
+    final path = result?['path'] as String? ?? _readyPath;
     if (path == null) return false;
     try {
       return await _channel.invokeMethod<bool>('installApk', {'path': path}) ?? false;

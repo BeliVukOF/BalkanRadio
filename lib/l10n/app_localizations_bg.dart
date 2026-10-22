@@ -282,4 +282,7 @@ class AppLocalizationsBg extends AppLocalizations {
 
   @override
   String get msgUpdateInstalled => 'Актуализацията е готова';
+
+  @override
+  String get updateInstall => 'Инсталиране';
 }

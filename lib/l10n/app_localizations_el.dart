@@ -283,4 +283,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get msgUpdateInstalled => 'Η ενημέρωση είναι έτοιμη';
+
+  @override
+  String get updateInstall => 'Εγκατάσταση';
 }

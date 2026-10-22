@@ -281,4 +281,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get msgUpdateInstalled => 'Update ready';
+
+  @override
+  String get updateInstall => 'Install';
 }

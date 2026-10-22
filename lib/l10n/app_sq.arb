@@ -94,5 +94,6 @@
   "msgUpdateUpToDate": "Ke versionin me te fundit",
   "msgUpdateFailed": "Kontrolli i perditesimit deshtoi",
   "msgUpdatePermissionNeeded": "Lejo instalimin nga ky aplikacion per teu perditesuar",
-  "msgUpdateInstalled": "Perditesimi eshte gati"
+  "msgUpdateInstalled": "Perditesimi eshte gati",
+  "updateInstall": "Instalo"
 }

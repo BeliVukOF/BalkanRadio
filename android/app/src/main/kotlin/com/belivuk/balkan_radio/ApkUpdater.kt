@@ -11,7 +11,7 @@ import java.io.File
 /**
  * Silent update. DownloadManager is a system service, so the APK keeps
  * downloading even if the app is backgrounded or killed; Dart polls
- * [status] until the file lands and then calls [install].
+ * [status] for progress and then calls [install].
  *
  * Android has no self-install API: the system installer dialog always shows.
  * That is a platform limit, not a choice made here.
@@ -42,12 +42,17 @@ object ApkUpdater {
         -1
     }
 
-    /** OK plus the file path, RUNNING while it downloads, FAILED on any error. */
-    fun status(context: Context, id: Long, fileName: String): Pair<String, String?> {
+    /**
+     * state, path and 0..100 progress. DownloadManager knows how many bytes
+     * have arrived, so the UI can show a real bar instead of a spinner.
+     */
+    fun status(context: Context, id: Long, fileName: String): Map<String, Any?> {
         val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         var outcome = FAILED
+        var downloaded = 0L
+        var total = 0L
         manager.query(DownloadManager.Query().setFilterById(id)).use { cursor ->
-            if (!cursor.moveToFirst()) return FAILED to null
+            if (!cursor.moveToFirst()) return mapOf("state" to FAILED, "path" to null, "progress" to 0)
             outcome = when (
                 cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
             ) {
@@ -58,14 +63,27 @@ object ApkUpdater {
                 -> RUNNING
                 else -> FAILED
             }
+            downloaded = cursor.getLong(
+                cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR),
+            )
+            total = cursor.getLong(
+                cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES),
+            )
         }
-        if (outcome != OK) return outcome to null
+        if (outcome != OK) {
+            val pct = if (total > 0) ((downloaded * 100) / total).toInt() else 0
+            return mapOf("state" to outcome, "path" to null, "progress" to pct)
+        }
         val file = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
             fileName,
         )
-        return if (file.exists() && file.length() > 0) OK to file.absolutePath
-        else FAILED to null
+        val path = if (file.exists() && file.length() > 0) file.absolutePath else null
+        return mapOf(
+            "state" to if (path == null) FAILED else OK,
+            "path" to path,
+            "progress" to if (path != null) 100 else 0,
+        )
     }
 
     /**

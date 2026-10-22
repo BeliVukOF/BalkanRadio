@@ -633,6 +633,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update ready'**
   String get msgUpdateInstalled;
+
+  /// No description provided for @updateInstall.
+  ///
+  /// In en, this message translates to:
+  /// **'Install'**
+  String get updateInstall;
 }
 
 class _AppLocalizationsDelegate

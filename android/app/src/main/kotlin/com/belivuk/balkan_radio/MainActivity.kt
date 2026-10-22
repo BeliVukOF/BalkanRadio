@@ -42,12 +42,14 @@ class MainActivity : AudioServiceActivity() {
                             result.success(ApkUpdater.enqueue(this, url, name))
                         }
                     }
-                    "downloadStatus" -> {
-                        val id = call.argument<Number>("id")?.toLong() ?: -1L
-                        val name = call.argument<String>("fileName").orEmpty()
-                        val (state, path) = ApkUpdater.status(this, id, name)
-                        result.success(mapOf("state" to state, "path" to path))
-                    }
+                    "downloadStatus" ->
+                        result.success(
+                            ApkUpdater.status(
+                                this,
+                                call.argument<Number>("id")?.toLong() ?: -1L,
+                                call.argument<String>("fileName").orEmpty(),
+                            ),
+                        )
                     "installApk" -> {
                         val path = call.argument<String>("path").orEmpty()
                         if (path.isEmpty()) result.success(false)

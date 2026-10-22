@@ -94,5 +94,6 @@
   "msgUpdateUpToDate": "Имаш најнова верзија",
   "msgUpdateFailed": "Проверката на ажурирањето не успеа",
   "msgUpdatePermissionNeeded": "Дозволи инсталација од оваа апликација за да се ажурира",
-  "msgUpdateInstalled": "Ажурирањето е подготвено"
+  "msgUpdateInstalled": "Ажурирањето е подготвено",
+  "updateInstall": "Инсталирај"
 }
