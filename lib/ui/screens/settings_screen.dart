@@ -9,7 +9,7 @@ import '../update_dialog.dart';
 import 'legal_screen.dart';
 
 /// Kept in sync with pubspec.yaml by a unit test (`about version matches pubspec`).
-const String appVersion = '1.3.16';
+const String appVersion = '1.3.17';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -138,7 +138,6 @@ class SettingsScreen extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.system_update_alt),
                 title: Text(l10n.labelCheckForUpdate),
-                subtitle: Text(l10n.descCheckForUpdate),
                 onTap: () => _checkUpdate(context),
               ),
             ],

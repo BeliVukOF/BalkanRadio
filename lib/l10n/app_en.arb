@@ -94,8 +94,7 @@
   "contentDescriptionPreviousStation": "Previous station",
   "contentDescriptionNextStation": "Next station",
   "titleUpdate": "App update",
-  "labelCheckForUpdate": "Check for app update",
-  "descCheckForUpdate": "Looks for a newer version on GitHub",
+  "labelCheckForUpdate": "Check for the Update",
   "updateAvailableTitle": "New update available",
   "updateAvailableBody": "Version {versionName} is ready to install.",
   "@updateAvailableBody": {

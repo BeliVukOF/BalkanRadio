@@ -244,10 +244,7 @@ class AppLocalizationsBs extends AppLocalizations {
   String get titleUpdate => 'Azuriranje aplikacije';
 
   @override
-  String get labelCheckForUpdate => 'Provjeri azuriranje aplikacije';
-
-  @override
-  String get descCheckForUpdate => 'Traži noviju verziju na GitHub-u';
+  String get labelCheckForUpdate => 'Provjeri ažuriranje';
 
   @override
   String get updateAvailableTitle => 'Dostupno novo azuriranje';

@@ -75,8 +75,7 @@
   "contentDescriptionPreviousStation": "Prethodna stanica",
   "contentDescriptionNextStation": "Sledeća stanica",
   "titleUpdate": "Azuriranje aplikacije",
-  "labelCheckForUpdate": "Proveri azuriranje aplikacije",
-  "descCheckForUpdate": "Traži noviju verziju na GitHub-u",
+  "labelCheckForUpdate": "Proveri ažuriranje",
   "updateAvailableTitle": "Dostupno novo azuriranje",
   "updateAvailableBody": "Verzija {versionName} je spremna za instalaciju.",
   "@updateAvailableBody": {

@@ -246,10 +246,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get titleUpdate => 'Ενημέρωση εφαρμογής';
 
   @override
-  String get labelCheckForUpdate => 'Έλεγχος ενημέρωσης εφαρμογής';
-
-  @override
-  String get descCheckForUpdate => 'Αναζητά νεότερη έκδοση στο GitHub';
+  String get labelCheckForUpdate => 'Έλεγχος ενημέρωσης';
 
   @override
   String get updateAvailableTitle => 'Διαθέσιμη νέα ενημέρωση';

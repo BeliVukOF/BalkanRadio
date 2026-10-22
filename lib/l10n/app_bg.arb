@@ -75,8 +75,7 @@
   "contentDescriptionPreviousStation": "Предишна станция",
   "contentDescriptionNextStation": "Следваща станция",
   "titleUpdate": "Актуализиране на приложението",
-  "labelCheckForUpdate": "Провери актуализация",
-  "descCheckForUpdate": "Търси по-нова версия в GitHub",
+  "labelCheckForUpdate": "Провери за актуализация",
   "updateAvailableTitle": "Има нова актуализация",
   "updateAvailableBody": "Версия {versionName} е готова за инсталиране.",
   "@updateAvailableBody": {

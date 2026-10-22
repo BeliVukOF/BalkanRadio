@@ -245,10 +245,7 @@ class AppLocalizationsMk extends AppLocalizations {
   String get titleUpdate => 'Ажурирање на апликацијата';
 
   @override
-  String get labelCheckForUpdate => 'Провери ажурирање на апликацијата';
-
-  @override
-  String get descCheckForUpdate => 'Бара поновна верзија на GitHub';
+  String get labelCheckForUpdate => 'Провери ажурирање';
 
   @override
   String get updateAvailableTitle => 'Достапно е ново ажурирање';

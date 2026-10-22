@@ -75,8 +75,7 @@
   "contentDescriptionPreviousStation": "Претходна станица",
   "contentDescriptionNextStation": "Следна станица",
   "titleUpdate": "Ажурирање на апликацијата",
-  "labelCheckForUpdate": "Провери ажурирање на апликацијата",
-  "descCheckForUpdate": "Бара поновна верзија на GitHub",
+  "labelCheckForUpdate": "Провери ажурирање",
   "updateAvailableTitle": "Достапно е ново ажурирање",
   "updateAvailableBody": "Верзија {versionName} е подготвена за инсталација.",
   "@updateAvailableBody": {

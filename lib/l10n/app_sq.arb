@@ -75,8 +75,7 @@
   "contentDescriptionPreviousStation": "Stacioni i mëparshëm",
   "contentDescriptionNextStation": "Stacioni tjetër",
   "titleUpdate": "Perditesimi i aplikacionit",
-  "labelCheckForUpdate": "Kontrollo perditesimin e aplikacionit",
-  "descCheckForUpdate": "Kerkon nje version me te ri ne GitHub",
+  "labelCheckForUpdate": "Kontrollo përditësimin",
   "updateAvailableTitle": "Ka perditesim te ri",
   "updateAvailableBody": "Versioni {versionName} eshte gati per instalim.",
   "@updateAvailableBody": {

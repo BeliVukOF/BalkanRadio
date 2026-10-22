@@ -244,10 +244,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get titleUpdate => 'App update';
 
   @override
-  String get labelCheckForUpdate => 'Check for app update';
-
-  @override
-  String get descCheckForUpdate => 'Looks for a newer version on GitHub';
+  String get labelCheckForUpdate => 'Check for the Update';
 
   @override
   String get updateAvailableTitle => 'New update available';

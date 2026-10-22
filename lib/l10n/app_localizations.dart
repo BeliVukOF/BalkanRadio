@@ -565,14 +565,8 @@ abstract class AppLocalizations {
   /// No description provided for @labelCheckForUpdate.
   ///
   /// In en, this message translates to:
-  /// **'Check for app update'**
+  /// **'Check for the Update'**
   String get labelCheckForUpdate;
-
-  /// No description provided for @descCheckForUpdate.
-  ///
-  /// In en, this message translates to:
-  /// **'Looks for a newer version on GitHub'**
-  String get descCheckForUpdate;
 
   /// No description provided for @updateAvailableTitle.
   ///

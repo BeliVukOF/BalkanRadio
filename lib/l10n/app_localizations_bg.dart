@@ -245,10 +245,7 @@ class AppLocalizationsBg extends AppLocalizations {
   String get titleUpdate => 'Актуализиране на приложението';
 
   @override
-  String get labelCheckForUpdate => 'Провери актуализация';
-
-  @override
-  String get descCheckForUpdate => 'Търси по-нова версия в GitHub';
+  String get labelCheckForUpdate => 'Провери за актуализация';
 
   @override
   String get updateAvailableTitle => 'Има нова актуализация';

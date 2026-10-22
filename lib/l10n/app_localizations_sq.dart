@@ -245,10 +245,7 @@ class AppLocalizationsSq extends AppLocalizations {
   String get titleUpdate => 'Perditesimi i aplikacionit';
 
   @override
-  String get labelCheckForUpdate => 'Kontrollo perditesimin e aplikacionit';
-
-  @override
-  String get descCheckForUpdate => 'Kerkon nje version me te ri ne GitHub';
+  String get labelCheckForUpdate => 'Kontrollo përditësimin';
 
   @override
   String get updateAvailableTitle => 'Ka perditesim te ri';
