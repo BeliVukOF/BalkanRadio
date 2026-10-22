@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -293,6 +294,204 @@ class _PulseLogoState extends State<PulseLogo>
     if (MediaQuery.disableAnimationsOf(context)) return widget.child;
     return ScaleTransition(scale: _scale, child: widget.child);
   }
+}
+
+
+/// Rows fade in one after another. Only the first [visible] rows animate: the
+/// rest appear as they are scrolled to, which keeps a 90-item list cheap.
+class StaggeredRow extends StatefulWidget {
+  const StaggeredRow({super.key, required this.index, required this.child});
+
+  final int index;
+  final Widget child;
+
+  @override
+  State<StaggeredRow> createState() => _StaggeredRowState();
+}
+
+class _StaggeredRowState extends State<StaggeredRow>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 260),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _c.value = 1;
+    } else {
+      // 18ms apart: past ~12 rows the whole screen has landed anyway.
+      final delay = Duration(milliseconds: (widget.index.clamp(0, 12)) * 18);
+      Future<void>.delayed(delay, () {
+        if (mounted) _c.forward();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_c.value == 1 && !_c.isAnimating) return widget.child;
+    final curve = CurvedAnimation(parent: _c, curve: Curves.easeOutCubic);
+    return FadeTransition(
+      opacity: curve,
+      child: SlideTransition(
+        position: Tween<Offset>(begin: const Offset(0, 0.06), end: Offset.zero)
+            .animate(curve),
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+/// Equalizer bars for the player. They only move while a station plays, which
+/// is the only honest signal the UI has for "audio is coming out".
+class BoldEqualizer extends StatefulWidget {
+  const BoldEqualizer({super.key, required this.active, this.color, this.height = 46, this.bars = 5});
+
+  final bool active;
+  final Color? color;
+  final double height;
+  final int bars;
+
+  @override
+  State<BoldEqualizer> createState() => _BoldEqualizerState();
+}
+
+class _BoldEqualizerState extends State<BoldEqualizer>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _sync();
+  }
+
+  @override
+  void didUpdateWidget(covariant BoldEqualizer old) {
+    super.didUpdateWidget(old);
+    if (old.active != widget.active) _sync();
+  }
+
+  void _sync() {
+    if (widget.active && !MediaQuery.disableAnimationsOf(context)) {
+      _c.repeat();
+    } else {
+      _c.stop();
+      _c.value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = widget.color ?? Theme.of(context).colorScheme.primary;
+    return SizedBox(
+      height: widget.height,
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (context, _) => Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            for (var i = 0; i < widget.bars; i++)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Container(
+                  width: 6,
+                  height: _barHeight(i),
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Fixed wave shapes at different phases: without an audio tap this is a
+  // stylised animation, not a real spectrum analyser.
+  double _barHeight(int i) {
+    final phase = _c.value * 2 * 3.14159265 + i * 0.9;
+    final wave = (0.5 + 0.5 * _sin(phase)) * 0.72 + 0.28;
+    final peak = widget.height * wave;
+    final floor = widget.height * 0.28;
+    if (peak < floor) return floor;
+    return peak;
+  }
+
+  // dart:math sin without pulling the import into the whole file.
+  double _sin(double x) => math.sin(x);
+}
+
+/// Fades and slightly lifts the child when the key changes, so switching
+/// stations reads as a transition instead of a hard cut.
+class CrossFade extends StatelessWidget {
+  const CrossFade({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.disableAnimationsOf(context)) return child;
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 420),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      transitionBuilder: (child, animation) => FadeTransition(
+        opacity: animation,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.04),
+            end: Offset.zero,
+          ).animate(animation),
+          child: child,
+        ),
+      ),
+      child: child,
+    );
+  }
+}
+
+/// Scales and fades a page as it enters. Used for the player so opening it
+/// feels like moving into the music instead of a hard cut.
+class FadeThroughPageRoute<T> extends PageRouteBuilder<T> {
+  FadeThroughPageRoute({required WidgetBuilder builder})
+      : super(
+          transitionDuration: const Duration(milliseconds: 320),
+          reverseTransitionDuration: const Duration(milliseconds: 260),
+          pageBuilder: (context, animation, secondary) => builder(context),
+          transitionsBuilder: (context, animation, secondary, child) {
+            return FadeTransition(
+              opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.96, end: 1).animate(
+                  CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+                ),
+                child: child,
+              ),
+            );
+          },
+        );
 }
 
 /// Concentric rings of the player artwork, drawn on the tile or the card.

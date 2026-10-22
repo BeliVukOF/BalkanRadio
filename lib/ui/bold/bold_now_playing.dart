@@ -144,6 +144,15 @@ class BoldNowPlaying extends StatelessWidget {
                     style: TextStyle(color: palette.textMuted, fontSize: 16),
                   ),
                 ),
+                const SizedBox(height: 16),
+                // Moves only while audio is actually playing.
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: BoldEqualizer(
+                    active: provider.isPlaying,
+                    color: palette.accent,
+                  ),
+                ),
                 if (provider.playbackError != null) ...[
                   const SizedBox(height: 10),
                   Row(
@@ -416,6 +425,15 @@ class BoldNowPlaying extends StatelessWidget {
                         regionLabel(l10n, station.region),
                         style: TextStyle(color: palette.textMuted, fontSize: 15),
                       ),
+                      const SizedBox(height: 22),
+                      // Moves only while audio is actually playing.
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: BoldEqualizer(
+                          active: provider.isPlaying,
+                          color: coral,
+                        ),
+                      ),
                       const Spacer(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -536,12 +554,15 @@ class BoldNowPlaying extends StatelessWidget {
         ),
       );
     }
-    return PulseLogo(
-      child: BoldMonogram(
-        name: station.name,
-        size: side,
-        radius: 40,
-        rings: true,
+    return CrossFade(
+      child: PulseLogo(
+        child: BoldMonogram(
+          key: ValueKey(station.streamUrl),
+          name: station.name,
+          size: side,
+          radius: 40,
+          rings: true,
+        ),
       ),
     );
   }
