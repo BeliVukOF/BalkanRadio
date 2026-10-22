@@ -35,6 +35,7 @@ class StationRepository {
     RadioStation(name: "Radio IN", streamUrl: "https://rdst.win:48383/stream", region: "Greece"),
     RadioStation(name: "RadioBoss", streamUrl: "http://168.119.74.185:8150/live", region: "Greece"),
     RadioStation(name: "Rythmos", streamUrl: "https://rythmos.live24.gr/rythmos", region: "Greece"),
+    RadioStation(name: "Thessaloniki FM", streamUrl: "https://eu7.fastcast4u.com/proxy/nmarog02?mp=/1", region: "Greece"),
     RadioStation(name: "Trelown", streamUrl: "http://i2.streams.ovh:7109/stream", region: "Greece"),
     RadioStation(name: "Antenna 5", streamUrl: "http://antenna5stream.neotel.mk:8000/live128", region: "Macedonia"),
     RadioStation(name: "City Radio Skopje", streamUrl: "http://176.9.117.123:9998/live", region: "Macedonia"),

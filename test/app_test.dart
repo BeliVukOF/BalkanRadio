@@ -1,5 +1,8 @@
+
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:balkan_radio/data/station_repository.dart';
 import 'package:balkan_radio/models/radio_station.dart';
 import 'package:balkan_radio/ui/screens/settings_screen.dart' show appVersion;
 import 'package:flutter_test/flutter_test.dart';
@@ -28,6 +31,19 @@ void main() {
     final station = RadioStation.fromJson(const {});
     expect(station.name, isEmpty);
     expect(station.streamUrl, isEmpty);
+  });
+
+  test('bundled fallback covers every station in stations/*.json', () {
+    final bundled = StationRepository.allStations.map((s) => s.streamUrl).toSet();
+    for (final file in Directory('stations').listSync()) {
+      if (!file.path.endsWith('.json')) continue;
+      final items = jsonDecode(File(file.path).readAsStringSync()) as List<dynamic>;
+      for (final item in items) {
+        final url = (item as Map<String, dynamic>)['streamUrl'] as String;
+        expect(bundled, contains(url),
+            reason: '${file.path} has $url, missing from the bundled fallback');
+      }
+    }
   });
 
   test('about version matches pubspec', () {

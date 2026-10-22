@@ -10,5 +10,6 @@
   { "name": "En Lefko", "streamUrl": "https://stream.rcs.revma.com/kwste9dz1duvv", "region": "Greece" },
   { "name": "Easy FM", "streamUrl": "https://easy972.live24.gr/easy972", "region": "Greece" },
   { "name": "Notes FM", "streamUrl": "https://netradio.live24.gr/stylfmathens", "region": "Greece" },
-  { "name": "Focus FM", "streamUrl": "https://ice.greekstream.net/focusfm", "region": "Greece" }
+  { "name": "Focus FM", "streamUrl": "https://ice.greekstream.net/focusfm", "region": "Greece" },
+  { "name": "Thessaloniki FM", "streamUrl": "https://eu7.fastcast4u.com/proxy/nmarog02?mp=/1", "region": "Greece" }
 ]
