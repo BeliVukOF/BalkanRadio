@@ -99,7 +99,10 @@ class RadioAudioHandler extends BaseAudioHandler {
       // 30s, not 15: some ICY/HLS servers take that long on mobile data.
       await _player.setUrl(station.streamUrl).timeout(const Duration(seconds: 30));
       if (token != _playToken) return;
-      await _player.play();
+      // Do not await: on a live stream play() only returns once enough has
+      // buffered, which can take seconds. The caller must not wait for audio
+      // just to open the player.
+      unawaited(_player.play());
     } catch (_) {
       if (token != _playToken) return;
       mediaItem.add(null);

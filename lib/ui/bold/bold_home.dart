@@ -25,6 +25,8 @@ class _BoldHomeState extends State<BoldHome> {
   String? _region;
   final TextEditingController _search = TextEditingController();
 
+  bool _playerOpen = false;
+
   @override
   void dispose() {
     _search.dispose();
@@ -55,25 +57,28 @@ class _BoldHomeState extends State<BoldHome> {
       await provider.togglePlayPause();
       return;
     }
+    // Captured before the await: playStation notifies listeners and this widget
+    // can rebuild, which deactivates the element a later context lookup uses.
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final failureText = AppLocalizations.of(context).msgPlayError;
     final ok = await provider.playStation(station);
     if (!ok) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).msgPlayError)),
-        );
-      }
+      messenger.showSnackBar(SnackBar(content: Text(failureText)));
       return;
     }
-    if (provider.prefs.autoOpenPlayer) _openPlayer();
+    if (provider.prefs.autoOpenPlayer) _openPlayer(navigator);
   }
 
   /// The full-screen player. Pushed once: a second tap while it is open would
-  /// stack copies.
-  void _openPlayer() {
-    final route = ModalRoute.of(context);
-    if (route?.isCurrent != true) return;
-    Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (_) => const BoldNowPlaying()));
+  /// stack copies. The station rows are not inside a route of their own, so
+  /// ModalRoute.of(context) is null here and cannot be used as a guard.
+  void _openPlayer(NavigatorState navigator) {
+    if (_playerOpen) return;
+    _playerOpen = true;
+    navigator
+        .push(MaterialPageRoute<void>(builder: (_) => const BoldNowPlaying()))
+        .whenComplete(() => _playerOpen = false);
   }
 
   @override
