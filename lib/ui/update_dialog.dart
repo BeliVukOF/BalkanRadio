@@ -4,21 +4,29 @@ import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../services/update_service.dart';
 
-/// "New update available" prompt. "Install now" starts the download; the same
-/// dialog then shows the progress and finally an Install button that hands the
-/// finished APK to the system installer. "Later" silences this version only.
+/// "New update available" prompt. One window does the whole job: it offers the
+/// update, shows the download progress in place, then hands the finished APK to
+/// the system installer on its own. Nothing else is pushed on top.
+///
+/// The installer confirmation itself is Android's and cannot be replaced; the
+/// app restarts by itself once the package is replaced.
 Future<void> showUpdateDialog(BuildContext context, UpdateService service) async {
   final update = service.available;
   if (update == null) return;
 
   final action = await showDialog<_UpdateAction>(
     context: context,
+    barrierDismissible: false,
     builder: (dialogContext) => Consumer<UpdateService>(
       builder: (context, service, _) {
         final l10n = AppLocalizations.of(context);
         return AlertDialog(
           icon: const Icon(Icons.system_update_alt),
-          title: Text(l10n.updateAvailableTitle),
+          title: Text(
+            service.downloading
+                ? l10n.updateDownloading
+                : l10n.updateAvailableTitle,
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -39,39 +47,35 @@ Future<void> showUpdateDialog(BuildContext context, UpdateService service) async
               ],
             ],
           ),
-          actions: service.downloading
-              ? null
-              : service.isReadyToInstall
-                  ? [
-                      TextButton(
-                        onPressed: () => Navigator.pop(dialogContext),
-                        child: Text(l10n.updateLater),
-                      ),
-                      FilledButton(
-                        onPressed: () async {
-                          await service.install(update);
-                          if (dialogContext.mounted) {
-                            Navigator.pop(dialogContext, _UpdateAction.install);
-                          }
-                        },
-                        child: Text(l10n.updateInstall),
-                      ),
-                    ]
-                  : [
-                      TextButton(
-                        onPressed: () => Navigator.pop(dialogContext, _UpdateAction.later),
-                        child: Text(l10n.updateLater),
-                      ),
-                      FilledButton(
-                        onPressed: () async {
-                          await service.download(update);
-                          if (dialogContext.mounted) {
-                            Navigator.pop(dialogContext, _UpdateAction.install);
-                          }
-                        },
-                        child: Text(l10n.updateNow),
-                      ),
-                    ],
+          actions: [
+            if (service.downloading)
+              // Nothing to cancel: DownloadManager has no pause and the dialog
+              // must stay put while the bar moves.
+              const SizedBox.shrink()
+            else ...[
+              TextButton(
+                onPressed: () =>
+                    Navigator.pop(dialogContext, _UpdateAction.later),
+                child: Text(l10n.updateLater),
+              ),
+              if (service.isReadyToInstall)
+                FilledButton(
+                  onPressed: () async {
+                    await service.install(update);
+                  },
+                  child: Text(l10n.updateInstall),
+                )
+              else
+                FilledButton(
+                  onPressed: () async {
+                    // Stay open: the Consumer above redraws the bar and the
+                    // Install button as the state changes.
+                    await service.download(update);
+                  },
+                  child: Text(l10n.updateNow),
+                ),
+            ],
+          ],
         );
       },
     ),
@@ -80,4 +84,4 @@ Future<void> showUpdateDialog(BuildContext context, UpdateService service) async
   if (action == _UpdateAction.later) await service.skip(update);
 }
 
-enum _UpdateAction { install, later }
+enum _UpdateAction { later }

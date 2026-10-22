@@ -30,8 +30,8 @@ class AppUpdate {
       );
 
   /// Kept in sync with pubspec.yaml by a unit test.
-  static const String currentVersionName = '1.3.20';
-  static const int currentVersionCode = 34;
+  static const String currentVersionName = '1.3.21';
+  static const int currentVersionCode = 35;
 
   bool get isNewer => versionCode > currentVersionCode;
 

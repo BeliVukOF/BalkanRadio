@@ -313,7 +313,7 @@ class _StaggeredRowState extends State<StaggeredRow>
     with SingleTickerProviderStateMixin {
   late final AnimationController _c = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 260),
+    duration: const Duration(milliseconds: 140),
   );
 
   @override
@@ -322,8 +322,9 @@ class _StaggeredRowState extends State<StaggeredRow>
     if (MediaQuery.disableAnimationsOf(context)) {
       _c.value = 1;
     } else {
-      // 18ms apart: past ~12 rows the whole screen has landed anyway.
-      final delay = Duration(milliseconds: (widget.index.clamp(0, 12)) * 18);
+      // 8ms apart: brisk but still readable. Anything slower feels laggy
+      // once the user starts scrolling before the list has settled.
+      final delay = Duration(milliseconds: (widget.index.clamp(0, 12)) * 8);
       Future<void>.delayed(delay, () {
         if (mounted) _c.forward();
       });
@@ -343,7 +344,7 @@ class _StaggeredRowState extends State<StaggeredRow>
     return FadeTransition(
       opacity: curve,
       child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0, 0.06), end: Offset.zero)
+        position: Tween<Offset>(begin: const Offset(0, 0.03), end: Offset.zero)
             .animate(curve),
         child: widget.child,
       ),
