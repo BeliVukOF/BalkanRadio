@@ -283,4 +283,18 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get updateInstall => 'Εγκατάσταση';
+
+  @override
+  String get labelAutoOpenPlayer => 'Αυτόματο άνοιγμα του πλέιερ';
+
+  @override
+  String get descAutoOpenPlayer =>
+      'Το πλέιερ πλήρους οθόνης ανοίγει μόλις ξεκινήσει ο σταθμός.';
+
+  @override
+  String get labelStopButtonX => 'X αντί για το κουμπί διακοπής';
+
+  @override
+  String get descStopButtonX =>
+      'Στην εφαρμογή, στην ειδοποίηση και στην κλειδωμένη οθόνη.';
 }

@@ -64,6 +64,22 @@ class RegionPreferences {
     await (await ready()).setString('design', value);
   }
 
+  /// Open the full-screen player as soon as a station starts.
+  bool get autoOpenPlayer => _prefs?.getBool('auto_open_player') ?? true;
+
+  Future<void> setAutoOpenPlayer(bool value) async {
+    await (await ready()).setBool('auto_open_player', value);
+  }
+
+  /// When true the stop control is an X instead of a square: it stops the
+  /// stream and clears the player instead of parking it in the mini player.
+  /// Off by default, so the existing stop button stays.
+  bool get useStopX => _prefs?.getBool('stop_x') ?? false;
+
+  Future<void> setUseStopX(bool value) async {
+    await (await ready()).setBool('stop_x', value);
+  }
+
   Set<String> get favorites => _prefs?.getStringList('favorites')?.toSet() ?? {};
 
   bool isStationFavorite(String streamUrl) => favorites.contains(streamUrl);

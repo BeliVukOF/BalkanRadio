@@ -94,5 +94,9 @@
   "msgUpdateFailed": "Проверката за актуализация се провали",
   "msgUpdatePermissionNeeded": "Разреши инсталиране от това приложение, за да се актуализира",
   "msgUpdateInstalled": "Актуализацията е готова",
-  "updateInstall": "Инсталиране"
+  "updateInstall": "Инсталиране",
+  "labelAutoOpenPlayer": "Автоматично отваряне на плейъра",
+  "descAutoOpenPlayer": "Плейърът на цял екран се отваря веднага щом станцията започне.",
+  "labelStopButtonX": "X вместо бутона за спиране",
+  "descStopButtonX": "В приложението, в известието и на заключения екран."
 }

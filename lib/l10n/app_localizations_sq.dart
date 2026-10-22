@@ -282,4 +282,18 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get updateInstall => 'Instalo';
+
+  @override
+  String get labelAutoOpenPlayer => 'Hap krejtësinë automatikisht';
+
+  @override
+  String get descAutoOpenPlayer =>
+      'Krejtësi në ekran të plotë hapet sapo stacioni fillon.';
+
+  @override
+  String get labelStopButtonX => 'X në vend të butonit stop';
+
+  @override
+  String get descStopButtonX =>
+      'Në aplikacion, në njoftim dhe në ekranin e kyçur.';
 }

@@ -633,6 +633,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Install'**
   String get updateInstall;
+
+  /// No description provided for @labelAutoOpenPlayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Open player automatically'**
+  String get labelAutoOpenPlayer;
+
+  /// No description provided for @descAutoOpenPlayer.
+  ///
+  /// In en, this message translates to:
+  /// **'The full-screen player opens as soon as a station starts.'**
+  String get descAutoOpenPlayer;
+
+  /// No description provided for @labelStopButtonX.
+  ///
+  /// In en, this message translates to:
+  /// **'X instead of stop button'**
+  String get labelStopButtonX;
+
+  /// No description provided for @descStopButtonX.
+  ///
+  /// In en, this message translates to:
+  /// **'In the app, the notification and the lock screen.'**
+  String get descStopButtonX;
 }
 
 class _AppLocalizationsDelegate

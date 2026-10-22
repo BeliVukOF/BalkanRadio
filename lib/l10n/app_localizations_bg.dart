@@ -282,4 +282,18 @@ class AppLocalizationsBg extends AppLocalizations {
 
   @override
   String get updateInstall => 'Инсталиране';
+
+  @override
+  String get labelAutoOpenPlayer => 'Автоматично отваряне на плейъра';
+
+  @override
+  String get descAutoOpenPlayer =>
+      'Плейърът на цял екран се отваря веднага щом станцията започне.';
+
+  @override
+  String get labelStopButtonX => 'X вместо бутона за спиране';
+
+  @override
+  String get descStopButtonX =>
+      'В приложението, в известието и на заключения екран.';
 }

@@ -56,11 +56,24 @@ class _BoldHomeState extends State<BoldHome> {
       return;
     }
     final ok = await provider.playStation(station);
-    if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).msgPlayError)),
-      );
+    if (!ok) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).msgPlayError)),
+        );
+      }
+      return;
     }
+    if (provider.prefs.autoOpenPlayer) _openPlayer();
+  }
+
+  /// The full-screen player. Pushed once: a second tap while it is open would
+  /// stack copies.
+  void _openPlayer() {
+    final route = ModalRoute.of(context);
+    if (route?.isCurrent != true) return;
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (_) => const BoldNowPlaying()));
   }
 
   @override

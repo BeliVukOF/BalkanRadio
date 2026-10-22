@@ -58,10 +58,23 @@ class RadioAudioHandler extends BaseAudioHandler {
 
   AudioPlayer get player => _player;
 
+  /// Off by default: the notification keeps the square stop button. When true
+  /// the stop control is an X, in the notification and on the lock screen too.
+  bool useStopX = false;
+
+  /// X instead of the square; audio_service sends it as a custom action, which
+  /// is the only way to change the notification icon (Android owns the icon of
+  /// the built-in stop action).
+  static final MediaControl _stopX = MediaControl.custom(
+    androidIcon: 'drawable/balkan_stop_x',
+    label: 'Stop',
+    name: 'stop',
+  );
+
   PlaybackState _state() => PlaybackState(
         controls: [
           if (_player.playing) MediaControl.pause else MediaControl.play,
-          MediaControl.stop,
+          if (useStopX) _stopX else MediaControl.stop,
         ],
         androidCompactActionIndices: const [0, 1],
         processingState: switch (_player.processingState) {
@@ -118,6 +131,17 @@ class RadioAudioHandler extends BaseAudioHandler {
       }
       return;
     }
+  }
+
+  /// The X is a custom action: only a custom action can carry its own
+  /// notification icon, and it must still land on the same stop behaviour.
+  @override
+  Future<dynamic> customAction(
+    String name, [
+    Map<String, dynamic>? extras,
+  ]) {
+    if (name == 'stop') return stop();
+    return super.customAction(name, extras);
   }
 
   @override

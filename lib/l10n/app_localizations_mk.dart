@@ -282,4 +282,18 @@ class AppLocalizationsMk extends AppLocalizations {
 
   @override
   String get updateInstall => 'Инсталирај';
+
+  @override
+  String get labelAutoOpenPlayer => 'Автоматски отвори плејер';
+
+  @override
+  String get descAutoOpenPlayer =>
+      'Плејерот на цел екран се отвора што станицата започне.';
+
+  @override
+  String get labelStopButtonX => 'X наместо копче за стоп';
+
+  @override
+  String get descStopButtonX =>
+      'Во апликацијата, во известувањето и на заклучениот екран.';
 }

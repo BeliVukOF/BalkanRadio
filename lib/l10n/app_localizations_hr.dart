@@ -282,4 +282,18 @@ class AppLocalizationsHr extends AppLocalizations {
 
   @override
   String get updateInstall => 'Instaliraj';
+
+  @override
+  String get labelAutoOpenPlayer => 'Automatski otvori plejer';
+
+  @override
+  String get descAutoOpenPlayer =>
+      'Plejer na cijelom ekranu otvara se čim stanica počne.';
+
+  @override
+  String get labelStopButtonX => 'X umjesto dugmeta za stop';
+
+  @override
+  String get descStopButtonX =>
+      'U aplikaciji, u obavijesti i na zaključanom ekranu.';
 }

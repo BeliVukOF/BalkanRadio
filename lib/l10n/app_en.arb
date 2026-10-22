@@ -113,5 +113,9 @@
   "msgUpdateFailed": "Update check failed",
   "msgUpdatePermissionNeeded": "Allow installing from this app to update",
   "msgUpdateInstalled": "Update ready",
-  "updateInstall": "Install"
+  "updateInstall": "Install",
+  "labelAutoOpenPlayer": "Open player automatically",
+  "descAutoOpenPlayer": "The full-screen player opens as soon as a station starts.",
+  "labelStopButtonX": "X instead of stop button",
+  "descStopButtonX": "In the app, the notification and the lock screen."
 }

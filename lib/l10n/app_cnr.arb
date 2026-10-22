@@ -94,5 +94,9 @@
   "msgUpdateFailed": "Provjera azuriranja nije uspjela",
   "msgUpdatePermissionNeeded": "Dopusti instalaciju iz ove aplikacije da bi se azurirala",
   "msgUpdateInstalled": "Azuriranje je spremno",
-  "updateInstall": "Instaliraj"
+  "updateInstall": "Instaliraj",
+  "labelAutoOpenPlayer": "Automatski otvori plejer",
+  "descAutoOpenPlayer": "Plejer na cijelom ekranu otvara se čim stanica počne.",
+  "labelStopButtonX": "X umjesto dugmeta za stop",
+  "descStopButtonX": "U aplikaciji, u obavještenju i na zaključanom ekranu."
 }

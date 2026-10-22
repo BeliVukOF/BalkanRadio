@@ -281,4 +281,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateInstall => 'Install';
+
+  @override
+  String get labelAutoOpenPlayer => 'Open player automatically';
+
+  @override
+  String get descAutoOpenPlayer =>
+      'The full-screen player opens as soon as a station starts.';
+
+  @override
+  String get labelStopButtonX => 'X instead of stop button';
+
+  @override
+  String get descStopButtonX =>
+      'In the app, the notification and the lock screen.';
 }

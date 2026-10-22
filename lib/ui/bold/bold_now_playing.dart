@@ -336,7 +336,9 @@ class BoldNowPlaying extends StatelessWidget {
                           ),
                         ),
                         circle(
-                          Icons.more_horiz_rounded,
+                          provider.prefs.useStopX
+                              ? Icons.close_rounded
+                              : Icons.more_horiz_rounded,
                           () {
                             provider.stop();
                             Navigator.of(context).pop();

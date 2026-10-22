@@ -94,5 +94,9 @@
   "msgUpdateFailed": "Kontrolli i perditesimit deshtoi",
   "msgUpdatePermissionNeeded": "Lejo instalimin nga ky aplikacion per teu perditesuar",
   "msgUpdateInstalled": "Perditesimi eshte gati",
-  "updateInstall": "Instalo"
+  "updateInstall": "Instalo",
+  "labelAutoOpenPlayer": "Hap krejtësinë automatikisht",
+  "descAutoOpenPlayer": "Krejtësi në ekran të plotë hapet sapo stacioni fillon.",
+  "labelStopButtonX": "X në vend të butonit stop",
+  "descStopButtonX": "Në aplikacion, në njoftim dhe në ekranin e kyçur."
 }

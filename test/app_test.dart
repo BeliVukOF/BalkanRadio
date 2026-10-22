@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'dart:io';
 
+import 'package:balkan_radio/data/region_preferences.dart';
 import 'package:balkan_radio/data/station_repository.dart';
 import 'package:balkan_radio/models/radio_station.dart';
 import 'package:balkan_radio/services/update_service.dart';
@@ -84,6 +85,14 @@ void main() {
     expect(older.isNewer, isFalse);
     expect(same.isNewer, isFalse);
     expect(newer.isNewer, isTrue);
+  });
+
+  test('new settings keep their documented defaults', () {
+    // RegionPreferences.reads through SharedPreferences, which is null in a
+    // plain unit test, so every getter falls back to its default.
+    final prefs = RegionPreferences();
+    expect(prefs.useStopX, isFalse, reason: 'stop stays a square by default');
+    expect(prefs.autoOpenPlayer, isTrue, reason: 'player opens by default');
   });
 
   test('each version downloads to its own file name', () {

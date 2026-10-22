@@ -94,5 +94,9 @@
   "msgUpdateFailed": "Ο έλεγχος ενημέρωσης απέτυχε",
   "msgUpdatePermissionNeeded": "Επίτρεψε την εγκατάσταση από αυτήν την εφαρμογή για ενημέρωση",
   "msgUpdateInstalled": "Η ενημέρωση είναι έτοιμη",
-  "updateInstall": "Εγκατάσταση"
+  "updateInstall": "Εγκατάσταση",
+  "labelAutoOpenPlayer": "Αυτόματο άνοιγμα του πλέιερ",
+  "descAutoOpenPlayer": "Το πλέιερ πλήρους οθόνης ανοίγει μόλις ξεκινήσει ο σταθμός.",
+  "labelStopButtonX": "X αντί για το κουμπί διακοπής",
+  "descStopButtonX": "Στην εφαρμογή, στην ειδοποίηση και στην κλειδωμένη οθόνη."
 }

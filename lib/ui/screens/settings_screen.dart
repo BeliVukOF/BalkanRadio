@@ -9,7 +9,7 @@ import '../update_dialog.dart';
 import 'legal_screen.dart';
 
 /// Kept in sync with pubspec.yaml by a unit test (`about version matches pubspec`).
-const String appVersion = '1.3.17';
+const String appVersion = '1.3.18';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -106,6 +106,20 @@ class SettingsScreen extends StatelessWidget {
                 value: provider.prefs.isPowerSavingEnabled,
                 onChanged: (value) =>
                     _guard(context, () => provider.setPowerSavingEnabled(value)),
+              ),
+              SwitchListTile(
+                title: Text(l10n.labelAutoOpenPlayer),
+                subtitle: Text(l10n.descAutoOpenPlayer),
+                value: provider.prefs.autoOpenPlayer,
+                onChanged: (value) =>
+                    _guard(context, () => provider.setAutoOpenPlayer(value)),
+              ),
+              SwitchListTile(
+                title: Text(l10n.labelStopButtonX),
+                subtitle: Text(l10n.descStopButtonX),
+                value: provider.prefs.useStopX,
+                onChanged: (value) =>
+                    _guard(context, () => provider.setUseStopX(value)),
               ),
             ],
           ),

@@ -94,5 +94,9 @@
   "msgUpdateFailed": "Проверката на ажурирањето не успеа",
   "msgUpdatePermissionNeeded": "Дозволи инсталација од оваа апликација за да се ажурира",
   "msgUpdateInstalled": "Ажурирањето е подготвено",
-  "updateInstall": "Инсталирај"
+  "updateInstall": "Инсталирај",
+  "labelAutoOpenPlayer": "Автоматски отвори плејер",
+  "descAutoOpenPlayer": "Плејерот на цел екран се отвора што станицата започне.",
+  "labelStopButtonX": "X наместо копче за стоп",
+  "descStopButtonX": "Во апликацијата, во известувањето и на заклучениот екран."
 }

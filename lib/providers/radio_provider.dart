@@ -319,6 +319,24 @@ class RadioProvider extends ChangeNotifier {
     _notify();
   }
 
+  /// X instead of the square stop button. Passed to the audio handler so the
+  /// media notification and the lock screen match the setting.
+  bool get useStopX => prefs.useStopX;
+
+  /// On by default: tapping a station opens the full-screen player.
+  bool get autoOpenPlayer => prefs.autoOpenPlayer;
+
+  Future<void> setAutoOpenPlayer(bool value) async {
+    await prefs.setAutoOpenPlayer(value);
+    _notify();
+  }
+
+  Future<void> setUseStopX(bool value) async {
+    await prefs.setUseStopX(value);
+    _audio?.useStopX = value;
+    _notify();
+  }
+
   Future<void> setThemeMode(ThemeMode mode) async {
     await prefs.setThemeMode(switch (mode) {
       ThemeMode.light => 'light',
