@@ -297,61 +297,6 @@ class _PulseLogoState extends State<PulseLogo>
 }
 
 
-/// Rows fade in one after another. Only the first [visible] rows animate: the
-/// rest appear as they are scrolled to, which keeps a 90-item list cheap.
-class StaggeredRow extends StatefulWidget {
-  const StaggeredRow({super.key, required this.index, required this.child});
-
-  final int index;
-  final Widget child;
-
-  @override
-  State<StaggeredRow> createState() => _StaggeredRowState();
-}
-
-class _StaggeredRowState extends State<StaggeredRow>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 140),
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    if (MediaQuery.disableAnimationsOf(context)) {
-      _c.value = 1;
-    } else {
-      // 8ms apart: brisk but still readable. Anything slower feels laggy
-      // once the user starts scrolling before the list has settled.
-      final delay = Duration(milliseconds: (widget.index.clamp(0, 12)) * 8);
-      Future<void>.delayed(delay, () {
-        if (mounted) _c.forward();
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_c.value == 1 && !_c.isAnimating) return widget.child;
-    final curve = CurvedAnimation(parent: _c, curve: Curves.easeOutCubic);
-    return FadeTransition(
-      opacity: curve,
-      child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0, 0.03), end: Offset.zero)
-            .animate(curve),
-        child: widget.child,
-      ),
-    );
-  }
-}
-
 /// Equalizer bars for the player. They only move while a station plays, which
 /// is the only honest signal the UI has for "audio is coming out".
 class BoldEqualizer extends StatefulWidget {

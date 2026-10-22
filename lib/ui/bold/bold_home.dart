@@ -272,21 +272,17 @@ class _BoldHomeState extends State<BoldHome> {
                         final station = stations[index];
                         final current = provider.currentStation?.streamUrl == station.streamUrl;
                         final favorite = provider.prefs.isStationFavorite(station.streamUrl);
-                        return StaggeredRow(
-                          index: index,
-                          child: BoldStationRow(
-                            station: station,
-                            subtitle: regionLabel(l10n, station.region),
-                            playing: current && provider.isPlaying,
-                            favorite: favorite,
-                            last: index == stations.length - 1,
-                            favoriteLabel: favorite
-                                ? l10n.contentDescriptionUnfavorite
-                                : l10n.contentDescriptionFavorite,
-                            onPlay: () => _play(provider, station),
-                            onFavorite: () =>
-                                _toggleFavorite(provider, station),
-                          ),
+                        return BoldStationRow(
+                          station: station,
+                          subtitle: regionLabel(l10n, station.region),
+                          playing: current && provider.isPlaying,
+                          favorite: favorite,
+                          last: index == stations.length - 1,
+                          favoriteLabel: favorite
+                              ? l10n.contentDescriptionUnfavorite
+                              : l10n.contentDescriptionFavorite,
+                          onPlay: () => _play(provider, station),
+                          onFavorite: () => _toggleFavorite(provider, station),
                         );
                       },
                     ),
