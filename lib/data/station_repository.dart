@@ -30,6 +30,7 @@ class StationRepository {
     RadioStation(name: "Focus FM", streamUrl: "https://ice.greekstream.net/focusfm", region: "Greece"),
     RadioStation(name: "Kiss FM", streamUrl: "https://kissfm.live24.gr/kissfmathens", region: "Greece"),
     RadioStation(name: "Melodia FM", streamUrl: "https://stream.rcs.revma.com/8tdwa6ez1duvv", region: "Greece"),
+    RadioStation(name: "Minore FM", streamUrl: "https://eu3.fastcast4u.com/proxy/nmarog00?mp=%2F1", region: "Greece"),
     RadioStation(name: "Notes FM", streamUrl: "https://netradio.live24.gr/stylfmathens", region: "Greece"),
     RadioStation(name: "Plus Radio", streamUrl: "https://eco.onestreaming.com/proxy/plusradio/stream", region: "Greece"),
     RadioStation(name: "Radio IN", streamUrl: "https://rdst.win:48383/stream", region: "Greece"),

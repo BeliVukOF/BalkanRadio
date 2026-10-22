@@ -11,5 +11,6 @@
   { "name": "Easy FM", "streamUrl": "https://easy972.live24.gr/easy972", "region": "Greece" },
   { "name": "Notes FM", "streamUrl": "https://netradio.live24.gr/stylfmathens", "region": "Greece" },
   { "name": "Focus FM", "streamUrl": "https://ice.greekstream.net/focusfm", "region": "Greece" },
-  { "name": "Thessaloniki FM", "streamUrl": "https://eu7.fastcast4u.com/proxy/nmarog02?mp=/1", "region": "Greece" }
+  { "name": "Thessaloniki FM", "streamUrl": "https://eu7.fastcast4u.com/proxy/nmarog02?mp=/1", "region": "Greece" },
+  { "name": "Minore FM", "streamUrl": "https://eu3.fastcast4u.com/proxy/nmarog00?mp=%2F1", "region": "Greece" }
 ]
