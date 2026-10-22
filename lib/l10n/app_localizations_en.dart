@@ -233,4 +233,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sleepCloseApp => 'Close the app';
+
+  @override
+  String get contentDescriptionPreviousStation => 'Previous station';
+
+  @override
+  String get contentDescriptionNextStation => 'Next station';
+
+  @override
+  String get titleUpdate => 'App update';
+
+  @override
+  String get labelCheckForUpdate => 'Check for app update';
+
+  @override
+  String get descCheckForUpdate => 'Looks for a newer version on GitHub';
+
+  @override
+  String get updateAvailableTitle => 'New update available';
+
+  @override
+  String updateAvailableBody(String versionName) {
+    return 'Version $versionName is ready to install.';
+  }
+
+  @override
+  String get updateNow => 'Install now';
+
+  @override
+  String get updateLater => 'Later';
+
+  @override
+  String get updateDownloading => 'Downloading update';
+
+  @override
+  String get updateInstalling => 'Opening installer';
+
+  @override
+  String get msgUpdateUpToDate => 'You have the latest version';
+
+  @override
+  String get msgUpdateFailed => 'Update check failed';
+
+  @override
+  String get msgUpdatePermissionNeeded =>
+      'Allow installing from this app to update';
+
+  @override
+  String get msgUpdateInstalled => 'Update ready';
 }

@@ -234,4 +234,52 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get sleepCloseApp => 'Mbyll aplikacionin';
+
+  @override
+  String get contentDescriptionPreviousStation => 'Stacioni i mëparshëm';
+
+  @override
+  String get contentDescriptionNextStation => 'Stacioni tjetër';
+
+  @override
+  String get titleUpdate => 'Perditesimi i aplikacionit';
+
+  @override
+  String get labelCheckForUpdate => 'Kontrollo perditesimin e aplikacionit';
+
+  @override
+  String get descCheckForUpdate => 'Kerkon nje version me te ri ne GitHub';
+
+  @override
+  String get updateAvailableTitle => 'Ka perditesim te ri';
+
+  @override
+  String updateAvailableBody(String versionName) {
+    return 'Versioni $versionName eshte gati per instalim.';
+  }
+
+  @override
+  String get updateNow => 'Instalo tani';
+
+  @override
+  String get updateLater => 'Me vone';
+
+  @override
+  String get updateDownloading => 'Po shkarkohet perditesimi';
+
+  @override
+  String get updateInstalling => 'Po hapet instaluesi';
+
+  @override
+  String get msgUpdateUpToDate => 'Ke versionin me te fundit';
+
+  @override
+  String get msgUpdateFailed => 'Kontrolli i perditesimit deshtoi';
+
+  @override
+  String get msgUpdatePermissionNeeded =>
+      'Lejo instalimin nga ky aplikacion per teu perditesuar';
+
+  @override
+  String get msgUpdateInstalled => 'Perditesimi eshte gati';
 }

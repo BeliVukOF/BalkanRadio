@@ -235,4 +235,52 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get sleepCloseApp => 'Κλείσιμο εφαρμογής';
+
+  @override
+  String get contentDescriptionPreviousStation => 'Προηγούμενος σταθμός';
+
+  @override
+  String get contentDescriptionNextStation => 'Επόμενος σταθμός';
+
+  @override
+  String get titleUpdate => 'Ενημέρωση εφαρμογής';
+
+  @override
+  String get labelCheckForUpdate => 'Έλεγχος ενημέρωσης εφαρμογής';
+
+  @override
+  String get descCheckForUpdate => 'Αναζητά νεότερη έκδοση στο GitHub';
+
+  @override
+  String get updateAvailableTitle => 'Διαθέσιμη νέα ενημέρωση';
+
+  @override
+  String updateAvailableBody(String versionName) {
+    return 'Η έκδοση $versionName είναι έτοιμη για εγκατάσταση.';
+  }
+
+  @override
+  String get updateNow => 'Εγκατάσταση τώρα';
+
+  @override
+  String get updateLater => 'Αργότερα';
+
+  @override
+  String get updateDownloading => 'Λήψη ενημέρωσης';
+
+  @override
+  String get updateInstalling => 'Ανοίγει ο εγκαταστάτης';
+
+  @override
+  String get msgUpdateUpToDate => 'Έχεις την πιο πρόσφατη έκδοση';
+
+  @override
+  String get msgUpdateFailed => 'Ο έλεγχος ενημέρωσης απέτυχε';
+
+  @override
+  String get msgUpdatePermissionNeeded =>
+      'Επίτρεψε την εγκατάσταση από αυτήν την εφαρμογή για ενημέρωση';
+
+  @override
+  String get msgUpdateInstalled => 'Η ενημέρωση είναι έτοιμη';
 }

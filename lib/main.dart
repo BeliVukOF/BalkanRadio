@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 
 import 'l10n/app_localizations.dart';
 import 'providers/radio_provider.dart';
+import 'services/update_service.dart';
 import 'ui/bold/bold_home.dart';
 import 'ui/bold/bold_theme.dart';
+import 'ui/update_dialog.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +18,10 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => RadioProvider(),
-      child: const BalkanRadioApp(),
+      child: ChangeNotifierProvider(
+        create: (_) => UpdateService(),
+        child: const BalkanRadioApp(),
+      ),
     ),
   );
 }
@@ -73,7 +78,42 @@ class BalkanRadioApp extends StatelessWidget {
           child: content,
         );
       },
-      home: const BoldHome(),
+      home: const UpdateGate(child: BoldHome()),
     );
   }
+}
+
+/// Silent update check at start-up. The prompt waits for the first frame so it
+/// cannot cover the splash screen, and fires only once per launch.
+class UpdateGate extends StatefulWidget {
+  const UpdateGate({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  State<UpdateGate> createState() => _UpdateGateState();
+}
+
+class _UpdateGateState extends State<UpdateGate> {
+  bool _asked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _check());
+  }
+
+  Future<void> _check() async {
+    if (_asked) return;
+    _asked = true;
+    final service = context.read<UpdateService>();
+    await service.checkAtStartup();
+    if (!mounted) return;
+    if (service.available != null) {
+      await showUpdateDialog(context, service);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

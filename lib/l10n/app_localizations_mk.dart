@@ -234,4 +234,52 @@ class AppLocalizationsMk extends AppLocalizations {
 
   @override
   String get sleepCloseApp => 'Затвори апликацијата';
+
+  @override
+  String get contentDescriptionPreviousStation => 'Претходна станица';
+
+  @override
+  String get contentDescriptionNextStation => 'Следна станица';
+
+  @override
+  String get titleUpdate => 'Ажурирање на апликацијата';
+
+  @override
+  String get labelCheckForUpdate => 'Провери ажурирање на апликацијата';
+
+  @override
+  String get descCheckForUpdate => 'Бара поновна верзија на GitHub';
+
+  @override
+  String get updateAvailableTitle => 'Достапно е ново ажурирање';
+
+  @override
+  String updateAvailableBody(String versionName) {
+    return 'Верзија $versionName е подготвена за инсталација.';
+  }
+
+  @override
+  String get updateNow => 'Инсталирај сега';
+
+  @override
+  String get updateLater => 'Подоцна';
+
+  @override
+  String get updateDownloading => 'Преземање на ажурирањето';
+
+  @override
+  String get updateInstalling => 'Се отвора инсталатерот';
+
+  @override
+  String get msgUpdateUpToDate => 'Имаш најнова верзија';
+
+  @override
+  String get msgUpdateFailed => 'Проверката на ажурирањето не успеа';
+
+  @override
+  String get msgUpdatePermissionNeeded =>
+      'Дозволи инсталација од оваа апликација за да се ажурира';
+
+  @override
+  String get msgUpdateInstalled => 'Ажурирањето е подготвено';
 }

@@ -71,5 +71,28 @@
   "labelNowPlaying": "Po luan tani",
   "labelSleepTimer": "Kohëmatësi i gjumit",
   "sleepOff": "Fikur",
-  "sleepCloseApp": "Mbyll aplikacionin"
+  "sleepCloseApp": "Mbyll aplikacionin",
+  "contentDescriptionPreviousStation": "Stacioni i mëparshëm",
+  "contentDescriptionNextStation": "Stacioni tjetër",
+  "titleUpdate": "Perditesimi i aplikacionit",
+  "labelCheckForUpdate": "Kontrollo perditesimin e aplikacionit",
+  "descCheckForUpdate": "Kerkon nje version me te ri ne GitHub",
+  "updateAvailableTitle": "Ka perditesim te ri",
+  "updateAvailableBody": "Versioni {versionName} eshte gati per instalim.",
+  "@updateAvailableBody": {
+    "description": "Body of the new-update dialog.",
+    "placeholders": {
+      "versionName": {
+        "type": "String"
+      }
+    }
+  },
+  "updateNow": "Instalo tani",
+  "updateLater": "Me vone",
+  "updateDownloading": "Po shkarkohet perditesimi",
+  "updateInstalling": "Po hapet instaluesi",
+  "msgUpdateUpToDate": "Ke versionin me te fundit",
+  "msgUpdateFailed": "Kontrolli i perditesimit deshtoi",
+  "msgUpdatePermissionNeeded": "Lejo instalimin nga ky aplikacion per teu perditesuar",
+  "msgUpdateInstalled": "Perditesimi eshte gati"
 }

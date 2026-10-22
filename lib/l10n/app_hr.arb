@@ -71,5 +71,28 @@
   "labelNowPlaying": "Trenutno svira",
   "labelSleepTimer": "Tajmer za spavanje",
   "sleepOff": "Isključi",
-  "sleepCloseApp": "Zatvori aplikaciju"
+  "sleepCloseApp": "Zatvori aplikaciju",
+  "contentDescriptionPreviousStation": "Prethodna stanica",
+  "contentDescriptionNextStation": "Sljedeća stanica",
+  "titleUpdate": "Azuriranje aplikacije",
+  "labelCheckForUpdate": "Provjeri azuriranje aplikacije",
+  "descCheckForUpdate": "Traži noviju verziju na GitHub-u",
+  "updateAvailableTitle": "Dostupno novo azuriranje",
+  "updateAvailableBody": "Verzija {versionName} je spremna za instalaciju.",
+  "@updateAvailableBody": {
+    "description": "Body of the new-update dialog.",
+    "placeholders": {
+      "versionName": {
+        "type": "String"
+      }
+    }
+  },
+  "updateNow": "Instaliraj odmah",
+  "updateLater": "Kasnije",
+  "updateDownloading": "Preuzimanje azuriranja",
+  "updateInstalling": "Otvara se instaler",
+  "msgUpdateUpToDate": "Imaš najnoviju verziju",
+  "msgUpdateFailed": "Provjera azuriranja nije uspjela",
+  "msgUpdatePermissionNeeded": "Dopusti instalaciju iz ove aplikacije da bi se azurirala",
+  "msgUpdateInstalled": "Azuriranje je spremno"
 }

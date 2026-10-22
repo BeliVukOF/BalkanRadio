@@ -233,4 +233,52 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get sleepCloseApp => 'Zatvori aplikaciju';
+
+  @override
+  String get contentDescriptionPreviousStation => 'Prethodna stanica';
+
+  @override
+  String get contentDescriptionNextStation => 'Sljedeća stanica';
+
+  @override
+  String get titleUpdate => 'Azuriranje aplikacije';
+
+  @override
+  String get labelCheckForUpdate => 'Provjeri azuriranje aplikacije';
+
+  @override
+  String get descCheckForUpdate => 'Traži noviju verziju na GitHub-u';
+
+  @override
+  String get updateAvailableTitle => 'Dostupno novo azuriranje';
+
+  @override
+  String updateAvailableBody(String versionName) {
+    return 'Verzija $versionName je spremna za instalaciju.';
+  }
+
+  @override
+  String get updateNow => 'Instaliraj odmah';
+
+  @override
+  String get updateLater => 'Kasnije';
+
+  @override
+  String get updateDownloading => 'Preuzimanje azuriranja';
+
+  @override
+  String get updateInstalling => 'Otvara se instaler';
+
+  @override
+  String get msgUpdateUpToDate => 'Imaš najnoviju verziju';
+
+  @override
+  String get msgUpdateFailed => 'Provjera azuriranja nije uspjela';
+
+  @override
+  String get msgUpdatePermissionNeeded =>
+      'Dopusti instalaciju iz ove aplikacije da bi se azurirala';
+
+  @override
+  String get msgUpdateInstalled => 'Azuriranje je spremno';
 }

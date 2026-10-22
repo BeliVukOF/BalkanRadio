@@ -90,5 +90,28 @@
   "labelNowPlaying": "Now playing",
   "labelSleepTimer": "Sleep timer",
   "sleepOff": "Off",
-  "sleepCloseApp": "Close the app"
+  "sleepCloseApp": "Close the app",
+  "contentDescriptionPreviousStation": "Previous station",
+  "contentDescriptionNextStation": "Next station",
+  "titleUpdate": "App update",
+  "labelCheckForUpdate": "Check for app update",
+  "descCheckForUpdate": "Looks for a newer version on GitHub",
+  "updateAvailableTitle": "New update available",
+  "updateAvailableBody": "Version {versionName} is ready to install.",
+  "@updateAvailableBody": {
+    "description": "Body of the new-update dialog.",
+    "placeholders": {
+      "versionName": {
+        "type": "String"
+      }
+    }
+  },
+  "updateNow": "Install now",
+  "updateLater": "Later",
+  "updateDownloading": "Downloading update",
+  "updateInstalling": "Opening installer",
+  "msgUpdateUpToDate": "You have the latest version",
+  "msgUpdateFailed": "Update check failed",
+  "msgUpdatePermissionNeeded": "Allow installing from this app to update",
+  "msgUpdateInstalled": "Update ready"
 }

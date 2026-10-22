@@ -71,5 +71,28 @@
   "labelNowPlaying": "Παίζει τώρα",
   "labelSleepTimer": "Χρονοδιακόπτης ύπνου",
   "sleepOff": "Ανενεργό",
-  "sleepCloseApp": "Κλείσιμο εφαρμογής"
+  "sleepCloseApp": "Κλείσιμο εφαρμογής",
+  "contentDescriptionPreviousStation": "Προηγούμενος σταθμός",
+  "contentDescriptionNextStation": "Επόμενος σταθμός",
+  "titleUpdate": "Ενημέρωση εφαρμογής",
+  "labelCheckForUpdate": "Έλεγχος ενημέρωσης εφαρμογής",
+  "descCheckForUpdate": "Αναζητά νεότερη έκδοση στο GitHub",
+  "updateAvailableTitle": "Διαθέσιμη νέα ενημέρωση",
+  "updateAvailableBody": "Η έκδοση {versionName} είναι έτοιμη για εγκατάσταση.",
+  "@updateAvailableBody": {
+    "description": "Body of the new-update dialog.",
+    "placeholders": {
+      "versionName": {
+        "type": "String"
+      }
+    }
+  },
+  "updateNow": "Εγκατάσταση τώρα",
+  "updateLater": "Αργότερα",
+  "updateDownloading": "Λήψη ενημέρωσης",
+  "updateInstalling": "Ανοίγει ο εγκαταστάτης",
+  "msgUpdateUpToDate": "Έχεις την πιο πρόσφατη έκδοση",
+  "msgUpdateFailed": "Ο έλεγχος ενημέρωσης απέτυχε",
+  "msgUpdatePermissionNeeded": "Επίτρεψε την εγκατάσταση από αυτήν την εφαρμογή για ενημέρωση",
+  "msgUpdateInstalled": "Η ενημέρωση είναι έτοιμη"
 }

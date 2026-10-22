@@ -543,6 +543,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close the app'**
   String get sleepCloseApp;
+
+  /// No description provided for @contentDescriptionPreviousStation.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous station'**
+  String get contentDescriptionPreviousStation;
+
+  /// No description provided for @contentDescriptionNextStation.
+  ///
+  /// In en, this message translates to:
+  /// **'Next station'**
+  String get contentDescriptionNextStation;
+
+  /// No description provided for @titleUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'App update'**
+  String get titleUpdate;
+
+  /// No description provided for @labelCheckForUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for app update'**
+  String get labelCheckForUpdate;
+
+  /// No description provided for @descCheckForUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks for a newer version on GitHub'**
+  String get descCheckForUpdate;
+
+  /// No description provided for @updateAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New update available'**
+  String get updateAvailableTitle;
+
+  /// Body of the new-update dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {versionName} is ready to install.'**
+  String updateAvailableBody(String versionName);
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Install now'**
+  String get updateNow;
+
+  /// No description provided for @updateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get updateLater;
+
+  /// No description provided for @updateDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading update'**
+  String get updateDownloading;
+
+  /// No description provided for @updateInstalling.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening installer'**
+  String get updateInstalling;
+
+  /// No description provided for @msgUpdateUpToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'You have the latest version'**
+  String get msgUpdateUpToDate;
+
+  /// No description provided for @msgUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Update check failed'**
+  String get msgUpdateFailed;
+
+  /// No description provided for @msgUpdatePermissionNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow installing from this app to update'**
+  String get msgUpdatePermissionNeeded;
+
+  /// No description provided for @msgUpdateInstalled.
+  ///
+  /// In en, this message translates to:
+  /// **'Update ready'**
+  String get msgUpdateInstalled;
 }
 
 class _AppLocalizationsDelegate

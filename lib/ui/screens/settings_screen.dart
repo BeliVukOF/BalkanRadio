@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../providers/radio_provider.dart';
+import '../../services/update_service.dart';
 import '../region_labels.dart';
+import '../update_dialog.dart';
 import 'legal_screen.dart';
 
 /// Kept in sync with pubspec.yaml by a unit test (`about version matches pubspec`).
@@ -131,6 +133,17 @@ class SettingsScreen extends StatelessWidget {
             ],
           ),
           _Section(
+            title: l10n.titleUpdate,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.system_update_alt),
+                title: Text(l10n.labelCheckForUpdate),
+                subtitle: Text(l10n.descCheckForUpdate),
+                onTap: () => _checkUpdate(context),
+              ),
+            ],
+          ),
+          _Section(
             title: l10n.titleLegal,
             children: [
               ListTile(
@@ -161,6 +174,24 @@ class SettingsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Explicit check: reports every outcome, unlike the silent start-up check.
+  Future<void> _checkUpdate(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final service = context.read<UpdateService>();
+    final messenger = ScaffoldMessenger.of(context);
+
+    final update = await service.checkNow();
+    if (!context.mounted) return;
+
+    if (update == null) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.msgUpdateUpToDate)),
+      );
+      return;
+    }
+    await showUpdateDialog(context, service);
   }
 
   /// Settings must never fail silently: any storage error is shown to the user.

@@ -234,4 +234,52 @@ class AppLocalizationsBg extends AppLocalizations {
 
   @override
   String get sleepCloseApp => 'Затвори приложението';
+
+  @override
+  String get contentDescriptionPreviousStation => 'Предишна станция';
+
+  @override
+  String get contentDescriptionNextStation => 'Следваща станция';
+
+  @override
+  String get titleUpdate => 'Актуализиране на приложението';
+
+  @override
+  String get labelCheckForUpdate => 'Провери актуализация';
+
+  @override
+  String get descCheckForUpdate => 'Търси по-нова версия в GitHub';
+
+  @override
+  String get updateAvailableTitle => 'Има нова актуализация';
+
+  @override
+  String updateAvailableBody(String versionName) {
+    return 'Версия $versionName е готова за инсталиране.';
+  }
+
+  @override
+  String get updateNow => 'Инсталирай сега';
+
+  @override
+  String get updateLater => 'По-късно';
+
+  @override
+  String get updateDownloading => 'Изтегляне на актуализацията';
+
+  @override
+  String get updateInstalling => 'Отваря се инсталаторът';
+
+  @override
+  String get msgUpdateUpToDate => 'Имаш най-новата версия';
+
+  @override
+  String get msgUpdateFailed => 'Проверката за актуализация се провали';
+
+  @override
+  String get msgUpdatePermissionNeeded =>
+      'Разреши инсталиране от това приложение, за да се актуализира';
+
+  @override
+  String get msgUpdateInstalled => 'Актуализацията е готова';
 }

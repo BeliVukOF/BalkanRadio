@@ -71,5 +71,28 @@
   "labelNowPlaying": "В момента свири",
   "labelSleepTimer": "Таймер за сън",
   "sleepOff": "Изключи",
-  "sleepCloseApp": "Затвори приложението"
+  "sleepCloseApp": "Затвори приложението",
+  "contentDescriptionPreviousStation": "Предишна станция",
+  "contentDescriptionNextStation": "Следваща станция",
+  "titleUpdate": "Актуализиране на приложението",
+  "labelCheckForUpdate": "Провери актуализация",
+  "descCheckForUpdate": "Търси по-нова версия в GitHub",
+  "updateAvailableTitle": "Има нова актуализация",
+  "updateAvailableBody": "Версия {versionName} е готова за инсталиране.",
+  "@updateAvailableBody": {
+    "description": "Body of the new-update dialog.",
+    "placeholders": {
+      "versionName": {
+        "type": "String"
+      }
+    }
+  },
+  "updateNow": "Инсталирай сега",
+  "updateLater": "По-късно",
+  "updateDownloading": "Изтегляне на актуализацията",
+  "updateInstalling": "Отваря се инсталаторът",
+  "msgUpdateUpToDate": "Имаш най-новата версия",
+  "msgUpdateFailed": "Проверката за актуализация се провали",
+  "msgUpdatePermissionNeeded": "Разреши инсталиране от това приложение, за да се актуализира",
+  "msgUpdateInstalled": "Актуализацията е готова"
 }

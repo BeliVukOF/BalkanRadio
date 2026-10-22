@@ -71,5 +71,28 @@
   "labelNowPlaying": "Моментално свири",
   "labelSleepTimer": "Тајмер за спиење",
   "sleepOff": "Исклучи",
-  "sleepCloseApp": "Затвори апликацијата"
+  "sleepCloseApp": "Затвори апликацијата",
+  "contentDescriptionPreviousStation": "Претходна станица",
+  "contentDescriptionNextStation": "Следна станица",
+  "titleUpdate": "Ажурирање на апликацијата",
+  "labelCheckForUpdate": "Провери ажурирање на апликацијата",
+  "descCheckForUpdate": "Бара поновна верзија на GitHub",
+  "updateAvailableTitle": "Достапно е ново ажурирање",
+  "updateAvailableBody": "Верзија {versionName} е подготвена за инсталација.",
+  "@updateAvailableBody": {
+    "description": "Body of the new-update dialog.",
+    "placeholders": {
+      "versionName": {
+        "type": "String"
+      }
+    }
+  },
+  "updateNow": "Инсталирај сега",
+  "updateLater": "Подоцна",
+  "updateDownloading": "Преземање на ажурирањето",
+  "updateInstalling": "Се отвора инсталатерот",
+  "msgUpdateUpToDate": "Имаш најнова верзија",
+  "msgUpdateFailed": "Проверката на ажурирањето не успеа",
+  "msgUpdatePermissionNeeded": "Дозволи инсталација од оваа апликација за да се ажурира",
+  "msgUpdateInstalled": "Ажурирањето е подготвено"
 }

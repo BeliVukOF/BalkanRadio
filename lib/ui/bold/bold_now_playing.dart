@@ -180,6 +180,7 @@ class BoldNowPlaying extends StatelessWidget {
                     ),
                     BoldOrb(
                       icon: Icons.skip_previous_rounded,
+                      tooltip: l10n.contentDescriptionPreviousStation,
                       size: 52,
                       iconSize: 26,
                       color: palette.neon || palette.modern
@@ -220,6 +221,7 @@ class BoldNowPlaying extends StatelessWidget {
                       ),
                     BoldOrb(
                       icon: Icons.skip_next_rounded,
+                      tooltip: l10n.contentDescriptionNextStation,
                       size: 52,
                       iconSize: 26,
                       color: palette.neon || palette.modern
@@ -275,17 +277,27 @@ class BoldNowPlaying extends StatelessWidget {
     final circleBg = dark ? cream : ink;
     final circleFg = dark ? ink : cream;
 
-    Widget circle(IconData icon, VoidCallback onTap, {double size = 46, double iconSize = 22}) =>
-        SizedBox(
-          width: size,
-          height: size,
-          child: Material(
-            color: circleBg,
-            shape: const CircleBorder(),
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              onTap: onTap,
-              child: Icon(icon, size: iconSize, color: circleFg),
+    Widget circle(
+      IconData icon,
+      VoidCallback onTap,
+      String label, {
+      double size = 46,
+      double iconSize = 22,
+    }) =>
+        Semantics(
+          button: true,
+          label: label,
+          child: SizedBox(
+            width: size,
+            height: size,
+            child: Material(
+              color: circleBg,
+              shape: const CircleBorder(),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: onTap,
+                child: Icon(icon, size: iconSize, color: circleFg),
+              ),
             ),
           ),
         );
@@ -305,7 +317,11 @@ class BoldNowPlaying extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        circle(Icons.keyboard_arrow_down_rounded, () => Navigator.of(context).pop()),
+                        circle(
+                          Icons.keyboard_arrow_down_rounded,
+                          () => Navigator.of(context).pop(),
+                          l10n.contentDescriptionBack,
+                        ),
                         Expanded(
                           child: Center(
                             child: Text(
@@ -319,10 +335,14 @@ class BoldNowPlaying extends StatelessWidget {
                             ),
                           ),
                         ),
-                        circle(Icons.more_horiz_rounded, () {
-                          provider.stop();
-                          Navigator.of(context).pop();
-                        }),
+                        circle(
+                          Icons.more_horiz_rounded,
+                          () {
+                            provider.stop();
+                            Navigator.of(context).pop();
+                          },
+                          l10n.contentDescriptionStop,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 26),
@@ -409,33 +429,41 @@ class BoldNowPlaying extends StatelessWidget {
                           ),
                           BoldOrb(
                             icon: Icons.skip_previous_rounded,
+                            tooltip: l10n.contentDescriptionPreviousStation,
                             size: 52,
                             iconSize: 28,
                             color: Colors.transparent,
                             iconColor: palette.text,
                             onPressed: () => _skip(provider, station, -1),
                           ),
-                          SizedBox(
-                            width: 80,
-                            height: 80,
-                            child: Material(
-                              color: coral,
-                              shape: const CircleBorder(),
-                              clipBehavior: Clip.antiAlias,
-                              child: InkWell(
-                                onTap: provider.togglePlayPause,
-                                child: Icon(
-                                  provider.isPlaying
-                                      ? Icons.pause_rounded
-                                      : Icons.play_arrow_rounded,
-                                  size: 38,
-                                  color: Colors.white,
+                          Semantics(
+                            button: true,
+                            label: provider.isPlaying
+                                ? l10n.contentDescriptionPause
+                                : l10n.contentDescriptionPlay,
+                            child: SizedBox(
+                              width: 80,
+                              height: 80,
+                              child: Material(
+                                color: coral,
+                                shape: const CircleBorder(),
+                                clipBehavior: Clip.antiAlias,
+                                child: InkWell(
+                                  onTap: provider.togglePlayPause,
+                                  child: Icon(
+                                    provider.isPlaying
+                                        ? Icons.pause_rounded
+                                        : Icons.play_arrow_rounded,
+                                    size: 38,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                           BoldOrb(
                             icon: Icons.skip_next_rounded,
+                            tooltip: l10n.contentDescriptionNextStation,
                             size: 52,
                             iconSize: 28,
                             color: Colors.transparent,

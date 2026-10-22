@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/radio_station.dart';
 import '../../providers/radio_provider.dart';
 import 'abstract.dart';
@@ -469,6 +470,11 @@ class _DashPainter extends CustomPainter {
 }
 
 /// One station line: avatar, name, region, favourite and play/pause.
+/// Screen readers need a name for the play control; the strings already
+/// exist in every locale.
+String _playLabel(AppLocalizations l10n, bool playing) =>
+    playing ? l10n.contentDescriptionPause : l10n.contentDescriptionPlay;
+
 class BoldStationRow extends StatelessWidget {
   const BoldStationRow({
     super.key,
@@ -496,6 +502,7 @@ class BoldStationRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
+    final l10n = AppLocalizations.of(context);
     if (palette.abstract) {
       final dark = palette.brightness == Brightness.dark;
       final row = InkWell(
@@ -540,19 +547,23 @@ class BoldStationRow extends StatelessWidget {
                 onPressed: onFavorite,
               ),
               const SizedBox(width: 6),
-              SizedBox(
-                width: 44,
-                height: 44,
-                child: Material(
-                  color: dark ? AbstractColors.cream : AbstractColors.ink,
-                  shape: const CircleBorder(),
-                  clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    onTap: onPlay,
-                    child: Icon(
-                      playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                      size: 24,
-                      color: dark ? AbstractColors.ink : AbstractColors.cream,
+              Semantics(
+                button: true,
+                label: _playLabel(l10n, playing),
+                child: SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: Material(
+                    color: dark ? AbstractColors.cream : AbstractColors.ink,
+                    shape: const CircleBorder(),
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: onPlay,
+                      child: Icon(
+                        playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                        size: 24,
+                        color: dark ? AbstractColors.ink : AbstractColors.cream,
+                      ),
                     ),
                   ),
                 ),
@@ -627,14 +638,19 @@ class BoldStationRow extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             if (palette.neon)
-              NeonPlayButton(
-                icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                size: 44,
-                onPressed: onPlay,
+              Semantics(
+                button: true,
+                label: _playLabel(l10n, playing),
+                child: NeonPlayButton(
+                  icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                  size: 44,
+                  onPressed: onPlay,
+                ),
               )
             else
               BoldOrb(
                 icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                tooltip: _playLabel(l10n, playing),
                 gradient: palette.playGradient,
                 iconColor: palette.playGradient == null ? palette.accent : Colors.white,
                 iconSize: 26,
@@ -684,6 +700,7 @@ class BoldMiniPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = BoldTheme.of(context);
+    final l10n = AppLocalizations.of(context);
     // Abstract: solid blue card, the one saturated surface on the page.
     if (palette.abstract) {
       const cream = AbstractColors.cream;
@@ -744,19 +761,23 @@ class BoldMiniPlayer extends StatelessWidget {
                   ),
                   const SleepChip(),
                   const SizedBox(width: 8),
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: Material(
-                      color: cream,
-                      shape: const CircleBorder(),
-                      clipBehavior: Clip.antiAlias,
-                      child: InkWell(
-                        onTap: onPlay,
-                        child: Icon(
-                          playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                          size: 22,
-                          color: AbstractColors.ink,
+                  Semantics(
+                    button: true,
+                    label: _playLabel(l10n, playing),
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Material(
+                        color: cream,
+                        shape: const CircleBorder(),
+                        clipBehavior: Clip.antiAlias,
+                        child: InkWell(
+                          onTap: onPlay,
+                          child: Icon(
+                            playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                            size: 22,
+                            color: AbstractColors.ink,
+                          ),
                         ),
                       ),
                     ),
@@ -848,14 +869,19 @@ class BoldMiniPlayer extends StatelessWidget {
                   const SleepChip(),
                   const SizedBox(width: 8),
                   if (palette.neon)
-                    NeonPlayButton(
-                      icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                      size: 44,
-                      onPressed: onPlay,
+                    Semantics(
+                      button: true,
+                      label: _playLabel(l10n, playing),
+                      child: NeonPlayButton(
+                        icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                        size: 44,
+                        onPressed: onPlay,
+                      ),
                     )
                   else
                     BoldOrb(
                       icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                      tooltip: _playLabel(l10n, playing),
                       gradient: palette.playGradient,
                       iconColor: palette.playGradient == null ? palette.accent : Colors.white,
                       iconSize: 24,
