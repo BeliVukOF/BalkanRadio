@@ -10,6 +10,7 @@ import 'bold_now_playing.dart';
 import 'abstract.dart';
 import 'bold_theme.dart';
 import 'bold_widgets.dart';
+import 'brand_mark.dart';
 
 /// "Bold" design shell: three tabs, mini player and full player on top of the
 /// same RadioProvider the classic screens use.
@@ -167,6 +168,8 @@ class _BoldHomeState extends State<BoldHome> {
               palette: palette,
               fontSize: 28,
             )
+          else if (_tab == 0 && !abstract)
+            BrandLockup(label: title)
           else
             Text(
               title,

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Background layer of the adaptive launcher icon. Measured from the supplied
+     brand artwork so the mask edge blends with the legacy square icon. -->
+<resources>
+    <color name="ic_launcher_background">#0F172A</color>
+</resources>
