@@ -79,7 +79,9 @@ class BoldNowPlaying extends StatelessWidget {
                     ),
                   ),
                   BoldOrb(
-                    icon: Icons.stop_rounded,
+                    icon: provider.prefs.useStopX
+                        ? Icons.close_rounded
+                        : Icons.stop_rounded,
                     tooltip: l10n.contentDescriptionStop,
                     onPressed: () {
                       provider.stop();
@@ -347,7 +349,7 @@ class BoldNowPlaying extends StatelessWidget {
                         circle(
                           provider.prefs.useStopX
                               ? Icons.close_rounded
-                              : Icons.more_horiz_rounded,
+                              : Icons.stop_rounded,
                           () {
                             provider.stop();
                             Navigator.of(context).pop();

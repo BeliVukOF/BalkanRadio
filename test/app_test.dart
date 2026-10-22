@@ -95,6 +95,43 @@ void main() {
     expect(prefs.autoOpenPlayer, isTrue, reason: 'player opens by default');
   });
 
+  test('the stop control follows useStopX in both players, never more_horiz', () {
+    // Two real bugs this locks down:
+    //  1. the Classic build() hardcoded Icons.stop_rounded and ignored the
+    //     setting entirely, so the X never appeared there;
+    //  2. the Abstract build() fell back to Icons.more_horiz_rounded (a
+    //     "more" menu) instead of the square stop, so with X off the button
+    //     showed three dots and did not read as stop.
+    // Every stop control must be one of exactly these two icons.
+    final src = File('lib/ui/bold/bold_now_playing.dart').readAsStringSync();
+    expect(
+      RegExp(r'Icons\.(close_rounded|stop_rounded)').allMatches(src).length,
+      greaterThanOrEqualTo(2),
+      reason: 'both players must pick the icon from useStopX',
+    );
+    expect(
+      src.contains('more_horiz'),
+      isFalse,
+      reason: 'a stop control must never render the more/menu icon',
+    );
+  });
+
+  test('switching useStopX republishes the media notification controls', () {
+    // setUseStopX updated the flag but emitted no new playbackState, so the
+    // notification and lock screen kept the old icon until an unrelated
+    // playback event happened. refreshControls() is what pushes it.
+    final src = File('lib/providers/radio_provider.dart').readAsStringSync();
+    final body = RegExp(r'Future<void> setUseStopX\(bool value\) async \{(.*?)\n  \}',
+            dotAll: true)
+        .firstMatch(src)!
+        .group(1)!;
+    expect(
+      body,
+      contains('refreshControls()'),
+      reason: 'changing the X must redraw the notification right away',
+    );
+  });
+
   test('each version downloads to its own file name', () {
     const a = AppUpdate(versionName: '1.3.15', versionCode: 29, apkUrl: 'u');
     const b = AppUpdate(versionName: '1.4.0', versionCode: 30, apkUrl: 'u');

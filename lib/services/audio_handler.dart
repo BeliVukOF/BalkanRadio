@@ -71,6 +71,12 @@ class RadioAudioHandler extends BaseAudioHandler {
     name: 'stop',
   );
 
+  /// Re-publishes the state so the notification redraws after a control
+  /// change. Toggling the X in Settings changed [useStopX] but nothing emitted
+  /// a new playbackState, so the notification and lock screen kept the old
+  /// icon until some unrelated playback event happened to fire.
+  void refreshControls() => playbackState.add(_state());
+
   PlaybackState _state() => PlaybackState(
         controls: [
           if (_player.playing) MediaControl.pause else MediaControl.play,

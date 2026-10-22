@@ -334,6 +334,9 @@ class RadioProvider extends ChangeNotifier {
   Future<void> setUseStopX(bool value) async {
     await prefs.setUseStopX(value);
     _audio?.useStopX = value;
+    // Push the new control set to the notification now; without this the
+    // media notification keeps the previous icon until playback changes.
+    _audio?.refreshControls();
     _notify();
   }
 
