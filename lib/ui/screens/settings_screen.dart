@@ -9,7 +9,7 @@ import '../update_dialog.dart';
 import 'legal_screen.dart';
 
 /// Kept in sync with pubspec.yaml by a unit test (`about version matches pubspec`).
-const String appVersion = '1.3.19';
+const String appVersion = '9.9.9';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
