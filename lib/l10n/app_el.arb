@@ -93,6 +93,7 @@
   "msgUpdateUpToDate": "Έχεις την πιο πρόσφατη έκδοση",
   "msgUpdateFailed": "Ο έλεγχος ενημέρωσης απέτυχε",
   "msgUpdatePermissionNeeded": "Επίτρεψε την εγκατάσταση από αυτήν την εφαρμογή για ενημέρωση",
+  "msgUpdateInstallFailed": "Ο εγκαταστάτης δεν άνοιξε. Δοκιμάστε ξανά από τις Ρυθμίσεις.",
   "msgUpdateInstalled": "Η ενημέρωση είναι έτοιμη",
   "updateInstall": "Εγκατάσταση",
   "labelAutoOpenPlayer": "Αυτόματο άνοιγμα του πλέιερ",

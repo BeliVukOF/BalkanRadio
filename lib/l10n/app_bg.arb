@@ -93,6 +93,7 @@
   "msgUpdateUpToDate": "Имаш най-новата версия",
   "msgUpdateFailed": "Проверката за актуализация се провали",
   "msgUpdatePermissionNeeded": "Разреши инсталиране от това приложение, за да се актуализира",
+  "msgUpdateInstallFailed": "Инсталаторът не се отвори. Опитайте отново от Настройки.",
   "msgUpdateInstalled": "Актуализацията е готова",
   "updateInstall": "Инсталиране",
   "labelAutoOpenPlayer": "Автоматично отваряне на плейъра",

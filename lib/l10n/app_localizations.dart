@@ -622,6 +622,12 @@ abstract class AppLocalizations {
   /// **'Allow installing from this app to update'**
   String get msgUpdatePermissionNeeded;
 
+  /// No description provided for @msgUpdateInstallFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the installer. Try again from Settings.'**
+  String get msgUpdateInstallFailed;
+
   /// No description provided for @msgUpdateInstalled.
   ///
   /// In en, this message translates to:

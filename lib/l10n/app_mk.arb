@@ -93,6 +93,7 @@
   "msgUpdateUpToDate": "Имаш најнова верзија",
   "msgUpdateFailed": "Проверката на ажурирањето не успеа",
   "msgUpdatePermissionNeeded": "Дозволи инсталација од оваа апликација за да се ажурира",
+  "msgUpdateInstallFailed": "Инсталатерот не се отвори. Обидете се повторно од Поставки.",
   "msgUpdateInstalled": "Ажурирањето е подготвено",
   "updateInstall": "Инсталирај",
   "labelAutoOpenPlayer": "Автоматски отвори плејер",

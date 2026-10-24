@@ -93,6 +93,7 @@
   "msgUpdateUpToDate": "Imaš najnoviju verziju",
   "msgUpdateFailed": "Provjera azuriranja nije uspjela",
   "msgUpdatePermissionNeeded": "Dopusti instalaciju iz ove aplikacije da bi se azurirala",
+  "msgUpdateInstallFailed": "Instalater se nije otvorio. Pokušaj ponovo iz Postavki.",
   "msgUpdateInstalled": "Azuriranje je spremno",
   "updateInstall": "Instaliraj",
   "labelAutoOpenPlayer": "Automatski otvori plejer",

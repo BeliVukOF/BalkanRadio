@@ -32,6 +32,33 @@ Future<void> showUpdateDialog(BuildContext context, UpdateService service) async
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(l10n.updateAvailableBody(update.versionName)),
+              if (service.permissionMissing) ...[
+                const SizedBox(height: 14),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.info_outline, size: 18, color: Theme.of(context).colorScheme.error),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        l10n.msgUpdatePermissionNeeded,
+                        style: TextStyle(color: Theme.of(context).colorScheme.error),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.settings),
+                  label: Text(l10n.msgUpdatePermissionNeeded),
+                  onPressed: () async {
+                    await service.requestInstallPermission();
+                    // The user has to come back from the system settings, so
+                    // the check runs again instead of waiting for them here.
+                    await service.checkInstallPermission();
+                  },
+                ),
+              ],
               if (service.downloading) ...[
                 const SizedBox(height: 20),
                 ClipRRect(
@@ -61,13 +88,29 @@ Future<void> showUpdateDialog(BuildContext context, UpdateService service) async
               if (service.isReadyToInstall)
                 FilledButton(
                   onPressed: () async {
-                    await service.install(update);
+                    final ok = await service.install(update);
+                    if (!ok && dialogContext.mounted) {
+                      // The installer did not open. Say so instead of leaving
+                      // the user with a button that appears to do nothing.
+                      ScaffoldMessenger.of(dialogContext).showSnackBar(
+                        SnackBar(content: Text(l10n.msgUpdateInstallFailed)),
+                      );
+                    }
                   },
                   child: Text(l10n.updateInstall),
                 )
               else
                 FilledButton(
                   onPressed: () async {
+                    // Without the permission the download cannot even start,
+                    // so the system settings are opened instead of pretending
+                    // that something is happening.
+                    if (await service.needsInstallPermission()) {
+                      service.permissionMissing = true;
+                      await service.requestInstallPermission();
+                      await service.checkInstallPermission();
+                      return;
+                    }
                     // Stay open: the Consumer above redraws the bar and the
                     // Install button as the state changes.
                     await service.download(update);

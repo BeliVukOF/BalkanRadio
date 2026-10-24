@@ -279,6 +279,10 @@ class AppLocalizationsEl extends AppLocalizations {
       'Επίτρεψε την εγκατάσταση από αυτήν την εφαρμογή για ενημέρωση';
 
   @override
+  String get msgUpdateInstallFailed =>
+      'Ο εγκαταστάτης δεν άνοιξε. Δοκιμάστε ξανά από τις Ρυθμίσεις.';
+
+  @override
   String get msgUpdateInstalled => 'Η ενημέρωση είναι έτοιμη';
 
   @override

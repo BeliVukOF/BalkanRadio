@@ -277,6 +277,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Allow installing from this app to update';
 
   @override
+  String get msgUpdateInstallFailed =>
+      'Could not open the installer. Try again from Settings.';
+
+  @override
   String get msgUpdateInstalled => 'Update ready';
 
   @override

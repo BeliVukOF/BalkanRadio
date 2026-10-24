@@ -93,6 +93,7 @@
   "msgUpdateUpToDate": "Ke versionin me te fundit",
   "msgUpdateFailed": "Kontrolli i perditesimit deshtoi",
   "msgUpdatePermissionNeeded": "Lejo instalimin nga ky aplikacion per teu perditesuar",
+  "msgUpdateInstallFailed": "Instaluesi nuk u hap. Provoni përsëri te Cilësimet.",
   "msgUpdateInstalled": "Perditesimi eshte gati",
   "updateInstall": "Instalo",
   "labelAutoOpenPlayer": "Hap krejtësinë automatikisht",

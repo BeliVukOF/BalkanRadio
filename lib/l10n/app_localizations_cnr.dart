@@ -277,6 +277,10 @@ class AppLocalizationsCnr extends AppLocalizations {
       'Dopusti instalaciju iz ove aplikacije da bi se azurirala';
 
   @override
+  String get msgUpdateInstallFailed =>
+      'Instalater se nije otvorio. Pokušaj ponovo iz Postavki.';
+
+  @override
   String get msgUpdateInstalled => 'Azuriranje je spremno';
 
   @override

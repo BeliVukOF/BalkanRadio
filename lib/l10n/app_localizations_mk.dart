@@ -278,6 +278,10 @@ class AppLocalizationsMk extends AppLocalizations {
       'Дозволи инсталација од оваа апликација за да се ажурира';
 
   @override
+  String get msgUpdateInstallFailed =>
+      'Инсталатерот не се отвори. Обидете се повторно од Поставки.';
+
+  @override
   String get msgUpdateInstalled => 'Ажурирањето е подготвено';
 
   @override

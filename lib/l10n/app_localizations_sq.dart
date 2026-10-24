@@ -278,6 +278,10 @@ class AppLocalizationsSq extends AppLocalizations {
       'Lejo instalimin nga ky aplikacion per teu perditesuar';
 
   @override
+  String get msgUpdateInstallFailed =>
+      'Instaluesi nuk u hap. Provoni përsëri te Cilësimet.';
+
+  @override
   String get msgUpdateInstalled => 'Perditesimi eshte gati';
 
   @override

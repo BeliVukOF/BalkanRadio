@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show MissingPluginException, MethodChannel, PlatformException;
@@ -30,8 +30,8 @@ class AppUpdate {
       );
 
   /// Kept in sync with pubspec.yaml by a unit test.
-  static const String currentVersionName = '1.3.19';
-  static const int currentVersionCode = 33;
+  static const String currentVersionName = '1.3.20';
+  static const int currentVersionCode = 34;
 
   bool get isNewer => versionCode > currentVersionCode;
 
@@ -65,9 +65,35 @@ class UpdateService extends ChangeNotifier {
   Timer? _poll;
 
   AppUpdate? get available => _available;
+
+  /// Sets the offered update without fetching it. Widget tests only.
+  @visibleForTesting
+  set available(AppUpdate? update) {
+    _available = update;
+    notifyListeners();
+  }
+
+  /// Repaints the prompt after a test changed the state.
+  @visibleForTesting
+  void notifyForTest() => notifyListeners();
   bool get checking => _checking;
   bool get downloading => _downloading;
   bool get permissionMissing => _permissionMissing;
+
+  /// Marks that the app may not install packages yet. The prompt shows the
+  /// reason instead of failing silently.
+  set permissionMissing(bool value) {
+    if (_permissionMissing == value) return;
+    _permissionMissing = value;
+    notifyListeners();
+  }
+
+  /// Re-reads the install permission after the user came back from the
+  /// system settings.
+  Future<void> checkInstallPermission() async {
+    _permissionMissing = await needsInstallPermission();
+    notifyListeners();
+  }
 
   /// 0..100 while downloading.
   int get progress => _progress;

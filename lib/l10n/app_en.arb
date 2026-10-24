@@ -112,6 +112,7 @@
   "msgUpdateUpToDate": "You have the latest version",
   "msgUpdateFailed": "Update check failed",
   "msgUpdatePermissionNeeded": "Allow installing from this app to update",
+  "msgUpdateInstallFailed": "Could not open the installer. Try again from Settings.",
   "msgUpdateInstalled": "Update ready",
   "updateInstall": "Install",
   "labelAutoOpenPlayer": "Open player automatically",

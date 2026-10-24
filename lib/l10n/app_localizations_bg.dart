@@ -278,6 +278,10 @@ class AppLocalizationsBg extends AppLocalizations {
       'Разреши инсталиране от това приложение, за да се актуализира';
 
   @override
+  String get msgUpdateInstallFailed =>
+      'Инсталаторът не се отвори. Опитайте отново от Настройки.';
+
+  @override
   String get msgUpdateInstalled => 'Актуализацията е готова';
 
   @override
