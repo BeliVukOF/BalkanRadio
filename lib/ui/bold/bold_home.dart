@@ -135,7 +135,7 @@ class _BoldHomeState extends State<BoldHome> {
     );
   }
 
-  Widget _header(AppLocalizations l10n, {required bool showSearch}) {
+  Widget _header(AppLocalizations l10n, {required bool showSearch, bool compact = false}) {
     final palette = BoldTheme.of(context);
     final abstract = palette.abstract;
     final rawEyebrow = abstract ? l10n.appName : l10n.navHeaderSubtitle;
@@ -145,51 +145,82 @@ class _BoldHomeState extends State<BoldHome> {
       2 => l10n.menuFavorites,
       _ => abstract ? l10n.titleAllStations : l10n.appName,
     };
+    // In landscape the search field sits next to the title instead of below
+    // it, so the header stays one row tall.
+    final search = showSearch
+        ? _SearchField(
+            controller: _search,
+            hint: l10n.searchHint,
+            onChanged: context.read<RadioProvider>().setSearchQuery,
+            autofocus: false,
+            compact: compact,
+          )
+        : const SizedBox.shrink();
+
+    final titleBlock = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          abstract ? eyebrow.toUpperCase() : eyebrow,
+          style: TextStyle(
+            color: palette.neon ? palette.neonA : palette.textMuted,
+            fontSize: abstract ? 11 : (palette.neon ? 12 : 13),
+            fontWeight: palette.neon || abstract ? FontWeight.w700 : null,
+            letterSpacing: abstract ? 2.2 : (palette.neon ? 2.5 : 0),
+            fontFamily: palette.neon ? 'monospace' : null,
+          ),
+        ),
+        const SizedBox(height: 4),
+        if (palette.neon)
+          GlitchTitle(
+            text: title.toUpperCase(),
+            palette: palette,
+            fontSize: compact ? 22 : 28,
+          )
+        else if (_tab == 0 && !abstract)
+          BrandLockup(label: title, fontSize: compact ? 26 : 34)
+        else
+          Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: palette.text,
+              fontSize: compact ? 24 : 34,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -1,
+            ),
+          ),
+      ],
+    );
+
+    if (compact) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(child: titleBlock),
+            const SizedBox(width: 16),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 260),
+              child: search,
+            ),
+          ],
+        ),
+      );
+    }
 
     return Padding(
       padding: EdgeInsets.fromLTRB(abstract ? 20 : 20, abstract ? 18 : 12, 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            abstract ? eyebrow.toUpperCase() : eyebrow,
-            style: TextStyle(
-              color: palette.neon ? palette.neonA : palette.textMuted,
-              fontSize: abstract ? 11 : (palette.neon ? 12 : 13),
-              fontWeight: palette.neon || abstract ? FontWeight.w700 : null,
-              letterSpacing: abstract ? 2.2 : (palette.neon ? 2.5 : 0),
-              fontFamily: palette.neon ? 'monospace' : null,
-            ),
-          ),
-          const SizedBox(height: 6),
-          if (palette.neon)
-            GlitchTitle(
-              text: title.toUpperCase(),
-              palette: palette,
-              fontSize: 28,
-            )
-          else if (_tab == 0 && !abstract)
-            BrandLockup(label: title)
-          else
-            Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: palette.text,
-                fontSize: 34,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -1,
-              ),
-            ),
+          titleBlock,
           if (showSearch) ...[
             const SizedBox(height: 16),
-            _SearchField(
-              controller: _search,
-              hint: l10n.searchHint,
-              onChanged: context.read<RadioProvider>().setSearchQuery,
-              autofocus: false,
-            ),
+            search,
           ],
           const SizedBox(height: 12),
         ],
@@ -197,13 +228,13 @@ class _BoldHomeState extends State<BoldHome> {
     );
   }
 
-  Widget _chips(RadioProvider provider, AppLocalizations l10n) {
+  Widget _chips(RadioProvider provider, AppLocalizations l10n, {bool compact = false}) {
     final regions = provider.enabledRegions;
     return SizedBox(
-      height: 40,
+      height: compact ? 34 : 40,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.symmetric(horizontal: compact ? 0 : 20),
         children: [
           _Chip(
             label: l10n.titleAllStations,
@@ -228,70 +259,93 @@ class _BoldHomeState extends State<BoldHome> {
       regionLabeler: (region) => regionLabel(l10n, region),
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _header(l10n, showSearch: true),
-        const SizedBox(height: 12),
-        if (!favoritesOnly) _chips(provider, l10n),
-        const SizedBox(height: 8),
-        if (provider.isLoading)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            child: LinearProgressIndicator(
-              minHeight: 2,
-              color: BoldTheme.of(context).accent,
-            ),
-          ),
-        Expanded(
-          child: stations.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: BoldTheme.of(context).abstract && favoritesOnly
-                        ? _abstractEmptyFavorites(l10n)
-                        : Text(
-                            favoritesOnly ? l10n.favoritesEmpty : l10n.noStationsFound,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: BoldTheme.of(context).textMuted,
-                              fontSize: 16,
-                            ),
-                          ),
-                  ),
-                )
-              // The card is a fixed panel: it always fills the space between
-              // the chips and the mini player, and the rows scroll inside it.
-              : _listCard(
-                    ListView.builder(
-                      padding: EdgeInsets.fromLTRB(
-                        BoldTheme.of(context).modern ? 14 : 20,
-                        BoldTheme.of(context).modern ? 6 : 4,
-                        BoldTheme.of(context).modern ? 14 : 20,
-                        16,
+    // Landscape (and any short screen) has no room for the tall portrait
+    // header: the chips move into the header row so the list keeps its
+    // height instead of being pushed out of the viewport.
+    return LayoutBuilder(
+      builder: (context, box) {
+        final compact = box.maxHeight < 520;
+        final header = _header(l10n, showSearch: true, compact: compact);
+        final chips = favoritesOnly
+            ? const SizedBox.shrink()
+            : _chips(provider, l10n, compact: compact);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (compact)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(child: header),
+                  // The chips scroll sideways, so they need a fixed width.
+                  SizedBox(width: 240, child: chips),
+                ],
+              )
+            else ...[
+              header,
+              const SizedBox(height: 12),
+              chips,
+            ],
+            if (!compact) const SizedBox(height: 8),
+            if (provider.isLoading)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: LinearProgressIndicator(
+                  minHeight: 2,
+                  color: BoldTheme.of(context).accent,
+                ),
+              ),
+            Expanded(
+              child: stations.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: BoldTheme.of(context).abstract && favoritesOnly
+                            ? _abstractEmptyFavorites(l10n)
+                            : Text(
+                                favoritesOnly ? l10n.favoritesEmpty : l10n.noStationsFound,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: BoldTheme.of(context).textMuted,
+                                  fontSize: 16,
+                                ),
+                              ),
                       ),
-                      itemCount: stations.length,
-                      itemBuilder: (context, index) {
-                        final station = stations[index];
-                        final current = provider.currentStation?.streamUrl == station.streamUrl;
-                        final favorite = provider.prefs.isStationFavorite(station.streamUrl);
-                        return BoldStationRow(
-                          station: station,
-                          subtitle: regionLabel(l10n, station.region),
-                          playing: current && provider.isPlaying,
-                          favorite: favorite,
-                          last: index == stations.length - 1,
-                          favoriteLabel: favorite
-                              ? l10n.contentDescriptionUnfavorite
-                              : l10n.contentDescriptionFavorite,
-                          onPlay: () => _play(provider, station),
-                          onFavorite: () => _toggleFavorite(provider, station),
-                        );
-                      },
+                    )
+                  // The card is a fixed panel: it always fills the space between
+                  // the chips and the mini player, and the rows scroll inside it.
+                  : _listCard(
+                      ListView.builder(
+                        padding: EdgeInsets.fromLTRB(
+                          BoldTheme.of(context).modern ? 14 : 20,
+                          BoldTheme.of(context).modern ? 6 : 4,
+                          BoldTheme.of(context).modern ? 14 : 20,
+                          16,
+                        ),
+                        itemCount: stations.length,
+                        itemBuilder: (context, index) {
+                          final station = stations[index];
+                          final current = provider.currentStation?.streamUrl == station.streamUrl;
+                          final favorite = provider.prefs.isStationFavorite(station.streamUrl);
+                          return BoldStationRow(
+                            station: station,
+                            subtitle: regionLabel(l10n, station.region),
+                            playing: current && provider.isPlaying,
+                            favorite: favorite,
+                            last: index == stations.length - 1,
+                            favoriteLabel: favorite
+                                ? l10n.contentDescriptionUnfavorite
+                                : l10n.contentDescriptionFavorite,
+                            onPlay: () => _play(provider, station),
+                            onFavorite: () => _toggleFavorite(provider, station),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-        ),
-      ],
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -397,6 +451,7 @@ class _SearchField extends StatelessWidget {
     required this.hint,
     required this.onChanged,
     this.autofocus = true,
+    this.compact = false,
   });
 
   final TextEditingController controller;
@@ -406,6 +461,9 @@ class _SearchField extends StatelessWidget {
   /// The field now lives in the header permanently, so it must not grab focus
   /// on launch and pop the keyboard.
   final bool autofocus;
+
+  /// Landscape: a shorter field so the header stays one row tall.
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -431,7 +489,7 @@ class _SearchField extends StatelessWidget {
     // Mock: glass pill for Modern, framed rectangle for Cyberpunk — the field
     // always has a body, never a bare line of text over the backdrop.
     return Container(
-      height: 46,
+      height: compact ? 38 : 46,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: palette.neon ? palette.surface : palette.glass,
@@ -442,7 +500,7 @@ class _SearchField extends StatelessWidget {
         children: [
           Icon(
             Icons.search,
-            size: 20,
+            size: compact ? 18 : 20,
             color: palette.neon ? palette.neonA : palette.highlight,
           ),
           const SizedBox(width: 8),

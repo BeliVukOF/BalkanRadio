@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:balkan_radio/data/region_preferences.dart';
 import 'package:balkan_radio/data/station_repository.dart';
 import 'package:balkan_radio/models/radio_station.dart';
+import 'package:balkan_radio/services/car_browse.dart';
 import 'package:balkan_radio/services/update_service.dart';
 import 'package:balkan_radio/ui/screens/settings_screen.dart' show appVersion;
 import 'package:flutter_test/flutter_test.dart';
@@ -137,5 +138,42 @@ void main() {
     const b = AppUpdate(versionName: '1.4.0', versionCode: 30, apkUrl: 'u');
     expect(a.fileName, 'BalkanRadio-1.3.15.apk');
     expect(a.fileName, isNot(b.fileName));
+  });
+
+  test('the media item carries the current song for the notification', () {
+    // audio_service shows the media item's `artist` as the notification's
+    // second line (android.text), so the song has to go there. The region
+    // stays in `album`, which the lock screen shows as the third line.
+    const station = RadioStation(
+      name: 'Play',
+      streamUrl: 'https://example.com/play',
+      region: 'Serbia',
+    );
+
+    final withSong = carStationItem(station, nowPlaying: 'Artist - Title');
+    expect(withSong.title, 'Play');
+    expect(withSong.artist, 'Artist - Title');
+    expect(withSong.album, 'Serbia');
+
+    // No song: the notification keeps the old second line.
+    final withoutSong = carStationItem(station);
+    expect(withoutSong.artist, 'Balkan Radio');
+    expect(carStationItem(station, nowPlaying: '').artist, 'Balkan Radio');
+  });
+
+  test('a song change republishes the media item to the notification', () {
+    // The notification only redraws when the media item is published again,
+    // so a new song has to be pushed into the audio handler.
+    final src = File('lib/providers/radio_provider.dart').readAsStringSync();
+    expect(
+      src.contains('nowPlaying.addListener(_pushNowPlayingToNotification)'),
+      isTrue,
+      reason: 'a new song must reach the notification, not only the app UI',
+    );
+    expect(
+      src.contains('_audio?.setNowPlaying(station,'),
+      isTrue,
+      reason: 'the song must be pushed into the audio handler',
+    );
   });
 }

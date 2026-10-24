@@ -56,19 +56,41 @@ class RadioAudioHandler extends BaseAudioHandler {
   /// in sync. Empty until stations load, which is fine — the car re-queries.
   List<RadioStation> browseStations = const [];
 
+  /// The station that is playing, so a song change can re-publish the media
+  /// item with the new title.
+  RadioStation? _currentStation;
+
+  /// The song currently shown in the notification, if any.
+  String? _nowPlaying;
+
+  /// Updates the song shown in the notification and on the lock screen.
+  ///
+  /// The media item has to be published again for the platform to redraw the
+  /// notification, so the same item is re-added with the new artist.
+  void setNowPlaying(RadioStation station, String? nowPlaying) {
+    if (_currentStation?.streamUrl != station.streamUrl) return;
+    if (_nowPlaying == nowPlaying) return;
+    _nowPlaying = nowPlaying;
+    mediaItem.add(carStationItem(station, nowPlaying: nowPlaying));
+  }
+
   AudioPlayer get player => _player;
 
   /// Off by default: the notification keeps the square stop button. When true
   /// the stop control is an X, in the notification and on the lock screen too.
   bool useStopX = false;
 
-  /// X instead of the square; audio_service sends it as a custom action, which
-  /// is the only way to change the notification icon (Android owns the icon of
-  /// the built-in stop action).
-  static final MediaControl _stopX = MediaControl.custom(
+  /// X instead of the square.
+  ///
+  /// This must stay a *native* stop control: audio_service only adds
+  /// controls without a custom action to the notification, so a
+  /// `MediaControl.custom` would drop the stop button from the notification
+  /// and the lock screen entirely. Keeping `action: MediaAction.stop` and
+  /// changing only the icon gives a real stop with the X glyph.
+  static const MediaControl _stopX = MediaControl(
     androidIcon: 'drawable/balkan_stop_x',
     label: 'Stop',
-    name: 'stop',
+    action: MediaAction.stop,
   );
 
   /// Re-publishes the state so the notification redraws after a control
@@ -99,6 +121,8 @@ class RadioAudioHandler extends BaseAudioHandler {
   Future<void> playStation(RadioStation station) async {
     final token = ++_playToken;
     error.value = null;
+    _currentStation = station;
+    _nowPlaying = null;
     mediaItem.add(carStationItem(station));
     try {
       await _player.stop();
@@ -142,17 +166,6 @@ class RadioAudioHandler extends BaseAudioHandler {
     }
   }
 
-  /// The X is a custom action: only a custom action can carry its own
-  /// notification icon, and it must still land on the same stop behaviour.
-  @override
-  Future<dynamic> customAction(
-    String name, [
-    Map<String, dynamic>? extras,
-  ]) {
-    if (name == 'stop') return stop();
-    return super.customAction(name, extras);
-  }
-
   @override
   Future<void> play() => _player.play();
 
@@ -163,6 +176,8 @@ class RadioAudioHandler extends BaseAudioHandler {
   Future<void> stop() async {
     _playToken++;
     error.value = null;
+    _currentStation = null;
+    _nowPlaying = null;
     await _player.stop();
     mediaItem.add(null);
     await super.stop();

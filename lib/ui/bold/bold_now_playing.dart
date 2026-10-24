@@ -45,12 +45,19 @@ class BoldNowPlaying extends StatelessWidget {
               // Mocks: artwork ~38% of the height on the glass designs, and
               // the controls sit in thumb reach with empty space below instead
               // of hugging the system navigation bar.
-              final artSide = math.min(
-                box.maxWidth - 48,
-                h * (box.maxWidth > box.maxHeight ? 0.18 : 0.38),
-              );
-              final bottomGap =
-                  h * (palette.modern || palette.neon ? 0.13 : 0.05);
+              // Landscape (and any short screen) has no vertical room for the
+              // portrait stack: the artwork moves next to the info and the
+              // controls stay pinned at the bottom.
+              final compact = h < 520;
+              final artSide = compact
+                  ? math.min(box.maxWidth * 0.30, math.max(96.0, h - 150))
+                  : math.min(
+                      box.maxWidth - 48,
+                      h * (box.maxWidth > box.maxHeight ? 0.18 : 0.38),
+                    );
+              final bottomGap = compact
+                  ? 8.0
+                  : h * (palette.modern || palette.neon ? 0.13 : 0.05);
               return Padding(
                 padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                 child: Column(
@@ -99,6 +106,63 @@ class BoldNowPlaying extends StatelessWidget {
                     ),
                   ),
                 )
+              else if (compact) ...[
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: artSide,
+                        height: artSide,
+                        child: _artwork(context, station, artSide),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _LiveBadge(magenta: palette.neonB, neon: palette.neon),
+                                const SleepChip(),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            _stationName(context, palette, station, 24),
+                            const SizedBox(height: 4),
+                            Text(
+                              regionLabel(l10n, station.region),
+                              style: TextStyle(color: palette.textMuted, fontSize: 14),
+                            ),
+                            _NowPlayingLine(
+                              title: provider.nowPlayingTitle,
+                              palette: palette,
+                            ),
+                            const SizedBox(height: 8),
+                            BoldEqualizer(
+                              active: provider.isPlaying,
+                              color: palette.accent,
+                              height: 32,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                _controls(
+                  context,
+                  provider,
+                  palette,
+                  l10n,
+                  station,
+                  favorite,
+                  compact: true,
+                ),
+                SizedBox(height: bottomGap),
+              ]
               else ...[
                 const SizedBox(height: 20),
                 SizedBox(
@@ -118,25 +182,7 @@ class BoldNowPlaying extends StatelessWidget {
                 const SizedBox(height: 14),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: palette.neon
-                      ? GlitchTitle(
-                          text: station.name.toUpperCase(),
-                          palette: palette,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w800,
-                          maxLines: 2,
-                        )
-                      : Text(
-                          station.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: palette.text,
-                            fontSize: 30,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.8,
-                          ),
-                        ),
+                  child: _stationName(context, palette, station, 30),
                 ),
                 const SizedBox(height: 6),
                 Align(
@@ -145,6 +191,10 @@ class BoldNowPlaying extends StatelessWidget {
                     regionLabel(l10n, station.region),
                     style: TextStyle(color: palette.textMuted, fontSize: 16),
                   ),
+                ),
+                _NowPlayingLine(
+                  title: provider.nowPlayingTitle,
+                  palette: palette,
                 ),
                 const SizedBox(height: 16),
                 // Moves only while audio is actually playing.
@@ -171,94 +221,7 @@ class BoldNowPlaying extends StatelessWidget {
                   ),
                 ],
                 const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    BoldOrb(
-                      icon: Icons.bedtime_outlined,
-                      tooltip: l10n.labelSleepTimer,
-                      size: 52,
-                      iconSize: 24,
-                      color: palette.neon || palette.modern
-                          ? Colors.transparent
-                          : null,
-                      iconColor: provider.sleepActive
-                          ? palette.accent
-                          : (palette.neon || palette.modern
-                              ? palette.textMuted
-                              : palette.text),
-                      onPressed: () => _pickSleepTimer(context, provider),
-                    ),
-                    BoldOrb(
-                      icon: Icons.skip_previous_rounded,
-                      tooltip: l10n.contentDescriptionPreviousStation,
-                      size: 52,
-                      iconSize: 26,
-                      color: palette.neon || palette.modern
-                          ? Colors.transparent
-                          : null,
-                      onPressed: () => _skip(provider, station, -1),
-                    ),
-                    if (palette.neon)
-                      Semantics(
-                        button: true,
-                        label: provider.isPlaying
-                            ? l10n.contentDescriptionPause
-                            : l10n.contentDescriptionPlay,
-                        child: NeonPlayButton(
-                          icon: provider.isPlaying
-                              ? Icons.pause_rounded
-                              : Icons.play_arrow_rounded,
-                          size: 78,
-                          cut: 18,
-                          onPressed: provider.togglePlayPause,
-                        ),
-                      )
-                    else
-                      BoldOrb(
-                        icon: provider.isPlaying
-                            ? Icons.pause_rounded
-                            : Icons.play_arrow_rounded,
-                        tooltip: provider.isPlaying
-                            ? l10n.contentDescriptionPause
-                            : l10n.contentDescriptionPlay,
-                        size: 78,
-                        color: palette.playGradient == null ? palette.accent : null,
-                        gradient: palette.playGradient,
-                        iconColor:
-                            palette.playGradient == null ? palette.onAccent : Colors.white,
-                        iconSize: 40,
-                        onPressed: provider.togglePlayPause,
-                      ),
-                    BoldOrb(
-                      icon: Icons.skip_next_rounded,
-                      tooltip: l10n.contentDescriptionNextStation,
-                      size: 52,
-                      iconSize: 26,
-                      color: palette.neon || palette.modern
-                          ? Colors.transparent
-                          : null,
-                      onPressed: () => _skip(provider, station, 1),
-                    ),
-                    BoldOrb(
-                      icon: favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                      tooltip: favorite
-                          ? l10n.contentDescriptionUnfavorite
-                          : l10n.contentDescriptionFavorite,
-                      size: 52,
-                      iconSize: 26,
-                      color: palette.neon || palette.modern
-                          ? Colors.transparent
-                          : null,
-                      iconColor: favorite
-                          ? (palette.neon ? palette.neonB : palette.accent)
-                          : (palette.neon
-                              ? palette.neonB
-                              : (palette.modern ? palette.accent : null)),
-                      onPressed: () => _toggleFavorite(context, provider, station.streamUrl),
-                    ),
-                  ],
-                ),
+                _controls(context, provider, palette, l10n, station, favorite),
                 SizedBox(height: bottomGap),
               ],
                   ],
@@ -268,6 +231,125 @@ class BoldNowPlaying extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  /// Station name, in the glitch style of the cyber design.
+  Widget _stationName(
+    BuildContext context,
+    BoldPalette palette,
+    RadioStation station,
+    double fontSize,
+  ) =>
+      palette.neon
+          ? GlitchTitle(
+              text: station.name.toUpperCase(),
+              palette: palette,
+              fontSize: fontSize,
+              fontWeight: FontWeight.w800,
+              maxLines: 2,
+            )
+          : Text(
+              station.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: palette.text,
+                fontSize: fontSize,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.8,
+              ),
+            );
+
+  /// The playback controls: sleep, previous, play/pause, next, favourite.
+  Widget _controls(
+    BuildContext context,
+    RadioProvider provider,
+    BoldPalette palette,
+    AppLocalizations l10n,
+    RadioStation station,
+    bool favorite, {
+    bool compact = false,
+  }) {
+    final side = compact ? 44.0 : 52.0;
+    final playSize = compact ? 64.0 : 78.0;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        BoldOrb(
+          icon: Icons.bedtime_outlined,
+          tooltip: l10n.labelSleepTimer,
+          size: side,
+          iconSize: compact ? 20 : 24,
+          color: palette.neon || palette.modern ? Colors.transparent : null,
+          iconColor: provider.sleepActive
+              ? palette.accent
+              : (palette.neon || palette.modern ? palette.textMuted : palette.text),
+          onPressed: () => _pickSleepTimer(context, provider),
+        ),
+        BoldOrb(
+          icon: Icons.skip_previous_rounded,
+          tooltip: l10n.contentDescriptionPreviousStation,
+          size: side,
+          iconSize: compact ? 22 : 26,
+          color: palette.neon || palette.modern ? Colors.transparent : null,
+          onPressed: () => _skip(provider, station, -1),
+        ),
+        if (palette.neon)
+          Semantics(
+            button: true,
+            label: provider.isPlaying
+                ? l10n.contentDescriptionPause
+                : l10n.contentDescriptionPlay,
+            child: NeonPlayButton(
+              icon: provider.isPlaying
+                  ? Icons.pause_rounded
+                  : Icons.play_arrow_rounded,
+              size: playSize,
+              cut: 18,
+              onPressed: provider.togglePlayPause,
+            ),
+          )
+        else
+          BoldOrb(
+            icon: provider.isPlaying
+                ? Icons.pause_rounded
+                : Icons.play_arrow_rounded,
+            tooltip: provider.isPlaying
+                ? l10n.contentDescriptionPause
+                : l10n.contentDescriptionPlay,
+            size: playSize,
+            color: palette.playGradient == null ? palette.accent : null,
+            gradient: palette.playGradient,
+            iconColor:
+                palette.playGradient == null ? palette.onAccent : Colors.white,
+            iconSize: compact ? 32 : 40,
+            onPressed: provider.togglePlayPause,
+          ),
+        BoldOrb(
+          icon: Icons.skip_next_rounded,
+          tooltip: l10n.contentDescriptionNextStation,
+          size: side,
+          iconSize: compact ? 22 : 26,
+          color: palette.neon || palette.modern ? Colors.transparent : null,
+          onPressed: () => _skip(provider, station, 1),
+        ),
+        BoldOrb(
+          icon: favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+          tooltip: favorite
+              ? l10n.contentDescriptionUnfavorite
+              : l10n.contentDescriptionFavorite,
+          size: side,
+          iconSize: compact ? 22 : 26,
+          color: palette.neon || palette.modern ? Colors.transparent : null,
+          iconColor: favorite
+              ? (palette.neon ? palette.neonB : palette.accent)
+              : (palette.neon
+                  ? palette.neonB
+                  : (palette.modern ? palette.accent : null)),
+          onPressed: () => _toggleFavorite(context, provider, station.streamUrl),
+        ),
+      ],
     );
   }
 
@@ -320,7 +402,13 @@ class BoldNowPlaying extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, box) {
               final h = box.maxHeight;
-              final side = math.min(box.maxWidth - 64, h * 0.36);
+              // Landscape (and any short screen) has no vertical room for the
+              // portrait stack: the artwork moves next to the info and the
+              // controls stay pinned at the bottom.
+              final compact = h < 520;
+              final side = compact
+                  ? math.min(box.maxWidth * 0.30, math.max(96.0, h - 150))
+                  : math.min(box.maxWidth - 64, h * 0.36);
               return Padding(
                 padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                 child: Column(
@@ -358,7 +446,6 @@ class BoldNowPlaying extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 26),
                     if (station == null)
                       Expanded(
                         child: Center(
@@ -368,6 +455,109 @@ class BoldNowPlaying extends StatelessWidget {
                           ),
                         ),
                       )
+                    else if (compact) ...[
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            PulseLogo(
+                              child: AbstractArtwork(
+                                name: station.name,
+                                size: side,
+                                radius: 48,
+                                signal: true,
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 7,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: coral,
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        SizedBox(
+                                          width: 7,
+                                          height: 7,
+                                          child: DecoratedBox(
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          'LIVE',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 1.4,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    station.name,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: palette.text,
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: -1.0,
+                                      height: 1.05,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    regionLabel(l10n, station.region),
+                                    style: TextStyle(
+                                      color: palette.textMuted,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  _NowPlayingLine(
+                                    title: provider.nowPlayingTitle,
+                                    palette: palette,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  BoldEqualizer(
+                                    active: provider.isPlaying,
+                                    color: coral,
+                                    height: 32,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _abstractControls(
+                        context,
+                        provider,
+                        palette,
+                        l10n,
+                        station,
+                        favorite,
+                        circle: circle,
+                        compact: true,
+                      ),
+                      const SizedBox(height: 8),
+                    ]
                     else ...[
                       Center(
                         child: PulseLogo(
@@ -427,6 +617,10 @@ class BoldNowPlaying extends StatelessWidget {
                         regionLabel(l10n, station.region),
                         style: TextStyle(color: palette.textMuted, fontSize: 15),
                       ),
+                      _NowPlayingLine(
+                        title: provider.nowPlayingTitle,
+                        palette: palette,
+                      ),
                       const SizedBox(height: 22),
                       // Moves only while audio is actually playing.
                       Align(
@@ -437,75 +631,14 @@ class BoldNowPlaying extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          BoldOrb(
-                            icon: Icons.bedtime_outlined,
-                            tooltip: l10n.labelSleepTimer,
-                            size: 52,
-                            iconSize: 24,
-                            color: Colors.transparent,
-                            iconColor: provider.sleepActive ? coral : palette.text,
-                            onPressed: () => _pickSleepTimer(context, provider),
-                          ),
-                          BoldOrb(
-                            icon: Icons.skip_previous_rounded,
-                            tooltip: l10n.contentDescriptionPreviousStation,
-                            size: 52,
-                            iconSize: 28,
-                            color: Colors.transparent,
-                            iconColor: palette.text,
-                            onPressed: () => _skip(provider, station, -1),
-                          ),
-                          Semantics(
-                            button: true,
-                            label: provider.isPlaying
-                                ? l10n.contentDescriptionPause
-                                : l10n.contentDescriptionPlay,
-                            child: SizedBox(
-                              width: 80,
-                              height: 80,
-                              child: Material(
-                                color: coral,
-                                shape: const CircleBorder(),
-                                clipBehavior: Clip.antiAlias,
-                                child: InkWell(
-                                  onTap: provider.togglePlayPause,
-                                  child: Icon(
-                                    provider.isPlaying
-                                        ? Icons.pause_rounded
-                                        : Icons.play_arrow_rounded,
-                                    size: 38,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          BoldOrb(
-                            icon: Icons.skip_next_rounded,
-                            tooltip: l10n.contentDescriptionNextStation,
-                            size: 52,
-                            iconSize: 28,
-                            color: Colors.transparent,
-                            iconColor: palette.text,
-                            onPressed: () => _skip(provider, station, 1),
-                          ),
-                          BoldOrb(
-                            icon: favorite
-                                ? Icons.favorite_rounded
-                                : Icons.favorite_border_rounded,
-                            tooltip: favorite
-                                ? l10n.contentDescriptionUnfavorite
-                                : l10n.contentDescriptionFavorite,
-                            size: 52,
-                            iconSize: 26,
-                            color: Colors.transparent,
-                            iconColor: coral,
-                            onPressed: () => _toggleFavorite(context, provider, station.streamUrl),
-                          ),
-                        ],
+                      _abstractControls(
+                        context,
+                        provider,
+                        palette,
+                        l10n,
+                        station,
+                        favorite,
+                        circle: circle,
                       ),
                       SizedBox(height: h * 0.12),
                     ],
@@ -516,6 +649,90 @@ class BoldNowPlaying extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  /// The abstract design's control row: circle buttons on ink/cream.
+  Widget _abstractControls(
+    BuildContext context,
+    RadioProvider provider,
+    BoldPalette palette,
+    AppLocalizations l10n,
+    RadioStation station,
+    bool favorite, {
+    required Widget Function(IconData, VoidCallback, String, {double size, double iconSize}) circle,
+    bool compact = false,
+  }) {
+    const coral = AbstractColors.coral;
+    final side = compact ? 44.0 : 52.0;
+    final playSize = compact ? 64.0 : 80.0;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        BoldOrb(
+          icon: Icons.bedtime_outlined,
+          tooltip: l10n.labelSleepTimer,
+          size: side,
+          iconSize: compact ? 20 : 24,
+          color: Colors.transparent,
+          iconColor: provider.sleepActive ? coral : palette.text,
+          onPressed: () => _pickSleepTimer(context, provider),
+        ),
+        BoldOrb(
+          icon: Icons.skip_previous_rounded,
+          tooltip: l10n.contentDescriptionPreviousStation,
+          size: side,
+          iconSize: compact ? 22 : 28,
+          color: Colors.transparent,
+          iconColor: palette.text,
+          onPressed: () => _skip(provider, station, -1),
+        ),
+        Semantics(
+          button: true,
+          label: provider.isPlaying
+              ? l10n.contentDescriptionPause
+              : l10n.contentDescriptionPlay,
+          child: SizedBox(
+            width: playSize,
+            height: playSize,
+            child: Material(
+              color: coral,
+              shape: const CircleBorder(),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: provider.togglePlayPause,
+                child: Icon(
+                  provider.isPlaying
+                      ? Icons.pause_rounded
+                      : Icons.play_arrow_rounded,
+                  size: compact ? 30 : 38,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+        BoldOrb(
+          icon: Icons.skip_next_rounded,
+          tooltip: l10n.contentDescriptionNextStation,
+          size: side,
+          iconSize: compact ? 22 : 28,
+          color: Colors.transparent,
+          iconColor: palette.text,
+          onPressed: () => _skip(provider, station, 1),
+        ),
+        BoldOrb(
+          icon: favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+          tooltip: favorite
+              ? l10n.contentDescriptionUnfavorite
+              : l10n.contentDescriptionFavorite,
+          size: side,
+          iconSize: compact ? 22 : 26,
+          color: Colors.transparent,
+          iconColor: coral,
+          onPressed: () => _toggleFavorite(context, provider, station.streamUrl),
+        ),
+      ],
     );
   }
 
@@ -672,6 +889,55 @@ class BoldNowPlaying extends StatelessWidget {
         SnackBar(content: Text(AppLocalizations.of(context).msgStorageError)),
       );
     }
+  }
+}
+
+
+/// The song currently playing, shown under the station name.
+///
+/// Only rendered when the station actually publishes a title: the eight
+/// Balkan groups were checked and none of them send ICY `StreamTitle`, so the
+/// title comes from the station's own web API. Stations without such an API
+/// show no line at all rather than a placeholder.
+class _NowPlayingLine extends StatelessWidget {
+  const _NowPlayingLine({required this.title, required this.palette});
+
+  final String? title;
+  final BoldPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = title;
+    if (text == null || text.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 6),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.music_note_rounded,
+              size: 16,
+              color: palette.accent,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                text,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: palette.accent,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
 

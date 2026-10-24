@@ -38,11 +38,19 @@ List<MediaItem> carBrowseChildren(
   return const [];
 }
 
-MediaItem carStationItem(RadioStation station) => MediaItem(
+/// The media item for a station.
+///
+/// [nowPlaying] is the song the station is currently airing, when it
+/// publishes one. It goes into `artist` because that is the field the
+/// notification shows as its second line (`android.text`), and the region
+/// stays in `album`, which the lock screen shows as the third line.
+MediaItem carStationItem(RadioStation station, {String? nowPlaying}) => MediaItem(
       id: station.streamUrl,
       title: station.name,
       album: station.region,
-      artist: 'Balkan Radio',
+      artist: (nowPlaying == null || nowPlaying.isEmpty)
+          ? 'Balkan Radio'
+          : nowPlaying,
       playable: true,
     );
 

@@ -9,6 +9,7 @@ import '../data/station_manager.dart';
 import '../data/station_repository.dart';
 import '../models/radio_station.dart';
 import '../services/audio_handler.dart';
+import '../services/now_playing_service.dart';
 
 class RadioProvider extends ChangeNotifier {
   RadioProvider() {
@@ -17,6 +18,12 @@ class RadioProvider extends ChangeNotifier {
 
   final RegionPreferences prefs = RegionPreferences();
   final StationManager stationManager = StationManager();
+
+  /// Fetches the current song title for the stations that publish
+  /// one. Stations without a public title source are simply not in
+  /// the map, and the player shows nothing for them instead of a
+  /// placeholder.
+  final NowPlayingService nowPlaying = NowPlayingService();
 
   final List<StreamSubscription<dynamic>> _subscriptions = [];
   final Completer<void> _audioReady = Completer<void>();
@@ -38,6 +45,24 @@ class RadioProvider extends ChangeNotifier {
   String get searchQuery => _searchQuery;
   bool get isPlaying => _audio?.playbackState.value.playing ?? false;
   String? get playbackError => _audio?.error.value;
+
+  /// The song currently playing, when the station publishes one.
+  String? get nowPlayingTitle {
+    final station = _currentStation;
+    if (station == null) return null;
+    return nowPlaying.titleFor(station.streamUrl);
+  }
+
+  /// Pushes the current song into the media notification and the lock
+  /// screen, and redraws the app UI.
+  void _pushNowPlayingToNotification() {
+    final station = _currentStation;
+    if (station != null) {
+      _audio?.setNowPlaying(station, nowPlaying.titleFor(station.streamUrl));
+    }
+    _notify();
+  }
+
   /// true while a sleep timer is armed.
   bool get sleepActive => _sleepDeadline != null;
 
@@ -98,6 +123,12 @@ class RadioProvider extends ChangeNotifier {
       _audio = RadioAudioHandler();
     }
 
+    // The handler starts with the square stop. Push the stored setting so
+    // the notification and the lock screen match the user's choice from the
+    // very first state, without waiting for a Settings visit.
+    _audio!.useStopX = prefs.useStopX;
+    _audio!.refreshControls();
+
     _subscriptions.add(_audio!.mediaItem.listen((item) {
       _currentStation = item == null
           ? null
@@ -113,6 +144,7 @@ class RadioProvider extends ChangeNotifier {
     }));
     _subscriptions.add(_audio!.playbackState.listen((_) => _notify()));
     _audio!.error.addListener(_notify);
+    nowPlaying.addListener(_pushNowPlayingToNotification);
 
     _notify();
     // Always completes, even when init above threw: playback calls must never
@@ -223,10 +255,21 @@ class RadioProvider extends ChangeNotifier {
     _notify();
   }
 
+  /// Sets the station the player shows, without touching audio.
+  /// Widget tests only: the real flow goes through [playStation].
+  @visibleForTesting
+  void debugSetCurrentStation(RadioStation? station) {
+    _currentStation = station;
+    _notify();
+  }
+
   /// Returns false when the stream could not be opened.
   Future<bool> playStation(RadioStation station) async {
     final token = ++_playToken;
     _currentStation = station;
+    // Start polling this station's title source. Stations without
+    // one are ignored by the service.
+    nowPlaying.watch(station.streamUrl);
     _notify();
 
     await _audioReady.future;
@@ -256,6 +299,7 @@ class RadioProvider extends ChangeNotifier {
   Future<void> stop() async {
     _playToken++;
     _currentStation = null;
+    nowPlaying.watch(null);
     _notify();
     await _audioReady.future;
     await _audio!.stop();
@@ -346,6 +390,11 @@ class RadioProvider extends ChangeNotifier {
       ThemeMode.dark => 'dark',
       ThemeMode.system => 'system',
     });
+    // The theme change rebuilds the player, and the notification is redrawn
+    // from the handler's cached controls. Republish them so the stop button
+    // (square or X) does not fall back to the default while the theme
+    // changes.
+    _audio?.refreshControls();
     _notify();
   }
 
@@ -359,6 +408,10 @@ class RadioProvider extends ChangeNotifier {
     _sleepTimer?.cancel();
     _disposed = true;
     _audio?.error.removeListener(_notify);
+    nowPlaying.removeListener(_pushNowPlayingToNotification);
+    // Stops the polling timer; without this it keeps running after the
+    // provider is gone.
+    nowPlaying.dispose();
     for (final subscription in _subscriptions) {
       subscription.cancel();
     }
