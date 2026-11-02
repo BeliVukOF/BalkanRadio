@@ -26,6 +26,7 @@ class StationRepository {
     RadioStation(name: "Otvoreni Live", streamUrl: "https://stream.otvoreni.hr/otvoreni", region: "Croatia"),
     RadioStation(name: "Art FM", streamUrl: "https://i2.streams.ovh:2200/ssl/artfm?mp=/stream", region: "Greece"),
     RadioStation(name: "Church Of Greece FM", streamUrl: "https://loki.mental-media.gr:8038/stream", region: "Greece"),
+    RadioStation(name: "Cosmo FM", streamUrl: "https://eco.onestreaming.com/proxy/cosmoradio/stream", region: "Greece"),
     RadioStation(name: "Easy FM", streamUrl: "https://easy972.live24.gr/easy972", region: "Greece"),
     RadioStation(name: "En Lefko", streamUrl: "https://stream.rcs.revma.com/kwste9dz1duvv", region: "Greece"),
     RadioStation(name: "Focus FM", streamUrl: "https://ice.greekstream.net/focusfm", region: "Greece"),
