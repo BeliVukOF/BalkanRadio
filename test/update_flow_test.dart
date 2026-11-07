@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 ///
 /// A user without the "install unknown apps" permission clicked "Install now"
 /// and NOTHING happened: no download, no error, no way forward. The permission
-/// was requested nowhere and the reason was never shown. These tests pin the
+/// was never requested and the reason was never shown. These tests pin the
 /// fix.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -101,23 +101,62 @@ void main() {
     // The permission check and the request are async.
     await tester.pumpAndSettle();
 
-    // The dialog must say WHY nothing happened and offer the way out.
+    // The dialog must say WHY nothing happened.
     expect(
       find.textContaining('Allow installing from this app'),
       findsWidgets,
       reason: 'the missing install permission is never explained',
-    );
-    // The way out: a button that opens the system settings.
-    expect(
-      find.byType(OutlinedButton),
-      findsOneWidget,
-      reason: 'there is no way to grant the permission from the prompt',
     );
     // The system settings were actually opened.
     expect(
       calls.map((c) => c.method),
       contains('requestInstallPermission'),
       reason: 'the install permission was never requested',
+    );
+    // And nothing was downloaded behind the user's back.
+    expect(
+      calls.map((c) => c.method),
+      isNot(contains('enqueueDownload')),
+      reason: 'the download started without the permission',
+    );
+  });
+
+  testWidgets('the download starts by itself when the user comes back',
+      (tester) async {
+    final calls = mockPlatform(canInstall: false);
+    final service = await pumpDialog(tester, update: update);
+
+    await tester.tap(find.text('Install now'));
+    await tester.pumpAndSettle();
+    expect(service.permissionMissing, isTrue);
+
+    // The user granted the permission in the system settings and came back.
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      const MethodChannel('balkan_radio/update'),
+      (call) async {
+        calls.add(call);
+        if (call.method == 'canRequestPackageInstalls') return true;
+        if (call.method == 'enqueueDownload') return 1;
+        if (call.method == 'downloadStatus') {
+          return <String, dynamic>{
+            'state': 'ok',
+            'path': '/sdcard/Download/BalkanRadio-9.9.9.apk',
+            'progress': 100,
+          };
+        }
+        return null;
+      },
+    );
+    service.didChangeAppLifecycleState(AppLifecycleState.resumed);
+    for (var i = 0; i < 8; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+
+    expect(
+      calls.map((c) => c.method),
+      contains('enqueueDownload'),
+      reason: 'the download did not continue after the permission was granted',
     );
   });
 

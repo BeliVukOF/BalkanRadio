@@ -265,9 +265,6 @@ class AppLocalizationsBg extends AppLocalizations {
   String get updateDownloading => 'Изтегляне на актуализацията';
 
   @override
-  String get updateInstalling => 'Отваря се инсталаторът';
-
-  @override
   String get msgUpdateUpToDate => 'Имаш най-новата версия';
 
   @override

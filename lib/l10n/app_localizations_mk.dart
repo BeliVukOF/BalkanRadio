@@ -265,9 +265,6 @@ class AppLocalizationsMk extends AppLocalizations {
   String get updateDownloading => 'Преземање на ажурирањето';
 
   @override
-  String get updateInstalling => 'Се отвора инсталатерот';
-
-  @override
   String get msgUpdateUpToDate => 'Имаш најнова верзија';
 
   @override

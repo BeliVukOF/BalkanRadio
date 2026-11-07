@@ -834,6 +834,7 @@ class BoldMiniPlayer extends StatelessWidget {
     required this.playing,
     required this.onOpen,
     required this.onPlay,
+    required this.onStop,
   });
 
   final RadioStation station;
@@ -841,6 +842,10 @@ class BoldMiniPlayer extends StatelessWidget {
   final bool playing;
   final VoidCallback onOpen;
   final VoidCallback onPlay;
+
+  /// Stops the stream. In the browser the full player is not available, so
+  /// the mini player has to be able to end the playback on its own.
+  final VoidCallback onStop;
 
   @override
   Widget build(BuildContext context) {
@@ -905,6 +910,28 @@ class BoldMiniPlayer extends StatelessWidget {
                     ),
                   ),
                   const SleepChip(),
+                  const SizedBox(width: 8),
+                  Semantics(
+                    button: true,
+                    label: l10n.contentDescriptionStop,
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Material(
+                        color: cream.withValues(alpha: .22),
+                        shape: const CircleBorder(),
+                        clipBehavior: Clip.antiAlias,
+                        child: InkWell(
+                          onTap: onStop,
+                          child: const Icon(
+                            Icons.stop_rounded,
+                            size: 22,
+                            color: cream,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   Semantics(
                     button: true,
@@ -1012,6 +1039,39 @@ class BoldMiniPlayer extends StatelessWidget {
                     ),
                   ),
                   const SleepChip(),
+                  const SizedBox(width: 8),
+                  if (palette.neon)
+                    Semantics(
+                      button: true,
+                      label: l10n.contentDescriptionStop,
+                      child: NeonPlayButton(
+                        icon: Icons.stop_rounded,
+                        size: 40,
+                        onPressed: onStop,
+                      ),
+                    )
+                  else
+                    Semantics(
+                      button: true,
+                      label: l10n.contentDescriptionStop,
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Material(
+                          color: palette.surfaceHigh,
+                          shape: const CircleBorder(),
+                          clipBehavior: Clip.antiAlias,
+                          child: InkWell(
+                            onTap: onStop,
+                            child: Icon(
+                              Icons.stop_rounded,
+                              size: 20,
+                              color: palette.textMuted,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   const SizedBox(width: 8),
                   if (palette.neon)
                     Semantics(

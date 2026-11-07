@@ -47,17 +47,6 @@ Future<void> showUpdateDialog(BuildContext context, UpdateService service) async
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.settings),
-                  label: Text(l10n.msgUpdatePermissionNeeded),
-                  onPressed: () async {
-                    await service.requestInstallPermission();
-                    // The user has to come back from the system settings, so
-                    // the check runs again instead of waiting for them here.
-                    await service.checkInstallPermission();
-                  },
-                ),
               ],
               if (service.downloading) ...[
                 const SizedBox(height: 20),
@@ -102,14 +91,12 @@ Future<void> showUpdateDialog(BuildContext context, UpdateService service) async
               else
                 FilledButton(
                   onPressed: () async {
-                    // Without the permission the download cannot even start,
-                    // so the system settings are opened instead of pretending
-                    // that something is happening.
+                    // Without the permission the download cannot even start.
+                    // Open the system settings and pick the download up again
+                    // when the user comes back, instead of failing silently.
                     if (await service.needsInstallPermission()) {
                       service.permissionMissing = true;
                       await service.requestInstallPermission();
-                      await service.checkInstallPermission();
-                      return;
                     }
                     // Stay open: the Consumer above redraws the bar and the
                     // Install button as the state changes.

@@ -151,6 +151,18 @@ class NowPlayingService extends ChangeNotifier {
       return () => _fetchPlayRadioSocket();
     }
 
+    // RadioBoss runs Icecast, which publishes the song of every mount on the
+    // status page of the stream port.
+    //
+    // Radio Tirana 1 is not here: its Icecast server has no title on the
+    // radiotirana1 mount, so the station never shows a song name.
+    if (streamUrl.contains('168.119.74.185')) {
+      return () => _fetchIcecastFrom(
+            'http://168.119.74.185:8150/status-json.xsl',
+            streamUrl,
+          );
+    }
+
     return null;
   }
 
@@ -344,12 +356,29 @@ class NowPlayingService extends ChangeNotifier {
   /// The Icecast status JSON of Top Media's server. It lists every mount
   /// with its current title, so the right one is picked by mount path.
   Future<String?> _fetchIcecast(String streamUrl) async {
+    return _fetchIcecastFrom(
+      'https://live.top-media.al/status-json.xsl',
+      streamUrl,
+    );
+  }
+
+  /// Reads the song title of [streamUrl] from an Icecast status page.
+  ///
+  /// The status page lists every mount with the title of the song that is
+  /// playing on it, which is where the station's own player reads it from.
+  Future<String?> _fetchIcecastFrom(
+    String statusUrl,
+    String streamUrl,
+  ) async {
     final res = await http
-        .get(Uri.parse('https://live.top-media.al/status-json.xsl'))
+        .get(Uri.parse(statusUrl))
         .timeout(_timeout);
     if (res.statusCode != 200) return null;
     final body = jsonDecode(res.body);
-    final sources = (body['icestats']?['source'] as List?) ?? const [];
+    final raw = body['icestats']?['source'];
+    final sources = raw is List
+        ? raw
+        : (raw is Map ? <dynamic>[raw] : const <dynamic>[]);
     final mount = streamUrl
         .split('/')
         .last

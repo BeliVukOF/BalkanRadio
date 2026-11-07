@@ -41,7 +41,8 @@ class _BoldHomeState extends State<BoldHome> {
     );
   }
 
-  Future<void> _toggleFavorite(RadioProvider provider, RadioStation station) async {
+  Future<void> _toggleFavorite(
+      RadioProvider provider, RadioStation station) async {
     try {
       await provider.toggleFavorite(station);
     } catch (error) {
@@ -78,7 +79,8 @@ class _BoldHomeState extends State<BoldHome> {
     if (_playerOpen) return;
     _playerOpen = true;
     navigator
-        .push(FadeThroughPageRoute<void>(builder: (_) => const BoldNowPlaying()))
+        .push(
+            FadeThroughPageRoute<void>(builder: (_) => const BoldNowPlaying()))
         .whenComplete(() => _playerOpen = false);
   }
 
@@ -91,55 +93,67 @@ class _BoldHomeState extends State<BoldHome> {
     return Scaffold(
       body: NeonBackdrop(
         child: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            Expanded(
-              child: switch (_tab) {
-                1 => _countries(provider, l10n),
-                2 => _stations(provider, l10n, favoritesOnly: true),
-                _ => _stations(provider, l10n, favoritesOnly: false),
-              },
-            ),
-            if (station != null)
-              BoldMiniPlayer(
-                station: station,
-                subtitle: regionLabel(l10n, station.region),
-                playing: provider.isPlaying,
-                onOpen: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const BoldNowPlaying()),
-                ),
-                onPlay: provider.togglePlayPause,
+          bottom: false,
+          // On a wide monitor the portrait layout stretches the rows across the
+          // whole screen and the text ends up unreadably far apart. The content
+          // is kept in a readable column in the middle instead.
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1100),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: switch (_tab) {
+                      1 => _countries(provider, l10n),
+                      2 => _stations(provider, l10n, favoritesOnly: true),
+                      _ => _stations(provider, l10n, favoritesOnly: false),
+                    },
+                  ),
+                  if (station != null)
+                    BoldMiniPlayer(
+                      station: station,
+                      subtitle: regionLabel(l10n, station.region),
+                      playing: provider.isPlaying,
+                      onOpen: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                            builder: (_) => const BoldNowPlaying()),
+                      ),
+                      onPlay: provider.togglePlayPause,
+                      onStop: provider.stop,
+                    ),
+                  BoldNavBar(
+                    index: _tab,
+                    labels: [
+                      l10n.titleAllStations,
+                      l10n.menuAllRegions,
+                      l10n.menuFavorites,
+                      l10n.titleSettings,
+                    ],
+                    onSelect: (index) {
+                      // Fourth slot is settings in every design.
+                      if (index == 3) {
+                        _openSettings();
+                        return;
+                      }
+                      setState(() => _tab = index);
+                    },
+                  ),
+                ],
               ),
-            BoldNavBar(
-              index: _tab,
-              labels: [
-                l10n.titleAllStations,
-                l10n.menuAllRegions,
-                l10n.menuFavorites,
-                l10n.titleSettings,
-              ],
-              onSelect: (index) {
-                // Fourth slot is settings in every design.
-                if (index == 3) {
-                  _openSettings();
-                  return;
-                }
-                setState(() => _tab = index);
-              },
             ),
-          ],
+          ),
         ),
-      ),
       ),
     );
   }
 
-  Widget _header(AppLocalizations l10n, {required bool showSearch, bool compact = false}) {
+  Widget _header(AppLocalizations l10n,
+      {required bool showSearch, bool compact = false}) {
     final palette = BoldTheme.of(context);
     final abstract = palette.abstract;
     final rawEyebrow = abstract ? l10n.appName : l10n.navHeaderSubtitle;
-    final eyebrow = palette.neon ? '// ${rawEyebrow.toUpperCase()}' : rawEyebrow;
+    final eyebrow =
+        palette.neon ? '// ${rawEyebrow.toUpperCase()}' : rawEyebrow;
     final title = switch (_tab) {
       1 => l10n.menuAllRegions,
       2 => l10n.menuFavorites,
@@ -213,7 +227,8 @@ class _BoldHomeState extends State<BoldHome> {
     }
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(abstract ? 20 : 20, abstract ? 18 : 12, 20, 0),
+      padding:
+          EdgeInsets.fromLTRB(abstract ? 20 : 20, abstract ? 18 : 12, 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -228,7 +243,8 @@ class _BoldHomeState extends State<BoldHome> {
     );
   }
 
-  Widget _chips(RadioProvider provider, AppLocalizations l10n, {bool compact = false}) {
+  Widget _chips(RadioProvider provider, AppLocalizations l10n,
+      {bool compact = false}) {
     final regions = provider.enabledRegions;
     return SizedBox(
       height: compact ? 34 : 40,
@@ -252,7 +268,8 @@ class _BoldHomeState extends State<BoldHome> {
     );
   }
 
-  Widget _stations(RadioProvider provider, AppLocalizations l10n, {required bool favoritesOnly}) {
+  Widget _stations(RadioProvider provider, AppLocalizations l10n,
+      {required bool favoritesOnly}) {
     final stations = provider.getFilteredStations(
       region: favoritesOnly ? null : _region,
       isFavoritesOnly: favoritesOnly,
@@ -264,7 +281,12 @@ class _BoldHomeState extends State<BoldHome> {
     // height instead of being pushed out of the viewport.
     return LayoutBuilder(
       builder: (context, box) {
-        final compact = box.maxHeight < 520;
+        // The layout follows the height of the screen, not the height that is
+        // left over. The keyboard takes half of the screen when it opens, and
+        // a header that changes its shape between the two would rebuild the
+        // search field: the field loses its focus, so the keyboard closes
+        // itself the moment it opens.
+        final compact = MediaQuery.sizeOf(context).height < 520;
         final header = _header(l10n, showSearch: true, compact: compact);
         final chips = favoritesOnly
             ? const SizedBox.shrink()
@@ -289,7 +311,8 @@ class _BoldHomeState extends State<BoldHome> {
             if (!compact) const SizedBox(height: 8),
             if (provider.isLoading)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                 child: LinearProgressIndicator(
                   minHeight: 2,
                   color: BoldTheme.of(context).accent,
@@ -303,7 +326,9 @@ class _BoldHomeState extends State<BoldHome> {
                         child: BoldTheme.of(context).abstract && favoritesOnly
                             ? _abstractEmptyFavorites(l10n)
                             : Text(
-                                favoritesOnly ? l10n.favoritesEmpty : l10n.noStationsFound,
+                                favoritesOnly
+                                    ? l10n.favoritesEmpty
+                                    : l10n.noStationsFound,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: BoldTheme.of(context).textMuted,
@@ -325,8 +350,10 @@ class _BoldHomeState extends State<BoldHome> {
                         itemCount: stations.length,
                         itemBuilder: (context, index) {
                           final station = stations[index];
-                          final current = provider.currentStation?.streamUrl == station.streamUrl;
-                          final favorite = provider.prefs.isStationFavorite(station.streamUrl);
+                          final current = provider.currentStation?.streamUrl ==
+                              station.streamUrl;
+                          final favorite = provider.prefs
+                              .isStationFavorite(station.streamUrl);
                           return BoldStationRow(
                             station: station,
                             subtitle: regionLabel(l10n, station.region),
@@ -337,7 +364,8 @@ class _BoldHomeState extends State<BoldHome> {
                                 ? l10n.contentDescriptionUnfavorite
                                 : l10n.contentDescriptionFavorite,
                             onPlay: () => _play(provider, station),
-                            onFavorite: () => _toggleFavorite(provider, station),
+                            onFavorite: () =>
+                                _toggleFavorite(provider, station),
                           );
                         },
                       ),
@@ -512,7 +540,8 @@ class _SearchField extends StatelessWidget {
 }
 
 class _Chip extends StatelessWidget {
-  const _Chip({required this.label, required this.selected, required this.onTap});
+  const _Chip(
+      {required this.label, required this.selected, required this.onTap});
 
   final String label;
   final bool selected;
@@ -572,7 +601,9 @@ class _Chip extends StatelessWidget {
                   ? palette.accent
                   : (palette.neon
                       ? Colors.transparent
-                      : (palette.modern ? palette.glass : palette.surfaceHigh))),
+                      : (palette.modern
+                          ? palette.glass
+                          : palette.surfaceHigh))),
           borderRadius: BorderRadius.circular(palette.corners(22)),
           clipBehavior: Clip.antiAlias,
           child: Ink(
@@ -598,7 +629,8 @@ class _Chip extends StatelessWidget {
                       color: gradient != null
                           ? Colors.white
                           : (selected ? palette.onAccent : palette.text),
-                      fontWeight: palette.neon ? FontWeight.w700 : FontWeight.w600,
+                      fontWeight:
+                          palette.neon ? FontWeight.w700 : FontWeight.w600,
                       fontSize: palette.neon ? 12 : 14,
                       letterSpacing: palette.neon ? 1 : 0,
                       fontFamily: palette.neon ? 'monospace' : null,
@@ -616,7 +648,8 @@ class _Chip extends StatelessWidget {
 
 /// "BALKAN RADIO" with the cyan/magenta split shadow of the cyber mock.
 class _CountryCard extends StatelessWidget {
-  const _CountryCard({required this.region, required this.label, required this.onTap});
+  const _CountryCard(
+      {required this.region, required this.label, required this.onTap});
 
   final String region;
   final String label;
@@ -673,7 +706,8 @@ class _CountryCard extends StatelessWidget {
         },
       );
     }
-    final code = BoldTheme.countryCodes[region] ?? region.substring(0, 2).toUpperCase();
+    final code =
+        BoldTheme.countryCodes[region] ?? region.substring(0, 2).toUpperCase();
     final neon = palette.neon;
     final glass = palette.modern;
     return DecoratedBox(
@@ -709,7 +743,9 @@ class _CountryCard extends StatelessWidget {
                     style: TextStyle(
                       color: neon
                           ? palette.highlight
-                          : (glass ? palette.stationColor(region) : Colors.white),
+                          : (glass
+                              ? palette.stationColor(region)
+                              : Colors.white),
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
                       letterSpacing: neon ? 2 : -0.5,

@@ -265,9 +265,6 @@ class AppLocalizationsSq extends AppLocalizations {
   String get updateDownloading => 'Po shkarkohet perditesimi';
 
   @override
-  String get updateInstalling => 'Po hapet instaluesi';
-
-  @override
   String get msgUpdateUpToDate => 'Ke versionin me te fundit';
 
   @override

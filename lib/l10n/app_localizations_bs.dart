@@ -264,9 +264,6 @@ class AppLocalizationsBs extends AppLocalizations {
   String get updateDownloading => 'Preuzimanje azuriranja';
 
   @override
-  String get updateInstalling => 'Otvara se instaler';
-
-  @override
   String get msgUpdateUpToDate => 'Imaš najnoviju verziju';
 
   @override

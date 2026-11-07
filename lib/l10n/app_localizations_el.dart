@@ -266,9 +266,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String get updateDownloading => 'Λήψη ενημέρωσης';
 
   @override
-  String get updateInstalling => 'Ανοίγει ο εγκαταστάτης';
-
-  @override
   String get msgUpdateUpToDate => 'Έχεις την πιο πρόσφατη έκδοση';
 
   @override

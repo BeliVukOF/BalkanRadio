@@ -108,7 +108,6 @@
   "updateNow": "Install now",
   "updateLater": "Later",
   "updateDownloading": "Downloading update",
-  "updateInstalling": "Opening installer",
   "msgUpdateUpToDate": "You have the latest version",
   "msgUpdateFailed": "Update check failed",
   "msgUpdatePermissionNeeded": "Allow installing from this app to update",

@@ -89,7 +89,6 @@
   "updateNow": "Instalo tani",
   "updateLater": "Me vone",
   "updateDownloading": "Po shkarkohet perditesimi",
-  "updateInstalling": "Po hapet instaluesi",
   "msgUpdateUpToDate": "Ke versionin me te fundit",
   "msgUpdateFailed": "Kontrolli i perditesimit deshtoi",
   "msgUpdatePermissionNeeded": "Lejo instalimin nga ky aplikacion per teu perditesuar",

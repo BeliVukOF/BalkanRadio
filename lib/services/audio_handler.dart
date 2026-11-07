@@ -127,7 +127,8 @@ class RadioAudioHandler extends BaseAudioHandler {
     try {
       await _player.stop();
       // 30s, not 15: some ICY/HLS servers take that long on mobile data.
-      await _player.setUrl(station.streamUrl).timeout(const Duration(seconds: 30));
+      await _player.setUrl(station.streamUrl)
+          .timeout(const Duration(seconds: 30));
       if (token != _playToken) return;
       // Do not await: on a live stream play() only returns once enough has
       // buffered, which can take seconds. The caller must not wait for audio

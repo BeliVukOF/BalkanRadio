@@ -264,9 +264,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateDownloading => 'Downloading update';
 
   @override
-  String get updateInstalling => 'Opening installer';
-
-  @override
   String get msgUpdateUpToDate => 'You have the latest version';
 
   @override

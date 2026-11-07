@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show MissingPluginException, MethodChannel, PlatformException;
@@ -30,8 +29,8 @@ class AppUpdate {
       );
 
   /// Kept in sync with pubspec.yaml by a unit test.
-  static const String currentVersionName = '1.3.20';
-  static const int currentVersionCode = 34;
+  static const String currentVersionName = '1.3.21';
+  static const int currentVersionCode = 35;
 
   bool get isNewer => versionCode > currentVersionCode;
 
@@ -45,9 +44,11 @@ class AppUpdate {
 /// The installer dialog cannot be suppressed: Android requires the user to
 /// confirm, and kills the app once the install starts. Everything before that
 /// - the check and the download - happens silently in the background.
-class UpdateService extends ChangeNotifier {
+class UpdateService extends ChangeNotifier with WidgetsBindingObserver {
   UpdateService({MethodChannel? channel})
-      : _channel = channel ?? const MethodChannel('balkan_radio/update');
+      : _channel = channel ?? const MethodChannel('balkan_radio/update') {
+    WidgetsBinding.instance.addObserver(this);
+  }
 
   final MethodChannel _channel;
 
@@ -72,10 +73,6 @@ class UpdateService extends ChangeNotifier {
     _available = update;
     notifyListeners();
   }
-
-  /// Repaints the prompt after a test changed the state.
-  @visibleForTesting
-  void notifyForTest() => notifyListeners();
   bool get checking => _checking;
   bool get downloading => _downloading;
   bool get permissionMissing => _permissionMissing;
@@ -88,13 +85,6 @@ class UpdateService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Re-reads the install permission after the user came back from the
-  /// system settings.
-  Future<void> checkInstallPermission() async {
-    _permissionMissing = await needsInstallPermission();
-    notifyListeners();
-  }
-
   /// 0..100 while downloading.
   int get progress => _progress;
 
@@ -103,6 +93,9 @@ class UpdateService extends ChangeNotifier {
 
   /// The update is downloaded and only waiting for the user to install it.
   bool get isReadyToInstall => _readyPath != null && !_downloading;
+
+  /// The download that was waiting for the install permission.
+  AppUpdate? _pendingDownload;
 
   /// Silent check at start-up. A failure is never shown: no update is not news.
   Future<void> checkAtStartup() async {
@@ -137,7 +130,6 @@ class UpdateService extends ChangeNotifier {
   }
 
   Future<AppUpdate?> fetchUpdate() async {
-    if (kIsWeb) return null;
     final response = await http
         .get(Uri.parse(_metaUrl))
         .timeout(const Duration(seconds: 10));
@@ -169,7 +161,6 @@ class UpdateService extends ChangeNotifier {
 
   /// True when Android has not been asked yet to allow this app to install.
   Future<bool> needsInstallPermission() async {
-    if (kIsWeb) return false;
     try {
       return !(await _channel.invokeMethod<bool>('canRequestPackageInstalls') ?? true);
     } on PlatformException {
@@ -180,7 +171,6 @@ class UpdateService extends ChangeNotifier {
   }
 
   Future<void> requestInstallPermission() async {
-    if (kIsWeb) return;
     try {
       await _channel.invokeMethod<bool>('requestInstallPermission');
     } on PlatformException {
@@ -195,6 +185,9 @@ class UpdateService extends ChangeNotifier {
   Future<bool> download(AppUpdate update) async {
     _permissionMissing = await needsInstallPermission();
     if (_permissionMissing) {
+      // Remember it: the download starts as soon as the user comes back
+      // from the system settings with the permission granted.
+      _pendingDownload = update;
       notifyListeners();
       return false;
     }
@@ -274,8 +267,23 @@ class UpdateService extends ChangeNotifier {
     }
   }
 
+  /// The user came back from the system settings. The permission they were
+  /// asked for may now be granted, so the download can start.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed || !_permissionMissing) return;
+    _permissionMissing = false;
+    notifyListeners();
+    final pending = _pendingDownload;
+    if (pending != null) {
+      _pendingDownload = null;
+      download(pending);
+    }
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _poll?.cancel();
     super.dispose();
   }

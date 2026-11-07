@@ -89,7 +89,6 @@
   "updateNow": "Инсталирай сега",
   "updateLater": "По-късно",
   "updateDownloading": "Изтегляне на актуализацията",
-  "updateInstalling": "Отваря се инсталаторът",
   "msgUpdateUpToDate": "Имаш най-новата версия",
   "msgUpdateFailed": "Проверката за актуализация се провали",
   "msgUpdatePermissionNeeded": "Разреши инсталиране от това приложение, за да се актуализира",

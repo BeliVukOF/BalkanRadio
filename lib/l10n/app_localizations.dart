@@ -598,12 +598,6 @@ abstract class AppLocalizations {
   /// **'Downloading update'**
   String get updateDownloading;
 
-  /// No description provided for @updateInstalling.
-  ///
-  /// In en, this message translates to:
-  /// **'Opening installer'**
-  String get updateInstalling;
-
   /// No description provided for @msgUpdateUpToDate.
   ///
   /// In en, this message translates to:

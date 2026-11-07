@@ -89,7 +89,6 @@
   "updateNow": "Εγκατάσταση τώρα",
   "updateLater": "Αργότερα",
   "updateDownloading": "Λήψη ενημέρωσης",
-  "updateInstalling": "Ανοίγει ο εγκαταστάτης",
   "msgUpdateUpToDate": "Έχεις την πιο πρόσφατη έκδοση",
   "msgUpdateFailed": "Ο έλεγχος ενημέρωσης απέτυχε",
   "msgUpdatePermissionNeeded": "Επίτρεψε την εγκατάσταση από αυτήν την εφαρμογή για ενημέρωση",

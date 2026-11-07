@@ -44,6 +44,7 @@ class RadioProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String get searchQuery => _searchQuery;
   bool get isPlaying => _audio?.playbackState.value.playing ?? false;
+
   String? get playbackError => _audio?.error.value;
 
   /// The song currently playing, when the station publishes one.
