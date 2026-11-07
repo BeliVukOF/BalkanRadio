@@ -114,6 +114,8 @@ class _BoldHomeState extends State<BoldHome> {
                       station: station,
                       subtitle: regionLabel(l10n, station.region),
                       playing: provider.isPlaying,
+                      useStopX: provider.prefs.useStopX,
+                      nowPlayingTitle: provider.nowPlayingTitle,
                       onOpen: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
                             builder: (_) => const BoldNowPlaying()),

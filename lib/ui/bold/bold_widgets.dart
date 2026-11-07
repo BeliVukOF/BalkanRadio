@@ -825,6 +825,150 @@ class BoldStationRow extends StatelessWidget {
   }
 }
 
+/// One line of text that scrolls sideways when it does not fit into the
+/// space it was given: the news ticker. Short text never moves.
+///
+/// The text is drawn twice, one period apart, so when the first copy leaves
+/// on the left the second one takes its place on the same pixels: the loop
+/// has no visible seam.
+class BoldMarquee extends StatefulWidget {
+  const BoldMarquee({
+    super.key,
+    required this.text,
+    required this.style,
+  });
+
+  final String text;
+  final TextStyle style;
+
+  @override
+  State<BoldMarquee> createState() => _BoldMarqueeState();
+}
+
+class _BoldMarqueeState extends State<BoldMarquee>
+    with SingleTickerProviderStateMixin {
+  /// Pixels per second: fast enough to read, slow enough to follow.
+  static const double _speed = 30;
+
+  /// Empty space between the two copies of the text.
+  static const double _gap = 36;
+
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 16),
+  );
+
+  String? _measuredText;
+  TextStyle? _measuredStyle;
+  double _textWidth = 0;
+  double _textHeight = 0;
+
+  @override
+  void didUpdateWidget(covariant BoldMarquee oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text != widget.text) {
+      // A new song starts from the left, not from the middle of the line.
+      _controller.value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  /// Measures the text once per text change, not on every rebuild.
+  void _measure() {
+    if (_measuredText == widget.text && _measuredStyle == widget.style) {
+      return;
+    }
+    _measuredText = widget.text;
+    _measuredStyle = widget.style;
+    final painter = TextPainter(
+      text: TextSpan(text: widget.text, style: widget.style),
+      textDirection: Directionality.of(context),
+      maxLines: 1,
+    )..layout();
+    _textWidth = painter.width;
+    _textHeight = painter.height;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _measure();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth;
+        if (!maxWidth.isFinite || _textWidth <= maxWidth) {
+          // It fits: the line never moves.
+          if (_controller.isAnimating) _controller.stop();
+          return Text(
+            widget.text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: widget.style,
+          );
+        }
+        // Honour the system "remove animations" accessibility setting.
+        if (MediaQuery.disableAnimationsOf(context)) {
+          if (_controller.isAnimating) _controller.stop();
+          return Text(
+            widget.text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: widget.style,
+          );
+        }
+        // One period = the text plus the gap behind it.
+        final period = _textWidth + _gap;
+        final seconds = (period / _speed).clamp(8.0, 40.0);
+        final duration = Duration(milliseconds: (seconds * 1000).round());
+        if (_controller.duration != duration) {
+          _controller.stop();
+          _controller.duration = duration;
+        }
+        if (!_controller.isAnimating) {
+          _controller.repeat();
+        }
+        final line = Text(
+          widget.text,
+          maxLines: 1,
+          softWrap: false,
+          style: widget.style,
+        );
+        return ClipRect(
+          child: SizedBox(
+            height: _textHeight,
+            child: OverflowBox(
+              alignment: Alignment.topLeft,
+              minWidth: 0,
+              maxWidth: double.infinity,
+              minHeight: 0,
+              maxHeight: double.infinity,
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) => Transform.translate(
+                  offset: Offset(-period * _controller.value, 0),
+                  child: child,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    line,
+                    const SizedBox(width: _gap),
+                    line,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
 /// Card above the navigation bar; tap opens the full player.
 class BoldMiniPlayer extends StatelessWidget {
   const BoldMiniPlayer({
@@ -832,6 +976,8 @@ class BoldMiniPlayer extends StatelessWidget {
     required this.station,
     required this.subtitle,
     required this.playing,
+    required this.useStopX,
+    required this.nowPlayingTitle,
     required this.onOpen,
     required this.onPlay,
     required this.onStop,
@@ -840,12 +986,28 @@ class BoldMiniPlayer extends StatelessWidget {
   final RadioStation station;
   final String subtitle;
   final bool playing;
+
+  /// X instead of the square stop button: the same choice the full player
+  /// and the media notification use.
+  final bool useStopX;
+
+  /// Song title of the current station, when it publishes one. Shown instead
+  /// of the LIVE label.
+  final String? nowPlayingTitle;
+
   final VoidCallback onOpen;
   final VoidCallback onPlay;
 
-  /// Stops the stream. In the browser the full player is not available, so
-  /// the mini player has to be able to end the playback on its own.
+  /// Stops the stream and clears the player.
   final VoidCallback onStop;
+
+  /// The song title as a scrolling line, or null when the station does not
+  /// publish one (then the LIVE label stays).
+  Widget? _songTitle({required TextStyle style}) {
+    final title = nowPlayingTitle;
+    if (title == null || title.isEmpty) return null;
+    return BoldMarquee(text: title, style: style);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -895,14 +1057,24 @@ class BoldMiniPlayer extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 6),
-                            Text(
-                              playing ? 'LIVE' : subtitle.toUpperCase(),
-                              style: TextStyle(
-                                color: cream.withValues(alpha: .85),
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 1.2,
-                              ),
+                            Expanded(
+                              child: _songTitle(
+                                style: TextStyle(
+                                  color: cream.withValues(alpha: .85),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.2,
+                                ),
+                              ) ??
+                                  Text(
+                                    playing ? 'LIVE' : subtitle.toUpperCase(),
+                                    style: TextStyle(
+                                      color: cream.withValues(alpha: .85),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
                             ),
                           ],
                         ),
@@ -923,8 +1095,8 @@ class BoldMiniPlayer extends StatelessWidget {
                         clipBehavior: Clip.antiAlias,
                         child: InkWell(
                           onTap: onStop,
-                          child: const Icon(
-                            Icons.stop_rounded,
+                          child: Icon(
+                            useStopX ? Icons.close_rounded : Icons.stop_rounded,
                             size: 22,
                             color: cream,
                           ),
@@ -1012,29 +1184,49 @@ class BoldMiniPlayer extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 6),
-                              Text(
-                                playing
-                                    ? 'LIVE'
-                                    : (palette.neon
-                                        ? '// ${subtitle.toUpperCase()}'
-                                        : subtitle.toUpperCase()),
-                                style: TextStyle(
-                                  color: palette.neon ? palette.neonB : palette.accent,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: palette.neon ? 1.5 : 1,
-                                  fontFamily: palette.neon ? 'monospace' : null,
-                                ),
+                              Expanded(
+                                child: _songTitle(
+                                  style: TextStyle(
+                                    color: palette.neon ? palette.neonB : palette.accent,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: palette.neon ? 1.5 : 1,
+                                    fontFamily: palette.neon ? 'monospace' : null,
+                                  ),
+                                ) ??
+                                    Text(
+                                      playing
+                                          ? 'LIVE'
+                                          : (palette.neon
+                                              ? '// ${subtitle.toUpperCase()}'
+                                              : subtitle.toUpperCase()),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color:
+                                            palette.neon ? palette.neonB : palette.accent,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: palette.neon ? 1.5 : 1,
+                                        fontFamily: palette.neon ? 'monospace' : null,
+                                      ),
+                                    ),
                               ),
                             ],
                           )
                         else
-                          Text(
-                            subtitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: palette.textMuted, fontSize: 13),
-                          ),
+                          _songTitle(
+                            style: TextStyle(
+                              color: palette.textMuted,
+                              fontSize: 13,
+                            ),
+                          ) ??
+                              Text(
+                                subtitle,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(color: palette.textMuted, fontSize: 13),
+                              ),
                       ],
                     ),
                   ),
@@ -1045,7 +1237,9 @@ class BoldMiniPlayer extends StatelessWidget {
                       button: true,
                       label: l10n.contentDescriptionStop,
                       child: NeonPlayButton(
-                        icon: Icons.stop_rounded,
+                        icon: useStopX
+                            ? Icons.close_rounded
+                            : Icons.stop_rounded,
                         size: 40,
                         onPressed: onStop,
                       ),
@@ -1064,7 +1258,9 @@ class BoldMiniPlayer extends StatelessWidget {
                           child: InkWell(
                             onTap: onStop,
                             child: Icon(
-                              Icons.stop_rounded,
+                              useStopX
+                                  ? Icons.close_rounded
+                                  : Icons.stop_rounded,
                               size: 20,
                               color: palette.textMuted,
                             ),
