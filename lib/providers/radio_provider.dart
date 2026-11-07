@@ -9,6 +9,7 @@ import '../data/station_manager.dart';
 import '../data/station_repository.dart';
 import '../models/radio_station.dart';
 import '../services/audio_handler.dart';
+import '../services/car_browse.dart';
 import '../services/now_playing_service.dart';
 
 class RadioProvider extends ChangeNotifier {
@@ -136,7 +137,11 @@ class RadioProvider extends ChangeNotifier {
           : _allStations.firstWhere(
               (s) => s.streamUrl == item.id,
               orElse: () => RadioStation(
-                name: item.title,
+                // While a song is playing the station name sits in `artist`
+                // and `title` carries the song, so prefer the artist here.
+                name: item.artist == null || item.artist == appDisplayName
+                    ? item.title
+                    : item.artist!,
                 streamUrl: item.id,
                 region: item.album ?? '',
               ),

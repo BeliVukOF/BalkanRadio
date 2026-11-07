@@ -141,9 +141,12 @@ void main() {
   });
 
   test('the media item carries the current song for the notification', () {
-    // audio_service shows the media item's `artist` as the notification's
-    // second line (android.text), so the song has to go there. The region
-    // stays in `album`, which the lock screen shows as the third line.
+    // The system media panel draws `title` as the big first line and scrolls
+    // it when it does not fit (AOSP: MediaDataManager reads DISPLAY_TITLE or
+    // TITLE as the song). The second line (`artist`) is never scrolled, so a
+    // long song title has to go into `title` to move. The station name moves
+    // to `artist`, and the region stays in `album`, the lock screen's third
+    // line.
     const station = RadioStation(
       name: 'Play',
       streamUrl: 'https://example.com/play',
@@ -151,14 +154,17 @@ void main() {
     );
 
     final withSong = carStationItem(station, nowPlaying: 'Artist - Title');
-    expect(withSong.title, 'Play');
-    expect(withSong.artist, 'Artist - Title');
+    expect(withSong.title, 'Artist - Title');
+    expect(withSong.artist, 'Play');
     expect(withSong.album, 'Serbia');
 
-    // No song: the notification keeps the old second line.
+    // No song: the station name keeps the big line and the app name stays
+    // visible in the second line.
     final withoutSong = carStationItem(station);
+    expect(withoutSong.title, 'Play');
     expect(withoutSong.artist, 'Balkan Radio');
     expect(carStationItem(station, nowPlaying: '').artist, 'Balkan Radio');
+    expect(carStationItem(station, nowPlaying: '').title, 'Play');
   });
 
   test('a song change republishes the media item to the notification', () {
