@@ -195,7 +195,11 @@ class _BoldHomeState extends State<BoldHome> {
             fontSize: compact ? 22 : 28,
           )
         else if (_tab == 0 && !abstract)
-          BrandLockup(label: title, fontSize: compact ? 26 : 34)
+          BrandLockup(
+            label: title,
+            markSize: compact ? 30 : 34,
+            fontSize: compact ? 26 : 30,
+          )
         else
           Text(
             title,
@@ -203,7 +207,7 @@ class _BoldHomeState extends State<BoldHome> {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: palette.text,
-              fontSize: compact ? 24 : 34,
+              fontSize: compact ? 24 : 30,
               fontWeight: FontWeight.w800,
               letterSpacing: -1,
             ),
@@ -229,17 +233,16 @@ class _BoldHomeState extends State<BoldHome> {
     }
 
     return Padding(
-      padding:
-          EdgeInsets.fromLTRB(abstract ? 20 : 20, abstract ? 18 : 12, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           titleBlock,
           if (showSearch) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             search,
           ],
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
         ],
       ),
     );

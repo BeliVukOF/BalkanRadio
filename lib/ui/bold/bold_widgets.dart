@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/radio_station.dart';
 import '../../providers/radio_provider.dart';
 import 'abstract.dart';
+import 'bold_motion.dart';
 import 'bold_theme.dart';
 
 /// Paints the design background: gradient for Modern, grid for Cyberpunk,
@@ -145,8 +146,25 @@ class BoldOrb extends StatelessWidget {
                 ),
           child: InkWell(
             onTap: onPressed,
-            child: Center(
-              child: Icon(icon, size: iconSize, color: iconColor ?? palette.text),
+            child: AnimatedSwitcher(
+              duration: MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : BoldMotion.micro,
+              switchInCurve: BoldMotion.enter,
+              switchOutCurve: BoldMotion.exit,
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: ScaleTransition(
+                  scale: Tween<double>(begin: 0.82, end: 1).animate(animation),
+                  child: child,
+                ),
+              ),
+              child: Icon(
+                icon,
+                key: ValueKey<IconData>(icon),
+                size: iconSize,
+                color: iconColor ?? palette.text,
+              ),
             ),
           ),
         ),
@@ -400,9 +418,9 @@ class CrossFade extends StatelessWidget {
   Widget build(BuildContext context) {
     if (MediaQuery.disableAnimationsOf(context)) return child;
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 420),
-      switchInCurve: Curves.easeOutCubic,
-      switchOutCurve: Curves.easeInCubic,
+      duration: BoldMotion.content,
+      switchInCurve: BoldMotion.enter,
+      switchOutCurve: BoldMotion.exit,
       transitionBuilder: (child, animation) => FadeTransition(
         opacity: animation,
         child: SlideTransition(
@@ -423,8 +441,8 @@ class CrossFade extends StatelessWidget {
 class FadeThroughPageRoute<T> extends PageRouteBuilder<T> {
   FadeThroughPageRoute({required WidgetBuilder builder})
       : super(
-          transitionDuration: const Duration(milliseconds: 320),
-          reverseTransitionDuration: const Duration(milliseconds: 260),
+          transitionDuration: BoldMotion.screen,
+          reverseTransitionDuration: BoldMotion.screenReverse,
           pageBuilder: (context, animation, secondary) => builder(context),
           transitionsBuilder: (context, animation, secondary, child) {
             return FadeTransition(
@@ -685,8 +703,8 @@ class BoldStationRow extends StatelessWidget {
               BoldOrb(
                 icon: favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                 tooltip: favoriteLabel,
-                size: 38,
-                iconSize: 19,
+                size: 48,
+                iconSize: 20,
                 color: Colors.transparent,
                 iconColor: favorite ? AbstractColors.coral : palette.textMuted,
                 onPressed: onFavorite,
@@ -696,8 +714,8 @@ class BoldStationRow extends StatelessWidget {
                 button: true,
                 label: _playLabel(l10n, playing),
                 child: SizedBox(
-                  width: 44,
-                  height: 44,
+                  width: 48,
+                  height: 48,
                   child: Material(
                     color: dark ? AbstractColors.cream : AbstractColors.ink,
                     shape: const CircleBorder(),
@@ -773,8 +791,8 @@ class BoldStationRow extends StatelessWidget {
             BoldOrb(
               icon: favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
               tooltip: favoriteLabel,
-              size: 40,
-              iconSize: 20,
+              size: 48,
+              iconSize: 22,
               color: Colors.transparent,
               iconColor: favorite
                   ? (palette.neon ? palette.neonB : palette.accent)
@@ -788,7 +806,7 @@ class BoldStationRow extends StatelessWidget {
                 label: _playLabel(l10n, playing),
                 child: NeonPlayButton(
                   icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                  size: 44,
+                  size: 48,
                   onPressed: onPlay,
                 ),
               )
@@ -796,6 +814,7 @@ class BoldStationRow extends StatelessWidget {
               BoldOrb(
                 icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
                 tooltip: _playLabel(l10n, playing),
+                size: 48,
                 gradient: palette.playGradient,
                 iconColor: palette.playGradient == null ? palette.accent : Colors.white,
                 iconSize: 26,
